@@ -67,5 +67,16 @@
                     </form>
                 }*@
         </dd>
+
+        @if (Model.IsAdministrator)
+        {
+            <dt>管理员</dt>
+            <dd>
+                <p>
+                    你是管理员，你可以管理其他用户的用户组
+                    <a asp-controller="RoleManage" asp-action="Index" class="btn-bracketed">管理</a>
+                </p>
+            </dd>
+        }
     </dl>
 </div>

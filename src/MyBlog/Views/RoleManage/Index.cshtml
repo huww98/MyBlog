@@ -1,0 +1,32 @@
+﻿@model IEnumerable<RoleManageViewModel>
+
+@{
+    ViewData["Title"] = "用户组管理";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserDisplayName)
+            </th>
+            <th>
+                用户组
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserDisplayName)
+            </td>
+            <td>
+                @await Html.PartialAsync("_RoleManagePartial", item)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
