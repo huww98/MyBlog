@@ -1,0 +1,52 @@
+﻿@model MyBlog.Models.Article
+
+@{
+    ViewData["Title"] = "删除";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<h3>你确定要删除这篇文章吗？</h3>
+<div>
+    <h4>文章</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedTime)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CreatedTime)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.EditedTime)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.EditedTime)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Author)
+        </dt>
+        <dd>
+            @await Html.PartialAsync("_UserDisplayNamePartial", Model.Author)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Content)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Content)
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <div class="form-actions no-color">
+            <input type="submit" value="删除" class="btn btn-danger" /> |
+            <a asp-action="Index">返回文章列表</a>
+        </div>
+    </form>
+</div>

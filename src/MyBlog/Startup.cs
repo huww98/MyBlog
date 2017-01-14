@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using MyBlog.Data;
 using MyBlog.Models;
 using MyBlog.Services;
+using MyBlog.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MyBlog
 {
@@ -60,6 +62,8 @@ namespace MyBlog
                 o.Password.RequireUppercase = false;
                 o.Password.RequireNonAlphanumeric = false;
             });
+            services.AddSingleton<IAuthorizationHandler, IsArticleAuthorAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, IsEditorAuthorizationHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
