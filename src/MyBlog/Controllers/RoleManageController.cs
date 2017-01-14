@@ -19,14 +19,11 @@ namespace MyBlog.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        //private readonly ApplicationDbContext _context;
-
 
         public RoleManageController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            //_context = context;
         }
 
         public async Task<IActionResult> Index()
@@ -37,7 +34,8 @@ namespace MyBlog.Controllers
                 u => new RoleManageViewModel
                 {
                     UserId = u.Id,
-                    UserDisplayName = $"{u.UserName}({u.Email})",
+                    UserName = u.UserName,
+                    Email = u.Email,
                     IsAuthor = u.Roles.Any(r => r.RoleId == authorRole.Id),
                     IsEditor = u.Roles.Any(r => r.RoleId == editorRole.Id)
                 }).ToListAsync();
