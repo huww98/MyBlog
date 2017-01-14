@@ -16,6 +16,7 @@
     "Microsoft.AspNetCore.Server.IISIntegration": "1.1.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
     "Microsoft.AspNetCore.StaticFiles": "1.1.0",
+    "Microsoft.AspNetCore.HttpOverrides": "1.1.0",
     "Microsoft.EntityFrameworkCore.Tools": {
       "version": "1.0.0-preview2-final",
       "type": "build"

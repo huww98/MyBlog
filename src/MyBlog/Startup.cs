@@ -14,6 +14,7 @@ using MyBlog.Models;
 using MyBlog.Services;
 using MyBlog.Authorization;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace MyBlog
 {
@@ -61,7 +62,12 @@ namespace MyBlog
                 o.Password.RequireLowercase = false;
                 o.Password.RequireUppercase = false;
                 o.Password.RequireNonAlphanumeric = false;
+
+                o.SecurityStampValidationInterval = TimeSpan.FromSeconds(30);
+
+                //o.User.RequireUniqueEmail = true;
             });
+
             services.AddSingleton<IAuthorizationHandler, IsArticleAuthorAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, IsEditorAuthorizationHandler>();
         }
@@ -84,7 +90,10 @@ namespace MyBlog
             }
 
             app.UseStaticFiles();
-
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
             app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
