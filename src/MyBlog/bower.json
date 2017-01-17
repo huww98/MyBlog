@@ -6,6 +6,7 @@
     "jquery": "2.1.4",
     "jquery-validation-unobtrusive": "3.2.6",
     "jquery-validation": "1.16.0",
-    "bootstrap-wysiwyg-steveathon": "1.0.4"
+    "bootstrap-wysiwyg-steveathon": "1.0.4",
+    "bootstrap-fileinput": "4.3.6"
   }
 }
