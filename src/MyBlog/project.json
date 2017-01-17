@@ -41,7 +41,8 @@
       "version": "1.0.0-preview2-final",
       "type": "build"
     },
-    "Pomelo.EntityFrameworkCore.MySql": "1.1.0"
+    "Pomelo.EntityFrameworkCore.MySql": "1.1.0",
+    "HtmlSanitizer": "3.3.142"
   },
 
   "tools": {

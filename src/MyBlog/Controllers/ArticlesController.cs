@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using MyBlog.Authorization;
 using System.Diagnostics;
 using System.Security.Claims;
+using Ganss.XSS;
 
 namespace MyBlog.Controllers
 {
@@ -20,12 +21,17 @@ namespace MyBlog.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IAuthorizationService _authorizationService;
+        private readonly HtmlSanitizer _santitizer;
 
-        public ArticlesController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, IAuthorizationService authorizationService)
+        public ArticlesController(UserManager<ApplicationUser> userManager,
+            ApplicationDbContext context,
+            IAuthorizationService authorizationService,
+            HtmlSanitizer santitizer)
         {
             _userManager = userManager;
             _context = context;
             _authorizationService = authorizationService;
+            _santitizer = santitizer;
         }
 
         // GET: Articles
@@ -102,6 +108,7 @@ namespace MyBlog.Controllers
             article.AuthorID = getCurrentUserID();
             article.CreatedTime = DateTime.Now;
             article.EditedTime = DateTime.Now;
+            preprocessContent(article);
             if (ModelState.IsValid)
             {
                 _context.Add(article);
@@ -153,6 +160,7 @@ namespace MyBlog.Controllers
                 return NotFound();
             }
             article.EditedTime = DateTime.Now;
+            preprocessContent(article);
 
             if (ModelState.IsValid)
             {
@@ -176,6 +184,12 @@ namespace MyBlog.Controllers
                 return RedirectToAction("Index");
             }
             return View(article);
+        }
+
+        private void preprocessContent(Article article)
+        {
+            article.Content = article.Content.Trim();
+            article.Content = _santitizer.Sanitize(article.Content);
         }
 
         private ArticleViewModel getArticleForAuthorize(int articleID)
