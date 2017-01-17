@@ -155,7 +155,7 @@ namespace MyBlog.Data.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGeneratedOnAdd", true),
-                    AuthorId = table.Column<string>(nullable: true),
+                    AuthorID = table.Column<string>(nullable: true),
                     Content = table.Column<string>(nullable: true),
                     CreatedTime = table.Column<DateTime>(nullable: false),
                     EditedTime = table.Column<DateTime>(nullable: false),
@@ -165,8 +165,8 @@ namespace MyBlog.Data.Migrations
                 {
                     table.PrimaryKey("PK_Article", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Article_AspNetUsers_AuthorId",
-                        column: x => x.AuthorId,
+                        name: "FK_Article_AspNetUsers_AuthorID",
+                        column: x => x.AuthorID,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -175,7 +175,8 @@ namespace MyBlog.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
-                column: "NormalizedName");
+                column: "NormalizedName",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -209,9 +210,9 @@ namespace MyBlog.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Article_AuthorId",
+                name: "IX_Article_AuthorID",
                 table: "Article",
-                column: "AuthorId");
+                column: "AuthorID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

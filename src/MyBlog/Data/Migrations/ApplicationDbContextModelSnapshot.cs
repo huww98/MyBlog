@@ -32,6 +32,7 @@ namespace MyBlog.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
+                        .IsUnique()
                         .HasName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
@@ -176,7 +177,7 @@ namespace MyBlog.Data.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AuthorId");
+                    b.Property<string>("AuthorID");
 
                     b.Property<string>("Content");
 
@@ -188,7 +189,7 @@ namespace MyBlog.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("AuthorId");
+                    b.HasIndex("AuthorID");
 
                     b.ToTable("Article");
                 });
@@ -234,7 +235,7 @@ namespace MyBlog.Data.Migrations
                 {
                     b.HasOne("MyBlog.Models.ApplicationUser", "Author")
                         .WithMany()
-                        .HasForeignKey("AuthorId");
+                        .HasForeignKey("AuthorID");
                 });
         }
     }

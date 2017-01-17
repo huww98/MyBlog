@@ -6,25 +6,13 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<form asp-action="Edit">
-    <div class="form-horizontal">
-        <h4>文章</h4>
-        <hr />
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <input type="hidden" asp-for="ID" />
-        @await Html.PartialAsync("_ArticleEditFormPartial")
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="保存" class="btn btn-default" />
-            </div>
-        </div>
-    </div>
-</form>
+@await Html.PartialAsync("_ArticleEditFormPartial")
+
 
 <div>
     <a asp-action="Index">返回文章列表</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ArticleEditFormScriptsPartial");}
 }

@@ -1,0 +1,39 @@
+﻿<script src="~/lib/jquery.hotkeys/jquery.hotkeys.js"></script>
+<script src="~/lib/google-code-prettify/src/prettify.js"></script>
+<script src="~/lib/bootstrap-wysiwyg-steveathon/src/bootstrap-wysiwyg.js"></script>
+<script type='text/javascript'>
+        $('#editor').wysiwyg();
+</script>
+<script src="~/lib/bootstrap-fileinput/js/fileinput.js"></script>
+<script src="~/lib/bootstrap-fileinput/themes/fa/theme.js"></script>
+<script src="~/lib/bootstrap-fileinput/js/locales/zh.js"></script>
+<script type='text/javascript'>
+        $("#picture").fileinput({
+            language: 'zh',
+            theme: 'fa',
+            showCaption: false,
+            uploadUrl: '/UploadImage',
+            allowedFileExtensions: ["jpg", "png", "gif"]
+        });
+        $('.input-append').click(function (event) {
+            event.stopPropagation();
+        });
+        $('#picture').on('fileuploaded', function (event, data, previewId, index) {
+            response = data.response;
+            sel = window.getSelection();
+            range = sel.getRangeAt(0);
+            range.deleteContents();
+            var el = document.createElement("img");
+            el.src = response.src;
+            el.style.width = "100%";
+            var frag = document.createDocumentFragment();
+            frag.appendChild(el);
+            range.insertNode(frag);
+        });
+</script>
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+<script type='text/javascript'>
+        $.validator.setDefaults({
+            ignore: [],
+        });
+</script>

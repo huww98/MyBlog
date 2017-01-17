@@ -9,7 +9,7 @@ namespace MyBlog.Models.AccountViewModels
     public class RegisterViewModel
     {
         [Required]
-        [StringLength(100, ErrorMessage = "{0}不能为空且最长{1}个字符。", MinimumLength = 1)]
+        [StringLength(100, ErrorMessage = "{0}最长{1}个字符。")]
         [Display(Name = "用户名")]
         public string UserName { get; set; }
 
