@@ -1,4 +1,4 @@
-﻿@model MyBlog.Models.Article
+﻿@model MyBlog.Models.ArticleViewModel
 
 @{
     ViewData["Title"] = Model.Title;
@@ -8,7 +8,7 @@
 
 <div>
     编写时间：@Html.DisplayFor(model => model.CreatedTime) 最后修改时间：@Html.DisplayFor(model => model.EditedTime) <br />
-    作者：@await Html.PartialAsync("_UserDisplayNamePartial", Model.Author)
+    作者：@await Html.PartialAsync("_UserDisplayNamePartial", Model)
     <hr />
             @Html.DisplayFor(model => model.Content)
 </div>

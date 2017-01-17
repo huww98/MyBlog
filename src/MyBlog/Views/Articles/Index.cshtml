@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MyBlog.Models.Article>
+﻿@model IEnumerable<MyBlog.Models.ArticleViewModel>
 
 @{
     ViewData["Title"] = "文章列表";
@@ -20,7 +20,7 @@
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Author)
+                @Html.DisplayNameFor(model => model.AuthorName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.CreatedTime)
@@ -39,7 +39,7 @@
                     @Html.DisplayFor(modelItem => item.Title)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Author.UserName)
+                    @Html.DisplayFor(modelItem => item.AuthorName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.CreatedTime)

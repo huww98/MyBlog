@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using MyBlog.Authorization;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace MyBlog.Controllers
 {
@@ -30,9 +31,16 @@ namespace MyBlog.Controllers
         // GET: Articles
         public async Task<IActionResult> Index()
         {
-            var list = await _context.Article
-                .Include(a => a.Author)
-                .AsNoTracking()
+            var list = await _context.Article.AsNoTracking()
+                .Select(a => new ArticleViewModel
+                {
+                    ID=a.ID,
+                    Title = a.Title,
+                    CreatedTime = a.CreatedTime,
+                    EditedTime = a.EditedTime,
+                    AuthorName = a.Author.UserName,
+                    AuthorID = a.AuthorID
+                })
                 .ToListAsync();
 
             foreach (var a in list)
@@ -51,7 +59,17 @@ namespace MyBlog.Controllers
                 return NotFound();
             }
 
-            var article = await _context.Article.Include(a => a.Author).SingleOrDefaultAsync(m => m.ID == id);
+            var article = await _context.Article.AsNoTracking()
+                .Select(a => new ArticleViewModel
+                {
+                    ID = a.ID,
+                    Title = a.Title,
+                    Content = a.Content,
+                    CreatedTime = a.CreatedTime,
+                    EditedTime = a.EditedTime,
+                    AuthorName = a.Author.UserName,
+                    AuthorEmail = a.Author.Email
+                }).SingleOrDefaultAsync(m => m.ID == id);
             if (article == null)
             {
                 return NotFound();
@@ -61,7 +79,7 @@ namespace MyBlog.Controllers
             return View(article);
         }
 
-        private async Task<bool> getCanEdit(Article article)
+        private async Task<bool> getCanEdit(ArticleViewModel article)
         {
             return await _authorizationService.AuthorizeAsync(User, article, new CanEditArticleRequirement());
         }
@@ -81,7 +99,7 @@ namespace MyBlog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Content,Title")] Article article)
         {
-            article.Author = await GetCurrentUserAsync();
+            article.AuthorID = getCurrentUserID();
             article.CreatedTime = DateTime.Now;
             article.EditedTime = DateTime.Now;
             if (ModelState.IsValid)
@@ -101,7 +119,14 @@ namespace MyBlog.Controllers
                 return NotFound();
             }
 
-            var article = await _context.Article.Include(a => a.Author).SingleOrDefaultAsync(m => m.ID == id);
+            var article = await _context.Article.AsNoTracking()
+                .Select(a => new ArticleViewModel
+                {
+                    ID = a.ID,
+                    Title = a.Title,
+                    Content = a.Content,
+                    AuthorID = a.AuthorID
+                }).SingleOrDefaultAsync(m => m.ID == id);
             if (article == null)
             {
                 return NotFound();
@@ -132,7 +157,7 @@ namespace MyBlog.Controllers
             if (ModelState.IsValid)
             {
 
-                Article articleFromDB = getArticle(article.ID);
+                var articleFromDB = getArticleForAuthorize(article.ID);
                 if (articleFromDB == null)
                 {
                     return NotFound();
@@ -153,9 +178,14 @@ namespace MyBlog.Controllers
             return View(article);
         }
 
-        private Article getArticle(int articleID)
+        private ArticleViewModel getArticleForAuthorize(int articleID)
         {
-            return _context.Article.Include(a => a.Author).AsNoTracking().SingleOrDefault(a => a.ID == articleID);
+            return _context.Article.AsNoTracking()
+                .Select(a => new ArticleViewModel
+                {
+                    ID = a.ID,
+                    AuthorID = a.AuthorID
+                }).SingleOrDefault(a => a.ID == articleID);
         }
 
         // GET: Articles/Delete/5
@@ -166,7 +196,17 @@ namespace MyBlog.Controllers
                 return NotFound();
             }
 
-            var article = await _context.Article.Include(a=>a.Author).SingleOrDefaultAsync(m => m.ID == id);
+            var article = await _context.Article
+                .Select(a => new ArticleViewModel
+                {
+                    ID = a.ID,
+                    Title = a.Title,
+                    Content = a.Content,
+                    CreatedTime = a.CreatedTime,
+                    EditedTime = a.EditedTime,
+                    AuthorName = a.Author.UserName,
+                    AuthorEmail = a.Author.Email
+                }).SingleOrDefaultAsync(m => m.ID == id);
 
             if (article == null)
             {
@@ -185,9 +225,9 @@ namespace MyBlog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var article = await _context.Article.Include(a=>a.Author).SingleOrDefaultAsync(m => m.ID == id);
+            var article = getArticleForAuthorize(id);
 
-            if (article==null)
+            if (article == null)
             {
                 return NotFound();
             }
@@ -196,7 +236,7 @@ namespace MyBlog.Controllers
                 return Challenge();
             }
 
-            _context.Article.Remove(article);
+            _context.Article.Remove(new Article { ID = article.ID });
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
@@ -206,9 +246,9 @@ namespace MyBlog.Controllers
             return _context.Article.Any(e => e.ID == id);
         }
 
-        private Task<ApplicationUser> GetCurrentUserAsync()
+        private string getCurrentUserID()
         {
-            return _userManager.GetUserAsync(User);
+            return User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value;
         }
     }
 }

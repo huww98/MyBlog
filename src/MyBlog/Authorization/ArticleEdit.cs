@@ -13,11 +13,11 @@ namespace MyBlog.Authorization
     {
     }
 
-    class IsArticleAuthorAuthorizationHandler : AuthorizationHandler<CanEditArticleRequirement, Article>
+    class IsArticleAuthorAuthorizationHandler : AuthorizationHandler<CanEditArticleRequirement, ArticleViewModel>
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CanEditArticleRequirement requirement, Article article)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CanEditArticleRequirement requirement, ArticleViewModel article)
         {
-            if (context.User.IsInRole(SeedData.AuthorRoleName) && context.User.FindFirst(c=>c.Type== ClaimTypes.NameIdentifier).Value == article.Author.Id)
+            if (context.User.IsInRole(SeedData.AuthorRoleName) && context.User.FindFirst(c=>c.Type== ClaimTypes.NameIdentifier).Value == article.AuthorID)
             {
                 context.Succeed(requirement);
             }
@@ -25,9 +25,9 @@ namespace MyBlog.Authorization
         }
     }
 
-    class IsEditorAuthorizationHandler : AuthorizationHandler<CanEditArticleRequirement, Article>
+    class IsEditorAuthorizationHandler : AuthorizationHandler<CanEditArticleRequirement, ArticleViewModel>
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CanEditArticleRequirement requirement, Article article)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CanEditArticleRequirement requirement, ArticleViewModel article)
         {
             if (context.User.IsInRole(SeedData.EditorRoleName))
             {

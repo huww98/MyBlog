@@ -1,0 +1,9 @@
+﻿@model ArticleViewModel
+
+@Html.DisplayFor(model => model.AuthorName)
+@if (!string.IsNullOrEmpty(Model.AuthorEmail))
+{
+    <text> (</text>
+    @Html.DisplayFor(model => model.AuthorEmail)
+    <text>)</text>
+}
