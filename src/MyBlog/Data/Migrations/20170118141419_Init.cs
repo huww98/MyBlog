@@ -64,6 +64,23 @@ namespace MyBlog.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Images",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGeneratedOnAdd", true),
+                    Alt = table.Column<string>(nullable: true),
+                    Discription = table.Column<string>(nullable: true),
+                    Path = table.Column<string>(nullable: false),
+                    SHA1 = table.Column<byte[]>(maxLength: 20, nullable: true),
+                    Url = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Images", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -150,7 +167,7 @@ namespace MyBlog.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Article",
+                name: "Articles",
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
@@ -163,13 +180,37 @@ namespace MyBlog.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Article", x => x.ID);
+                    table.PrimaryKey("PK_Articles", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Article_AspNetUsers_AuthorID",
+                        name: "FK_Articles_AspNetUsers_AuthorID",
                         column: x => x.AuthorID,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ArticleImages",
+                columns: table => new
+                {
+                    ArticleID = table.Column<int>(nullable: false),
+                    ImageID = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ArticleImages", x => new { x.ArticleID, x.ImageID });
+                    table.ForeignKey(
+                        name: "FK_ArticleImages_Articles_ArticleID",
+                        column: x => x.ArticleID,
+                        principalTable: "Articles",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ArticleImages_Images_ImageID",
+                        column: x => x.ImageID,
+                        principalTable: "Images",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -210,9 +251,26 @@ namespace MyBlog.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Article_AuthorID",
-                table: "Article",
+                name: "IX_Articles_AuthorID",
+                table: "Articles",
                 column: "AuthorID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ArticleImages_ImageID",
+                table: "ArticleImages",
+                column: "ImageID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Images_SHA1",
+                table: "Images",
+                column: "SHA1",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Images_Url",
+                table: "Images",
+                column: "Url",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -233,10 +291,16 @@ namespace MyBlog.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Article");
+                name: "ArticleImages");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Articles");
+
+            migrationBuilder.DropTable(
+                name: "Images");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

@@ -191,7 +191,49 @@ namespace MyBlog.Data.Migrations
 
                     b.HasIndex("AuthorID");
 
-                    b.ToTable("Article");
+                    b.ToTable("Articles");
+                });
+
+            modelBuilder.Entity("MyBlog.Models.ArticleImage", b =>
+                {
+                    b.Property<int>("ArticleID");
+
+                    b.Property<int>("ImageID");
+
+                    b.HasKey("ArticleID", "ImageID");
+
+                    b.HasIndex("ImageID");
+
+                    b.ToTable("ArticleImages");
+                });
+
+            modelBuilder.Entity("MyBlog.Models.Image", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Alt");
+
+                    b.Property<string>("Discription");
+
+                    b.Property<string>("Path")
+                        .IsRequired();
+
+                    b.Property<byte[]>("SHA1")
+                        .HasAnnotation("MaxLength", 20);
+
+                    b.Property<string>("Url")
+                        .IsRequired();
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("SHA1")
+                        .IsUnique();
+
+                    b.HasIndex("Url")
+                        .IsUnique();
+
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>
@@ -236,6 +278,19 @@ namespace MyBlog.Data.Migrations
                     b.HasOne("MyBlog.Models.ApplicationUser", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorID");
+                });
+
+            modelBuilder.Entity("MyBlog.Models.ArticleImage", b =>
+                {
+                    b.HasOne("MyBlog.Models.Article", "Article")
+                        .WithMany()
+                        .HasForeignKey("ArticleID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("MyBlog.Models.Image", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
         }
     }

@@ -21,8 +21,19 @@ namespace MyBlog.Data
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
+            builder.Entity<ArticleImage>()
+                .HasKey(t => new { t.ArticleID, t.ImageID });
+
+            builder.Entity<Image>()
+                .HasIndex(i => i.SHA1)
+                .IsUnique();
+            builder.Entity<Image>()
+                .HasIndex(i => i.Url)
+                .IsUnique();
         }
 
-        public DbSet<Article> Article { get; set; }
+        public DbSet<Article> Articles { get; set; }
+        public DbSet<Image> Images { get; set; }
+        public DbSet<ArticleImage> ArticleImages { get; set; }
     }
 }

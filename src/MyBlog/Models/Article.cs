@@ -11,37 +11,20 @@ namespace MyBlog.Models
     {
         public int ID { get; set; }
 
-        public string Title { get; set; }
-
-        [DataType(DataType.Html)]
-        public string Content { get; set; }
-
-        public ApplicationUser Author { get; set; }
-
-        [ForeignKey(nameof(Author))]
-        public string AuthorID { get; set; }
-
-        public DateTime CreatedTime { get; set; }
-
-        public DateTime EditedTime { get; set; }
-    }
-
-    public class ArticleViewModel
-    {
-        public int ID { get; set; }
-
         [Display(Name = "标题")]
+        [Required]
         public string Title { get; set; }
 
         [DataType(DataType.Html)]
         [Display(Name = "内容")]
         [StringLength(Microsoft.AspNetCore.WebUtilities.FormReader.DefaultValueLengthLimit)]
+        [Required]
         public string Content { get; set; }
 
         [Display(Name = "作者")]
-        public string AuthorName { get; set; }
+        public ApplicationUser Author { get; set; }
 
-        public string AuthorEmail { get; set; }
+        [ForeignKey(nameof(Author))]
         public string AuthorID { get; set; }
 
         [Display(Name = "创建日期")]
@@ -50,6 +33,7 @@ namespace MyBlog.Models
         [Display(Name = "编辑日期")]
         public DateTime EditedTime { get; set; }
 
+        [NotMapped]
         public bool CanEdit { get; set; }
     }
 }

@@ -13,6 +13,8 @@ using MyBlog.Authorization;
 using System.Diagnostics;
 using System.Security.Claims;
 using Ganss.XSS;
+using AngleSharp.Dom;
+using AngleSharp.Dom.Html;
 
 namespace MyBlog.Controllers
 {
@@ -37,16 +39,9 @@ namespace MyBlog.Controllers
         // GET: Articles
         public async Task<IActionResult> Index()
         {
-            var list = await _context.Article.AsNoTracking()
-                .Select(a => new ArticleViewModel
-                {
-                    ID=a.ID,
-                    Title = a.Title,
-                    CreatedTime = a.CreatedTime,
-                    EditedTime = a.EditedTime,
-                    AuthorName = a.Author.UserName,
-                    AuthorID = a.AuthorID
-                })
+            var list = await _context.Articles
+                .AsNoTracking()
+                .Include(a=>a.Author)
                 .ToListAsync();
 
             foreach (var a in list)
@@ -65,17 +60,10 @@ namespace MyBlog.Controllers
                 return NotFound();
             }
 
-            var article = await _context.Article.AsNoTracking()
-                .Select(a => new ArticleViewModel
-                {
-                    ID = a.ID,
-                    Title = a.Title,
-                    Content = a.Content,
-                    CreatedTime = a.CreatedTime,
-                    EditedTime = a.EditedTime,
-                    AuthorName = a.Author.UserName,
-                    AuthorEmail = a.Author.Email
-                }).SingleOrDefaultAsync(m => m.ID == id);
+            var article = await _context.Articles
+                .AsNoTracking()
+                .Include(a=>a.Author)
+                .SingleOrDefaultAsync(a => a.ID == id);
             if (article == null)
             {
                 return NotFound();
@@ -85,7 +73,7 @@ namespace MyBlog.Controllers
             return View(article);
         }
 
-        private async Task<bool> getCanEdit(ArticleViewModel article)
+        private async Task<bool> getCanEdit(Article article)
         {
             return await _authorizationService.AuthorizeAsync(User, article, new CanEditArticleRequirement());
         }
@@ -126,14 +114,7 @@ namespace MyBlog.Controllers
                 return NotFound();
             }
 
-            var article = await _context.Article.AsNoTracking()
-                .Select(a => new ArticleViewModel
-                {
-                    ID = a.ID,
-                    Title = a.Title,
-                    Content = a.Content,
-                    AuthorID = a.AuthorID
-                }).SingleOrDefaultAsync(m => m.ID == id);
+            var article = await _context.Articles.AsNoTracking().SingleOrDefaultAsync(m => m.ID == id);
             if (article == null)
             {
                 return NotFound();
@@ -165,7 +146,7 @@ namespace MyBlog.Controllers
             if (ModelState.IsValid)
             {
 
-                var articleFromDB = getArticleForAuthorize(article.ID);
+                var articleFromDB = await _context.Articles.AsNoTracking().SingleOrDefaultAsync(a => a.ID == id);
                 if (articleFromDB == null)
                 {
                     return NotFound();
@@ -189,17 +170,34 @@ namespace MyBlog.Controllers
         private void preprocessContent(Article article)
         {
             article.Content = article.Content.Trim();
-            article.Content = _santitizer.Sanitize(article.Content);
-        }
-
-        private ArticleViewModel getArticleForAuthorize(int articleID)
-        {
-            return _context.Article.AsNoTracking()
-                .Select(a => new ArticleViewModel
+            List<string> imgSrcs = new List<string>();
+            _santitizer.PostProcessNode += (s, e) =>
+            {
+                IHtmlImageElement ele = e.Node as IHtmlImageElement;
+                if (ele != null)
                 {
-                    ID = a.ID,
-                    AuthorID = a.AuthorID
-                }).SingleOrDefault(a => a.ID == articleID);
+                    Uri uri = new Uri(ele.Source);
+                    imgSrcs.Add(uri.LocalPath);
+                }
+
+            };
+            article.Content = _santitizer.Sanitize(article.Content);
+            var imgsInDB = _context.Images.Where(i => imgSrcs.Distinct().Contains(i.Url)).Select(i => i.Url);
+            if (imgsInDB.Count() == imgSrcs.Count)
+            {
+                return;
+            }
+            else
+            {
+                var imgsInDBDict = imgsInDB.ToDictionary(s => s);
+                foreach (var item in imgSrcs)
+                {
+                    if (!imgsInDBDict.ContainsKey(item))
+                    {
+                        ModelState.AddModelError(string.Empty, $"图片{item}不存在或已被删除");
+                    }
+                }
+            }
         }
 
         // GET: Articles/Delete/5
@@ -210,17 +208,9 @@ namespace MyBlog.Controllers
                 return NotFound();
             }
 
-            var article = await _context.Article
-                .Select(a => new ArticleViewModel
-                {
-                    ID = a.ID,
-                    Title = a.Title,
-                    Content = a.Content,
-                    CreatedTime = a.CreatedTime,
-                    EditedTime = a.EditedTime,
-                    AuthorName = a.Author.UserName,
-                    AuthorEmail = a.Author.Email
-                }).SingleOrDefaultAsync(m => m.ID == id);
+            var article = await _context.Articles
+                .Include(a=>a.Author)
+                .SingleOrDefaultAsync(m => m.ID == id);
 
             if (article == null)
             {
@@ -239,7 +229,7 @@ namespace MyBlog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var article = getArticleForAuthorize(id);
+            var article = await _context.Articles.SingleOrDefaultAsync(a => a.ID == id);
 
             if (article == null)
             {
@@ -250,14 +240,9 @@ namespace MyBlog.Controllers
                 return Challenge();
             }
 
-            _context.Article.Remove(new Article { ID = article.ID });
+            _context.Articles.Remove(new Article { ID = article.ID });
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
-        }
-
-        private bool ArticleExists(int id)
-        {
-            return _context.Article.Any(e => e.ID == id);
         }
 
         private string getCurrentUserID()

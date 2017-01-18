@@ -71,7 +71,7 @@ namespace MyBlog
 
             services.AddSingleton<IAuthorizationHandler, IsArticleAuthorAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, IsEditorAuthorizationHandler>();
-            services.AddSingleton<HtmlSanitizer>(new HtmlSanitizer());
+            services.AddScoped<HtmlSanitizer>(i => new HtmlSanitizer());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

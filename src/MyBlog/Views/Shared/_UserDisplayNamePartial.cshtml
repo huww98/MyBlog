@@ -1,0 +1,9 @@
+﻿@model ApplicationUser
+
+@Html.DisplayFor(model => model.UserName)
+@if (!string.IsNullOrEmpty(Model.Email))
+{
+    <text> (</text>
+    @Html.DisplayFor(model => model.Email)
+    <text>)</text>
+}

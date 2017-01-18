@@ -20,7 +20,7 @@ namespace MyBlog.Models
         public static async Task Initialize(IServiceProvider serviceProvider)
         {
             var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
-            await context.Database.MigrateAsync();
+            await context.Database.EnsureCreatedAsync();
 
             UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var admin = await userManager.FindByNameAsync(AdministratorUserName);
@@ -41,13 +41,11 @@ namespace MyBlog.Models
             await createRole(roleManager, EditorRoleName);
             await createRole(roleManager, AuthorRoleName);
 
-            result = await userManager.AddToRoleAsync(admin, AdministratorRoleName);
-            if (result != IdentityResult.Success)
-            {
-                throw new Exception($"添加{AdministratorUserName}用户至组{AdministratorRoleName}失败。{result.ToString()}");
-            }
+            await addUserToRole(userManager, admin,AdministratorRoleName);
+            await addUserToRole(userManager, admin,EditorRoleName);
+            await addUserToRole(userManager, admin,AuthorRoleName);
 
-            context.Article.AddRange(
+            context.Articles.AddRange(
             new Article
             {
                 Title = "Test Article",
@@ -67,6 +65,15 @@ namespace MyBlog.Models
             );
             context.SaveChanges();
 
+        }
+
+        private static async Task addUserToRole(UserManager<ApplicationUser> userManager, ApplicationUser user,string roleName)
+        {
+            var result = await userManager.AddToRoleAsync(user, roleName);
+            if (result != IdentityResult.Success)
+            {
+                throw new Exception($"添加{user.UserName}用户至组{roleName}失败。{result.ToString()}");
+            }
         }
 
         private static async Task createRole(RoleManager<IdentityRole> roleManager, string roleName)

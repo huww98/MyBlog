@@ -1,4 +1,4 @@
-﻿@model ArticleViewModel
+﻿@model Article
 
 @{string actionName = Model == null ? "Create" : "Edit";}
 <form asp-action=@actionName id="article-form" autocomplete="off">
@@ -67,7 +67,7 @@
                     <div class="btn-group">
                         <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="插入图片"><i class="fa fa-picture-o"></i></a>
                         <div class="dropdown-menu input-append" style="width:300px;padding:0">
-                            <input id="picture" name="picture" type="file" multiple class="file-loading">
+                            <input id="imageFile" name="imageFile" type="file" multiple class="file-loading">
                         </div>
                     </div>
                 </div>

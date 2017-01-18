@@ -1,4 +1,4 @@
-﻿@model MyBlog.Models.ArticleViewModel
+﻿@model MyBlog.Models.Article
 
 @{
     ViewData["Title"] = "删除";
@@ -30,10 +30,10 @@
             @Html.DisplayFor(model => model.EditedTime)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.AuthorName)
+            @Html.DisplayNameFor(model => model.Author)
         </dt>
         <dd>
-            @await Html.PartialAsync("_UserDisplayNamePartial", Model)
+            @await Html.PartialAsync("_UserDisplayNamePartial", Model.Author)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Content)

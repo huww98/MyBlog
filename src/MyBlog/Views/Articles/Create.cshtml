@@ -1,4 +1,4 @@
-﻿@model MyBlog.Models.ArticleViewModel
+﻿@model MyBlog.Models.Article
 
 @{
     ViewData["Title"] = "写新文章";
@@ -6,7 +6,7 @@
 
 <h2>创建</h2>
 
-@await Html.PartialAsync("_ArticleEditFormPartial", Model)
+@await Html.PartialAsync("_ArticleEditFormPartial")
 
 
 <div>
