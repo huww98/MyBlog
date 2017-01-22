@@ -25,9 +25,6 @@ namespace MyBlog.Data
                 .HasKey(t => new { t.ArticleID, t.ImageID });
 
             builder.Entity<Image>()
-                .HasIndex(i => i.SHA1)
-                .IsUnique();
-            builder.Entity<Image>()
                 .HasIndex(i => i.Url)
                 .IsUnique();
         }

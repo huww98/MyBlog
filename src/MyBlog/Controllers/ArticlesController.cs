@@ -41,7 +41,7 @@ namespace MyBlog.Controllers
         {
             var list = await _context.Articles
                 .AsNoTracking()
-                .Include(a=>a.Author)
+                .Include(a => a.Author)
                 .ToListAsync();
 
             foreach (var a in list)
@@ -62,7 +62,7 @@ namespace MyBlog.Controllers
 
             var article = await _context.Articles
                 .AsNoTracking()
-                .Include(a=>a.Author)
+                .Include(a => a.Author)
                 .SingleOrDefaultAsync(a => a.ID == id);
             if (article == null)
             {
@@ -96,7 +96,8 @@ namespace MyBlog.Controllers
             article.AuthorID = getCurrentUserID();
             article.CreatedTime = DateTime.Now;
             article.EditedTime = DateTime.Now;
-            preprocessContent(article);
+            ICollection<Image> imageUsed;
+            preprocessContent(article, out imageUsed);
             if (ModelState.IsValid)
             {
                 _context.Add(article);
@@ -130,44 +131,37 @@ namespace MyBlog.Controllers
         // POST: Articles/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost,ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind(nameof(Article.ID), nameof(Article.Title), nameof(Article.Content))] Article article)
+        public async Task<IActionResult> EditArticle(int id)
         {
-            if (id != article.ID)
+            var article = await _context.Articles.AsNoTracking().SingleOrDefaultAsync(a => a.ID == id);
+            if (await TryUpdateModelAsync(article, string.Empty, a => a.ID, a => a.Title, a => a.Content))
             {
-                return NotFound();
-            }
-            article.EditedTime = DateTime.Now;
-            preprocessContent(article);
-
-            if (ModelState.IsValid)
-            {
-
-                var articleFromDB = await _context.Articles.AsNoTracking().SingleOrDefaultAsync(a => a.ID == id);
-                if (articleFromDB == null)
+                if (id != article.ID)
                 {
                     return NotFound();
                 }
-                if (!await getCanEdit(articleFromDB))
+                article.EditedTime = DateTime.Now;
+                ICollection<Image> imageUsed;
+                preprocessContent(article, out imageUsed);
+
+                if (TryValidateModel(article))
                 {
-                    return Challenge();
+                    if (!await getCanEdit(article))
+                    {
+                        return Challenge();
+                    }
+
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Index");
+
                 }
-
-                var entity = _context.Attach(article);
-                entity.Property(a => a.Title).IsModified = true;
-                entity.Property(a => a.Content).IsModified = true;
-                entity.Property(a => a.EditedTime).IsModified = true;
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction("Index");
             }
             return View(article);
         }
 
-        private void preprocessContent(Article article)
+        private void preprocessContent(Article article, out ICollection<Image> usedImages)
         {
             article.Content = article.Content.Trim();
             List<string> imgSrcs = new List<string>();
@@ -176,23 +170,26 @@ namespace MyBlog.Controllers
                 IHtmlImageElement ele = e.Node as IHtmlImageElement;
                 if (ele != null)
                 {
-                    Uri uri = new Uri(ele.Source);
-                    imgSrcs.Add(uri.LocalPath);
+                    Uri uri = new Uri(ele.GetAttribute("src"), UriKind.RelativeOrAbsolute);
+                    if (!uri.IsAbsoluteUri)
+                    {
+                        imgSrcs.Add(uri.OriginalString);
+                    }
                 }
 
             };
             article.Content = _santitizer.Sanitize(article.Content);
-            var imgsInDB = _context.Images.Where(i => imgSrcs.Distinct().Contains(i.Url)).Select(i => i.Url);
+            var imgsInDB = _context.Images.Where(i => imgSrcs.Distinct().Contains(i.Url)).ToDictionary(s => s.Url);
+            usedImages = imgsInDB.Values;
             if (imgsInDB.Count() == imgSrcs.Count)
             {
                 return;
             }
             else
             {
-                var imgsInDBDict = imgsInDB.ToDictionary(s => s);
                 foreach (var item in imgSrcs)
                 {
-                    if (!imgsInDBDict.ContainsKey(item))
+                    if (!imgsInDB.ContainsKey(item))
                     {
                         ModelState.AddModelError(string.Empty, $"图片{item}不存在或已被删除");
                     }
@@ -209,7 +206,7 @@ namespace MyBlog.Controllers
             }
 
             var article = await _context.Articles
-                .Include(a=>a.Author)
+                .Include(a => a.Author)
                 .SingleOrDefaultAsync(m => m.ID == id);
 
             if (article == null)
