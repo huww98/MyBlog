@@ -1,6 +1,19 @@
 ﻿@model Article
 
 @{string actionName = Model == null ? "Create" : "Edit";}
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="imageModalLabel">插入图片</h4>
+            </div>
+            <div class="modal-body">
+                <input id="imageFile" name="imageFile" type="file" multiple class="file-loading">
+            </div>
+        </div>
+    </div>
+</div>
 <form asp-action=@actionName id="article-form" autocomplete="off">
     <div class="form-horizontal">
         <h4>文章</h4>
@@ -51,10 +64,12 @@
                         <a class="btn btn-default" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i class="fa fa-align-justify"></i></a>
                     </div>
                     <div class="btn-group">
-                        <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="Hyperlink"><i class="fa fa-link"></i></a>
-                        <div class="dropdown-menu input-append">
-                            <input class="form-control" placeholder="URL" type="text" data-edit="createLink" />
-                            <button class="btn btn-default" type="button">Add</button>
+                        <div class="btn-group">
+                            <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="Hyperlink"><i class="fa fa-link"></i></a>
+                            <div class="dropdown-menu input-append">
+                                <input class="form-control" placeholder="URL" type="text" data-edit="createLink" />
+                                <button class="btn btn-default" type="button">Add</button>
+                            </div>
                         </div>
                         <a class="btn btn-default" data-edit="unlink" title="Remove Hyperlink"><i class="fa fa-unlink"></i></a>
                     </div>
@@ -65,10 +80,7 @@
                         <a class="btn btn-default" data-edit="html" title="切换HTML源码"><i class='glyphicon glyphicon-pencil'></i></a>
                     </div>
                     <div class="btn-group">
-                        <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="插入图片"><i class="fa fa-picture-o"></i></a>
-                        <div class="dropdown-menu input-append" style="width:300px;padding:0">
-                            <input id="imageFile" name="imageFile" type="file" multiple class="file-loading">
-                        </div>
+                        <a class="btn btn-default" data-toggle="modal" data-target="#imageModal" title="插入图片"><i class="fa fa-picture-o"></i></a>
                     </div>
                 </div>
                 <div class="col-md-10 form-control" id="editor" contenteditable="true">
@@ -84,7 +96,7 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <a class="btn btn-default" onclick="$('#Content').val($('#editor').cleanHtml(true)); $('#article-form').submit();">
-                    @(Model==null?"新建":"保存")
+                    @(Model == null ? "新建" : "保存")
                 </a>
             </div>
         </div>

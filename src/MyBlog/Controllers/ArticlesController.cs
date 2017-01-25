@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +13,6 @@ using MyBlog.Authorization;
 using System.Diagnostics;
 using System.Security.Claims;
 using Ganss.XSS;
-using AngleSharp.Dom;
 using AngleSharp.Dom.Html;
 
 namespace MyBlog.Controllers
@@ -86,8 +85,6 @@ namespace MyBlog.Controllers
         }
 
         // POST: Articles/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize(Roles = SeedData.AuthorRoleName)]
         [ValidateAntiForgeryToken]
@@ -96,11 +93,13 @@ namespace MyBlog.Controllers
             article.AuthorID = getCurrentUserID();
             article.CreatedTime = DateTime.Now;
             article.EditedTime = DateTime.Now;
-            ICollection<Image> imageUsed;
+            IDictionary<string, Image> imageUsed;
             preprocessContent(article, out imageUsed);
-            if (ModelState.IsValid)
+            if (TryValidateModel(article))
             {
                 _context.Add(article);
+                article.Images = new List<ArticleImage>();
+                updateImageArticleLinks(article, imageUsed);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
@@ -122,20 +121,27 @@ namespace MyBlog.Controllers
             }
             if (!await getCanEdit(article))
             {
-                return Challenge();
+                return Unauthorized();
             }
 
             return View(article);
         }
 
         // POST: Articles/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost,ActionName("Edit")]
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditArticle(int id)
+        public async Task<IActionResult> EditArticle(int? id)
         {
-            var article = await _context.Articles.AsNoTracking().SingleOrDefaultAsync(a => a.ID == id);
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var article = await _context.Articles
+                .Include(a => a.Images)
+                    .ThenInclude(ai => ai.Image)
+                .SingleOrDefaultAsync(a => a.ID == id);
+
             if (await TryUpdateModelAsync(article, string.Empty, a => a.ID, a => a.Title, a => a.Content))
             {
                 if (id != article.ID)
@@ -143,25 +149,50 @@ namespace MyBlog.Controllers
                     return NotFound();
                 }
                 article.EditedTime = DateTime.Now;
-                ICollection<Image> imageUsed;
+                IDictionary<string, Image> imageUsed;  //Key is the URL of the image.
                 preprocessContent(article, out imageUsed);
 
                 if (TryValidateModel(article))
                 {
                     if (!await getCanEdit(article))
                     {
-                        return Challenge();
+                        return Unauthorized();
                     }
 
+                    updateImageArticleLinks(article, imageUsed);
                     await _context.SaveChangesAsync();
                     return RedirectToAction("Index");
-
                 }
             }
             return View(article);
         }
 
-        private void preprocessContent(Article article, out ICollection<Image> usedImages)
+        private void updateImageArticleLinks(Article article, IDictionary<string, Image> imageUsed)
+        {
+            List<ArticleImage> imageDeleted = new List<ArticleImage>();
+            foreach (var i in article.Images)
+            {
+                if (imageUsed.ContainsKey(i.Image.Url))
+                {
+                    imageUsed.Remove(i.Image.Url);
+                }
+                else
+                {
+                    imageDeleted.Add(i);
+                }
+            }
+
+            foreach (var i in imageDeleted)
+            {
+                article.Images.Remove(i);
+            }
+            foreach (var i in imageUsed.Values)
+            {
+                article.Images.Add(new ArticleImage { Image = i });
+            }
+        }
+
+        private void preprocessContent(Article article, out IDictionary<string, Image> usedImages)
         {
             article.Content = article.Content.Trim();
             List<string> imgSrcs = new List<string>();
@@ -179,9 +210,9 @@ namespace MyBlog.Controllers
 
             };
             article.Content = _santitizer.Sanitize(article.Content);
-            var imgsInDB = _context.Images.Where(i => imgSrcs.Distinct().Contains(i.Url)).ToDictionary(s => s.Url);
-            usedImages = imgsInDB.Values;
-            if (imgsInDB.Count() == imgSrcs.Count)
+            usedImages = _context.Images.Where(i => imgSrcs.Distinct().Contains(i.Url)).ToDictionary(s => s.Url);
+
+            if (usedImages.Count() == imgSrcs.Count)
             {
                 return;
             }
@@ -189,9 +220,9 @@ namespace MyBlog.Controllers
             {
                 foreach (var item in imgSrcs)
                 {
-                    if (!imgsInDB.ContainsKey(item))
+                    if (!usedImages.ContainsKey(item))
                     {
-                        ModelState.AddModelError(string.Empty, $"Õº∆¨{item}≤ª¥Ê‘⁄ªÚ“—±ª…æ≥˝");
+                        ModelState.AddModelError(string.Empty, $"ÂõæÁâá{item}‰∏çÂ≠òÂú®ÊàñÂ∑≤Ë¢´Âà†Èô§");
                     }
                 }
             }
@@ -215,7 +246,7 @@ namespace MyBlog.Controllers
             }
             if (!await getCanEdit(article))
             {
-                return Challenge();
+                return Unauthorized();
             }
 
             return View(article);
@@ -224,9 +255,21 @@ namespace MyBlog.Controllers
         // POST: Articles/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int? id, bool? ifDeleteImages)
         {
-            var article = await _context.Articles.SingleOrDefaultAsync(a => a.ID == id);
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var query = _context.Articles.Include(a => a.Images);
+            if (ifDeleteImages == true)
+            {
+                query = query
+                    .ThenInclude(ai => ai.Image)
+                    .ThenInclude(i => i.Articles);
+            }
+            var article = await query.SingleOrDefaultAsync(a => a.ID == id);
 
             if (article == null)
             {
@@ -234,10 +277,21 @@ namespace MyBlog.Controllers
             }
             if (!await getCanEdit(article))
             {
-                return Challenge();
+                return Unauthorized();
             }
 
-            _context.Articles.Remove(new Article { ID = article.ID });
+            if (ifDeleteImages == true)
+            {
+                foreach (var i in article.Images)
+                {
+                    if (i.Image.Articles.Count <= 1)
+                    {
+                        System.IO.File.Delete(i.Image.Path);
+                        _context.Remove(i.Image);
+                    }
+                }
+            }
+            _context.Remove(article);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }

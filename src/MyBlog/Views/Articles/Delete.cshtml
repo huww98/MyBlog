@@ -44,6 +44,12 @@
     </dl>
 
     <form asp-action="Delete">
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="ifDeleteImages" value="true"/>
+                删除只在此文章中使用的图片
+            </label>
+        </div>
         <div class="form-actions no-color">
             <input type="submit" value="删除" class="btn btn-danger" /> |
             <a asp-action="Index">返回文章列表</a>

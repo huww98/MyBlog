@@ -33,6 +33,8 @@ namespace MyBlog.Models
         [Display(Name = "编辑日期")]
         public DateTime EditedTime { get; set; }
 
+        public ICollection<ArticleImage> Images { get; set; }
+
         [NotMapped]
         public bool CanEdit { get; set; }
     }

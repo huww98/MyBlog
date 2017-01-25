@@ -23,6 +23,8 @@ namespace MyBlog.Models
 
         [Required]
         public string Url { get; set; }
+
+        public ICollection<ArticleImage> Articles { get; set; }
     }
 
     public class ArticleImage
