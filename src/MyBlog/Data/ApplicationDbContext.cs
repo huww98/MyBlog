@@ -23,6 +23,8 @@ namespace MyBlog.Data
             // Add your customizations after calling base.OnModelCreating(builder);
             builder.Entity<ArticleImage>()
                 .HasKey(t => new { t.ArticleID, t.ImageID });
+            builder.Entity<ArticleCategory>()
+                .HasKey(t => new { t.ArticleID, t.CategoryID });
 
             builder.Entity<Image>()
                 .HasIndex(i => i.Url)
