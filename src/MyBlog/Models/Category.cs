@@ -12,10 +12,12 @@ namespace MyBlog.Models
         public int ID { get; set; }
 
         [ForeignKey(nameof(ParentCategory))]
-        public int ParentCategoryID { get; set; }
+        public int? ParentCategoryID { get; set; }
 
+        [Display(Name = "父分类")]
         public Category ParentCategory { get; set; }
 
+        [Display(Name = "名称")]
         [StringLength(256)]
         [Required]
         public string Name { get; set; }

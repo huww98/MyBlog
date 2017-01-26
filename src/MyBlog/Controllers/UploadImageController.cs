@@ -21,7 +21,7 @@ namespace MyBlog.Controllers
             _context = context;
         }
 
-        public async Task<object> Index(IFormFile imageFile, int file_id)
+        public async Task<IActionResult> Index(IFormFile imageFile, int file_id)
         {
             string pathToSave, url;
             generatePath(imageFile, out pathToSave, out url);
@@ -42,7 +42,7 @@ namespace MyBlog.Controllers
 
             _context.Add(image);
             await _context.SaveChangesAsync();
-            return new { src = url };
+            return Json(new { src = url });
         }
 
         private static void generatePath(IFormFile picture, out string pathToSave, out string url)
