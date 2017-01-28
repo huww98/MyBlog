@@ -25,6 +25,10 @@ namespace MyBlog.Data
                 .HasKey(t => new { t.ArticleID, t.ImageID });
             builder.Entity<ArticleCategory>()
                 .HasKey(t => new { t.ArticleID, t.CategoryID });
+            builder.Entity<Category>()
+                .HasOne(c => c.ParentCategory)
+                .WithMany(c => c.ChildCategories)
+                .HasForeignKey(c => c.ParentCategoryID);
 
             builder.Entity<Image>()
                 .HasIndex(i => i.Url)

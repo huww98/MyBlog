@@ -23,6 +23,10 @@ textarea {
 	overflow: scroll;
 	outline: none;
 }
+.indent{
+    margin-left:10px;
+    margin-right:10px
+}
 /* Carousel */
 .carousel-caption p {
     font-size: 20px;

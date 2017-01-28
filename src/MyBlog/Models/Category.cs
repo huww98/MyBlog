@@ -11,16 +11,36 @@ namespace MyBlog.Models
     {
         public int ID { get; set; }
 
-        [ForeignKey(nameof(ParentCategory))]
         public int? ParentCategoryID { get; set; }
 
         [Display(Name = "父分类")]
         public Category ParentCategory { get; set; }
 
+        private ICollection<Category> _childCategories;
+        public ICollection<Category> ChildCategories
+        {
+            get
+            {
+                if (_childCategories==null)
+                {
+                    _childCategories = new List<Category>();
+                }
+                return _childCategories;
+            }
+        }
+
+
         [Display(Name = "名称")]
         [StringLength(256)]
         [Required]
         public string Name { get; set; }
+
+        [Display(Name = "别名")]
+        [StringLength(256)]
+        public string Slot { get; set; }
+
+        [NotMapped]
+        public int IndentLevel { get; set; }
     }
 
     public class ArticleCategory

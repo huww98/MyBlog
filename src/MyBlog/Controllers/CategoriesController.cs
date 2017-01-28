@@ -21,11 +21,33 @@ namespace MyBlog.Controllers
             _context = context;    
         }
 
+        private List<Category> SettleCategories(IEnumerable<Category> categories)
+        {
+            var roots = categories.Where(c => c.ParentCategory == null);
+            var result = new List<Category>();
+            foreach (var cate in roots)
+            {
+                cate.IndentLevel = 0;
+                result.Add(cate);
+                addChildrenToList(cate, result);
+            }
+            return result;
+        }
+        private void addChildrenToList(Category category,IList<Category> list)
+        {
+            foreach (var child in category.ChildCategories)
+            {
+                child.IndentLevel = category.IndentLevel + 1;
+                list.Add(child);
+                addChildrenToList(child, list);
+            }
+        }
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Category.Include(c => c.ParentCategory);
-            return View(await applicationDbContext.ToListAsync());
+            var categories = _context.Category;
+            await categories.LoadAsync();
+            return View(SettleCategories(categories));
         }
 
         // GET: Categories/Details/5
