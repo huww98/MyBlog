@@ -73,7 +73,6 @@ namespace MyBlog.Controllers
         public async Task<IActionResult> Create()
         {
             await _context.Category.LoadAsync();
-            PopulateParentDropDownList();
             return View();
         }
 
@@ -88,7 +87,6 @@ namespace MyBlog.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            //await PopulateParentDropDownList(category);
             return View(category);
         }
 
@@ -105,7 +103,6 @@ namespace MyBlog.Controllers
             {
                 return NotFound();
             }
-            //await PopulateParentDropDownList(category);
             return View(category);
         }
 
@@ -139,7 +136,6 @@ namespace MyBlog.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            //await PopulateParentDropDownList(category);
             return View(category);
         }
 
@@ -160,11 +156,6 @@ namespace MyBlog.Controllers
         private bool CategoryExists(int id)
         {
             return _context.Category.Any(e => e.ID == id);
-        }
-
-        private void PopulateParentDropDownList(Category category = null)
-        {
-            ViewData["ParentCategoryID"] = TreeViewData.Build(_context.Category.Local, category);
         }
 
         private async Task<List<Category>> GetValidParentCategories(Category category)

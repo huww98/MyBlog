@@ -1,0 +1,24 @@
+﻿@model IEnumerable<string>
+
+<script src="~/lib/bootstrap-treeview/src/js/bootstrap-treeview.js"></script>
+@foreach (var name in Model)
+{
+    <script>
+        var tree=$('#@name')
+        tree.treeview({
+            data: tree.data('treeview-data'),
+            onNodeSelected: function(event, data) {
+                var hiddenInput = document.createElement("input");
+                hiddenInput.name = "@name";
+                hiddenInput.type = "hidden"
+                hiddenInput.value = data.category_id;
+                $(this).after(hiddenInput);
+            },
+
+            onNodeUnselected: function(event, data) {
+                $(this).siblings("[value=" + data.category_id + "]").remove();
+            }
+        });
+    </script>
+}
+

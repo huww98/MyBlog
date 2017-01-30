@@ -1,4 +1,5 @@
 @model MyBlog.Models.Category
+@using MyBlog.ViewComponents
 
 @{
     ViewData["Title"] = "Create";
@@ -14,11 +15,7 @@
         <div class="form-group">
             <label asp-for="ParentCategory" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <div>
-                    <div id="tree"></div>
-                </div>
-
-                <span asp-validation-for="ParentCategoryID" class="text-danger"></span>
+                @(await Component.InvokeAsync<CategorySelectorViewComponent>(new { Name= "ParentCategoryID" }))
             </div>
         </div>
         <div class="form-group">
@@ -41,22 +38,9 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script src="~/lib/bootstrap-treeview/src/js/bootstrap-treeview.js"></script>
-    <script>
-        $('#tree').treeview({
-            data : @Html.Raw(ViewBag.ParentCategoryID),
-            onNodeSelected: function(event, data) {
-                var hiddenInput=document.createElement("input");
-                hiddenInput.name="ParentCategoryID";
-                hiddenInput.type="hidden"
-                hiddenInput.value=data.category_id;
-                $(this).after(hiddenInput);
-            },
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("_CategorySelectorScriptPartial", new[] { "ParentCategoryID" });
+    }
 
-            onNodeUnselected: function(event, data) {
-                $(this).siblings("[value="+data.category_id+"]").remove();
-            }
-        });
-    </script>
 }
