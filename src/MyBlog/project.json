@@ -41,6 +41,7 @@
       "version": "1.1.0-preview4-final",
       "type": "build"
     },
+    "Newtonsoft.Json": "9.0.1",
     "Pomelo.EntityFrameworkCore.MySql": "1.1.0",
     "HtmlSanitizer": "3.3.142"
   },

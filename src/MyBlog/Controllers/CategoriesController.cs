@@ -18,7 +18,7 @@ namespace MyBlog.Controllers
 
         public CategoriesController(ApplicationDbContext context)
         {
-            _context = context;    
+            _context = context;
         }
 
         private List<Category> SettleCategories(IEnumerable<Category> categories)
@@ -33,7 +33,7 @@ namespace MyBlog.Controllers
             }
             return result;
         }
-        private void addChildrenToList(Category category,IList<Category> list)
+        private void addChildrenToList(Category category, IList<Category> list)
         {
             foreach (var child in category.ChildCategories)
             {
@@ -72,7 +72,8 @@ namespace MyBlog.Controllers
         // GET: Categories/Create
         public async Task<IActionResult> Create()
         {
-            await PopulateParentDropDownList();
+            await _context.Category.LoadAsync();
+            PopulateParentDropDownList();
             return View();
         }
 
@@ -87,7 +88,7 @@ namespace MyBlog.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            await PopulateParentDropDownList(category);
+            //await PopulateParentDropDownList(category);
             return View(category);
         }
 
@@ -104,7 +105,7 @@ namespace MyBlog.Controllers
             {
                 return NotFound();
             }
-            await PopulateParentDropDownList(category);
+            //await PopulateParentDropDownList(category);
             return View(category);
         }
 
@@ -138,7 +139,7 @@ namespace MyBlog.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            await PopulateParentDropDownList(category);
+            //await PopulateParentDropDownList(category);
             return View(category);
         }
 
@@ -161,19 +162,9 @@ namespace MyBlog.Controllers
             return _context.Category.Any(e => e.ID == id);
         }
 
-        private async Task PopulateParentDropDownList(Category category = null)
+        private void PopulateParentDropDownList(Category category = null)
         {
-            IEnumerable<Category> validParents;
-            if (category == null)
-            {
-                validParents = _context.Category;
-            }
-            else
-            {
-                validParents = await GetValidParentCategories(category);
-            }
-
-            ViewData["ParentCategoryID"] = new SelectList(validParents, "ID", "Name", category?.ParentCategoryID);
+            ViewData["ParentCategoryID"] = TreeViewData.Build(_context.Category.Local, category);
         }
 
         private async Task<List<Category>> GetValidParentCategories(Category category)
@@ -184,7 +175,7 @@ namespace MyBlog.Controllers
             return categories;
         }
 
-        private void removeChildren(ICollection<Category> categories,Category toRemoveChildren)
+        private void removeChildren(ICollection<Category> categories, Category toRemoveChildren)
         {
             var children = categories.Where(c => c.ParentCategory == toRemoveChildren).ToList();
             foreach (var child in children)
