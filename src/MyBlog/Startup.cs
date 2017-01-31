@@ -16,6 +16,8 @@ using MyBlog.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Ganss.XSS;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 
 namespace MyBlog
 {
@@ -56,6 +58,7 @@ namespace MyBlog
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+            services.AddSingleton(HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.BasicLatin, UnicodeRanges.CjkUnifiedIdeographs }));
 
             services.Configure<IdentityOptions>(o =>
             {

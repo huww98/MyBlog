@@ -11,14 +11,16 @@
         <h4>Category</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" asp-for="ID" />
+        <input type="hidden" asp-for="ID" />
         <div class="form-group">
             <label asp-for="ParentCategory" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <select asp-for="ParentCategoryID" class="form-control" asp-items="ViewBag.ParentCategoryID">
-                    <option value=""></option>
-                </select>
-                <span asp-validation-for="ParentCategoryID" class="text-danger"></span>
+                @(await Component.InvokeAsync<CategorySelectorViewComponent>(new
+            {
+                Name = "ParentCategoryID",
+                PreselectedIDs = Model.ParentCategoryID==null ? null : new int[] { Model.ParentCategoryID.Value },
+                ExceptionID = Model.ID
+            }))
             </div>
         </div>
         <div class="form-group">
@@ -41,5 +43,8 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("_CategorySelectorScriptPartial", new[] { "ParentCategoryID" });
+    }
 }

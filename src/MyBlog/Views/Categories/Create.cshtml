@@ -1,5 +1,4 @@
 @model MyBlog.Models.Category
-@using MyBlog.ViewComponents
 
 @{
     ViewData["Title"] = "Create";
@@ -40,7 +39,7 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        await Html.RenderPartialAsync("_CategorySelectorScriptPartial", new[] { "ParentCategoryID" });
+        await Html.RenderPartialAsync("_CategorySelectorScriptPartial");
     }
 
 }

@@ -8,8 +8,10 @@ namespace MyBlog.Models
 {
     public class CategorySelectorViewModel
     {
+        public string ButtonClasses { get; set; }
         public string Name { get; set; }
-
+        public bool IsMultiple { get; set; }
+        public IEnumerable<Category> PreselectedCategories { get; set; }
         public ICollection<TreeViewNode> RootNodes { get; } = new List<TreeViewNode>();
 
         public string GetJsonData()

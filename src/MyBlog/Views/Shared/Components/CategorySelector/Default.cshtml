@@ -1,5 +1,47 @@
 ﻿@model CategorySelectorViewModel
 
-<div>
-    <div id="@Model.Name" data-treeview-data="@Model.GetJsonData()"></div>
+@{
+    string buttonContent, buttonData;
+    if (Model.PreselectedCategories != null)
+    {
+        var names = Model.PreselectedCategories.Select(c => c.Name);
+        buttonContent = string.Join(", ", names);
+        buttonData = Newtonsoft.Json.JsonConvert.SerializeObject(names);
+    }
+    else
+    {
+        buttonContent = "无";
+        buttonData = "[]";
+    }
+}
+<div class="category-selector"
+     data-treeview-data="@Model.GetJsonData()"
+     data-input-name="@Model.Name"
+     data-is-multiple="@Model.IsMultiple.ToString().ToLower()">
+
+    <div class="modal fade" id="selectCategoryModal" tabindex="-1" role="dialog" aria-labelledby="selectCategoryModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="selectCategoryModalLabel">选择分类</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="treeview"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a class="@Model.ButtonClasses" data-names="@buttonData">
+        @buttonContent
+    </a>
+
+    @if (Model.PreselectedCategories != null)
+    {
+        foreach (var c in Model.PreselectedCategories)
+        {
+            <input name="@Model.Name" type="hidden" value="@c.ID" />
+        }
+    }
 </div>
