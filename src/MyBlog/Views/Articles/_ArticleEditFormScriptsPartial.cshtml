@@ -1,4 +1,5 @@
-﻿<script src="~/lib/jquery.hotkeys/jquery.hotkeys.js"></script>
+﻿@{await Html.RenderPartialAsync("_CategorySelectorScriptPartial");}
+<script src="~/lib/jquery.hotkeys/jquery.hotkeys.js"></script>
 <script src="~/lib/google-code-prettify/src/prettify.js"></script>
 <script src="~/lib/bootstrap-wysiwyg-steveathon/src/bootstrap-wysiwyg.js"></script>
 <script type='text/javascript'>
@@ -11,7 +12,6 @@
     $("#imageFile").fileinput({
         language: 'zh',
         theme: 'fa',
-        showCaption: false,
         uploadUrl: '/UploadImage',
         allowedFileExtensions: ["jpg", "png", "gif"],
         fileActionSettings: { showZoom : false }

@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MyBlog.Data;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MyBlog.Models
@@ -13,10 +10,11 @@ namespace MyBlog.Models
     public static class SeedData
     {
         public const string AdministratorUserName = "Administrator";
-        const string administratorDefaultPassword = "a123456";
+        private const string administratorDefaultPassword = "a123456";
         public const string AdministratorRoleName = "Administrator";
         public const string EditorRoleName = "Editor";
         public const string AuthorRoleName = "Author";
+
         public static async Task Initialize(IServiceProvider serviceProvider)
         {
             var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
@@ -41,9 +39,9 @@ namespace MyBlog.Models
             await createRole(roleManager, EditorRoleName);
             await createRole(roleManager, AuthorRoleName);
 
-            await addUserToRole(userManager, admin,AdministratorRoleName);
-            await addUserToRole(userManager, admin,EditorRoleName);
-            await addUserToRole(userManager, admin,AuthorRoleName);
+            await addUserToRole(userManager, admin, AdministratorRoleName);
+            await addUserToRole(userManager, admin, EditorRoleName);
+            await addUserToRole(userManager, admin, AuthorRoleName);
 
             context.Articles.AddRange(
             new Article
@@ -64,10 +62,9 @@ namespace MyBlog.Models
             }
             );
             context.SaveChanges();
-
         }
 
-        private static async Task addUserToRole(UserManager<ApplicationUser> userManager, ApplicationUser user,string roleName)
+        private static async Task addUserToRole(UserManager<ApplicationUser> userManager, ApplicationUser user, string roleName)
         {
             var result = await userManager.AddToRoleAsync(user, roleName);
             if (result != IdentityResult.Success)

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
+using MyBlog.Data;
+using MyBlog.Models;
+using System;
 using System.IO;
 using System.Security.Cryptography;
-using MyBlog.Models;
-using MyBlog.Data;
+using System.Threading.Tasks;
 
 namespace MyBlog.Controllers
 {
@@ -16,6 +14,7 @@ namespace MyBlog.Controllers
         public const string ImagePath = "wwwroot\\UploadedImages";
         public const string UrlPath = "/UploadedImages";
         private readonly ApplicationDbContext _context;
+
         public UploadImageController(ApplicationDbContext context)
         {
             _context = context;

@@ -1,8 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MyBlog.Models
 {
@@ -11,7 +8,7 @@ namespace MyBlog.Models
         public string ButtonClasses { get; set; }
         public string Name { get; set; }
         public bool IsMultiple { get; set; }
-        public IEnumerable<Category> PreselectedCategories { get; set; }
+        public ICollection<Category> PreselectedCategories { get; set; }
         public ICollection<TreeViewNode> RootNodes { get; } = new List<TreeViewNode>();
 
         public string GetJsonData()
@@ -36,7 +33,6 @@ namespace MyBlog.Models
 
         [JsonExtensionData]
         public IDictionary<string, object> JsonExtensionData { get; set; } = new Dictionary<string, object>();
-
     }
 
     public class TreeViewNodeState

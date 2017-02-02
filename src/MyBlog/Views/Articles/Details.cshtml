@@ -17,9 +17,9 @@
     @if (Model.CanEdit)
     {
         <a asp-action="Edit" asp-route-id="@Model.ID">编辑</a>
-        @: | 
+        @: |
         <a asp-action="Delete" asp-route-id="@Model.ID">删除</a>
-        @: | 
+        @: |
     }
     <a asp-action="Index">返回文章列表</a>
 </div>

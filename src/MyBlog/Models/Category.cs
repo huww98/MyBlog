@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MyBlog.Models
 {
@@ -17,18 +14,18 @@ namespace MyBlog.Models
         public Category ParentCategory { get; set; }
 
         private ICollection<Category> _childCategories;
+
         public ICollection<Category> ChildCategories
         {
             get
             {
-                if (_childCategories==null)
+                if (_childCategories == null)
                 {
                     _childCategories = new List<Category>();
                 }
                 return _childCategories;
             }
         }
-
 
         [Display(Name = "名称")]
         [StringLength(256)]
@@ -47,11 +44,12 @@ namespace MyBlog.Models
     {
         [ForeignKey(nameof(Article))]
         public int ArticleID { get; set; }
+
         public Article Article { get; set; }
 
         [ForeignKey(nameof(Category))]
         public int CategoryID { get; set; }
-        public Category Category { get; set; }
 
+        public Category Category { get; set; }
     }
 }

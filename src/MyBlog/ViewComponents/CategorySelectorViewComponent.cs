@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MyBlog.Data;
+using MyBlog.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using MyBlog.Data;
-using MyBlog.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace MyBlog.ViewComponents
 {
@@ -29,7 +28,7 @@ namespace MyBlog.ViewComponents
             await _context.Category.LoadAsync();
             if (preselectedIDs != null)
             {
-                viewModel.PreselectedCategories = _context.Category.Local.Where(c => preselectedIDs.Contains(c.ID));
+                viewModel.PreselectedCategories = _context.Category.Local.Where(c => preselectedIDs.Contains(c.ID)).ToList();
             }
 
             var roots = _context.Category.Local.Where(c => c.ParentCategory == null);

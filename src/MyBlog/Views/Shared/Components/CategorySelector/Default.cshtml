@@ -2,7 +2,7 @@
 
 @{
     string buttonContent, buttonData;
-    if (Model.PreselectedCategories != null)
+    if (Model.PreselectedCategories != null && Model.PreselectedCategories.Count > 0)
     {
         var names = Model.PreselectedCategories.Select(c => c.Name);
         buttonContent = string.Join(", ", names);

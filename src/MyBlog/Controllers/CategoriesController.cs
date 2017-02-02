@@ -1,13 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyBlog.Data;
 using MyBlog.Models;
-using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MyBlog.Controllers
 {
@@ -33,6 +31,7 @@ namespace MyBlog.Controllers
             }
             return result;
         }
+
         private void addChildrenToList(Category category, IList<Category> list)
         {
             foreach (var child in category.ChildCategories)
@@ -42,6 +41,7 @@ namespace MyBlog.Controllers
                 addChildrenToList(child, list);
             }
         }
+
         // GET: Categories
         public async Task<IActionResult> Index()
         {

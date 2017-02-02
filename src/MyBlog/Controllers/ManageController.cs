@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MyBlog.Models;
 using MyBlog.Models.ManageViewModels;
 using MyBlog.Services;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MyBlog.Controllers
 {
@@ -356,6 +354,6 @@ namespace MyBlog.Controllers
             return _userManager.GetUserAsync(HttpContext.User);
         }
 
-        #endregion
+        #endregion Helpers
     }
 }
