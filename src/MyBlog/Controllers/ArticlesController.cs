@@ -60,6 +60,7 @@ namespace MyBlog.Controllers
 
             var article = await _context.Articles
                 .AsNoTracking()
+                .Include(a => a.Categories).ThenInclude(ac => ac.Category)
                 .Include(a => a.Author)
                 .SingleOrDefaultAsync(a => a.ID == id);
             if (article == null)
