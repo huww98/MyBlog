@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MyBlog.Models;
 
@@ -23,6 +19,12 @@ namespace MyBlog.Data
             // Add your customizations after calling base.OnModelCreating(builder);
             builder.Entity<ArticleImage>()
                 .HasKey(t => new { t.ArticleID, t.ImageID });
+            builder.Entity<ArticleCategory>()
+                .HasKey(t => new { t.ArticleID, t.CategoryID });
+            builder.Entity<Category>()
+                .HasOne(c => c.ParentCategory)
+                .WithMany(c => c.ChildCategories)
+                .HasForeignKey(c => c.ParentCategoryID);
 
             builder.Entity<Image>()
                 .HasIndex(i => i.Url)
@@ -32,5 +34,6 @@ namespace MyBlog.Data
         public DbSet<Article> Articles { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<ArticleImage> ArticleImages { get; set; }
+        public DbSet<Category> Category { get; set; }
     }
 }

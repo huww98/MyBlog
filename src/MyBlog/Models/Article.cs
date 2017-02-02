@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MyBlog.Models
 {
@@ -34,6 +32,9 @@ namespace MyBlog.Models
         public DateTime EditedTime { get; set; }
 
         public ICollection<ArticleImage> Images { get; set; }
+
+        [Display(Name = "分类")]
+        public ICollection<ArticleCategory> Categories { get; set; }
 
         [NotMapped]
         public bool CanEdit { get; set; }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MyBlog.Models
 {
@@ -31,11 +28,12 @@ namespace MyBlog.Models
     {
         [ForeignKey(nameof(Article))]
         public int ArticleID { get; set; }
+
         public Article Article { get; set; }
 
         [ForeignKey(nameof(Image))]
         public int ImageID { get; set; }
-        public Image Image { get; set; }
 
+        public Image Image { get; set; }
     }
 }

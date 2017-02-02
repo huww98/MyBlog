@@ -1,0 +1,53 @@
+﻿<script src="~/lib/bootstrap-treeview/src/js/bootstrap-treeview.js"></script>
+
+<script>
+    $(".category-selector").each(function () {
+        var root = $(this);
+        var button = root.children("a");
+        var buttonData = button.data("names");
+        var modal = root.children("#selectCategoryModal");
+        var isMultiple = root.data("is-multiple");
+
+        button.on("click", function () {
+            modal.modal('toggle');
+        });
+
+        function updateButtonContent() {
+            var content= "";
+            if (buttonData.length === 0) {
+                content = "无";
+            }
+            else {
+                content = buttonData[0];
+            }
+            for (var i = 1; i < buttonData.length; i++) {
+                content += ", ";
+                content += buttonData[i];
+            }
+            button.html(content);
+        }
+
+        root.find(".treeview").treeview({
+            data: root.data("treeview-data"),
+            multiSelect: isMultiple,
+            onNodeSelected: function (event, data) {
+                var hiddenInput = document.createElement("input");
+                hiddenInput.name = root.data("input-name");
+                hiddenInput.type = "hidden"
+                hiddenInput.value = data.category_id;
+                root.append(hiddenInput);
+                buttonData.push(data.text);
+                updateButtonContent();
+                if (!isMultiple) {
+                    modal.modal('hide');
+                }
+            },
+
+            onNodeUnselected: function (event, data) {
+                root.children("[value=" + data.category_id + "]").remove();
+                buttonData.splice(buttonData.indexOf(data.text), 1);
+                updateButtonContent();
+            }
+        });
+    });
+</script>

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace MyBlog.Models
 {
@@ -10,7 +6,7 @@ namespace MyBlog.Models
     {
         public string UserId { get; set; }
 
-        [Display(Name ="用户")]
+        [Display(Name = "用户")]
         public string UserDisplayName
         {
             get

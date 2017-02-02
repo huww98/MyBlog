@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
+using MyBlog.Data;
+using MyBlog.Models;
+using System;
 using System.IO;
 using System.Security.Cryptography;
-using MyBlog.Models;
-using MyBlog.Data;
+using System.Threading.Tasks;
 
 namespace MyBlog.Controllers
 {
@@ -16,12 +14,13 @@ namespace MyBlog.Controllers
         public const string ImagePath = "wwwroot\\UploadedImages";
         public const string UrlPath = "/UploadedImages";
         private readonly ApplicationDbContext _context;
+
         public UploadImageController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task<object> Index(IFormFile imageFile, int file_id)
+        public async Task<IActionResult> Index(IFormFile imageFile, int file_id)
         {
             string pathToSave, url;
             generatePath(imageFile, out pathToSave, out url);
@@ -42,7 +41,7 @@ namespace MyBlog.Controllers
 
             _context.Add(image);
             await _context.SaveChangesAsync();
-            return new { src = url };
+            return Json(new { src = url });
         }
 
         private static void generatePath(IFormFile picture, out string pathToSave, out string url)

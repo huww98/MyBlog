@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,6 +6,9 @@ using Microsoft.Extensions.Logging;
 using MyBlog.Models;
 using MyBlog.Models.AccountViewModels;
 using MyBlog.Services;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace MyBlog.Controllers
 {
@@ -60,11 +58,11 @@ namespace MyBlog.Controllers
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var user = await _userManager.FindByEmailAsync(model.EmailOrUserName);
-                if (user==null)
+                if (user == null)
                 {
                     user = await _userManager.FindByNameAsync(model.EmailOrUserName);
                 }
-                if (user==null)
+                if (user == null)
                 {
                     ModelState.AddModelError(string.Empty, "用户不存在。");
                     return View(model);
@@ -473,6 +471,6 @@ namespace MyBlog.Controllers
             }
         }
 
-        #endregion
+        #endregion Helpers
     }
 }
