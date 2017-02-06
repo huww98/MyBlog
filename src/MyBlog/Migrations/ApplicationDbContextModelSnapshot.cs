@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using MyBlog.Data;
 
-namespace MyBlog.Data.Migrations
+namespace MyBlog.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -24,10 +24,10 @@ namespace MyBlog.Data.Migrations
                         .IsConcurrencyToken();
 
                     b.Property<string>("Name")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.Property<string>("NormalizedName")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.HasKey("Id");
 
@@ -133,7 +133,7 @@ namespace MyBlog.Data.Migrations
                         .IsConcurrencyToken();
 
                     b.Property<string>("Email")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.Property<bool>("EmailConfirmed");
 
@@ -142,10 +142,10 @@ namespace MyBlog.Data.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.Property<string>("NormalizedUserName")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.Property<string>("PasswordHash");
 
@@ -158,7 +158,7 @@ namespace MyBlog.Data.Migrations
                     b.Property<bool>("TwoFactorEnabled");
 
                     b.Property<string>("UserName")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.HasKey("Id");
 
@@ -179,19 +179,35 @@ namespace MyBlog.Data.Migrations
 
                     b.Property<string>("AuthorID");
 
-                    b.Property<string>("Content");
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(4194304);
 
                     b.Property<DateTime>("CreatedTime");
 
                     b.Property<DateTime>("EditedTime");
 
-                    b.Property<string>("Title");
+                    b.Property<string>("Title")
+                        .IsRequired();
 
                     b.HasKey("ID");
 
                     b.HasIndex("AuthorID");
 
                     b.ToTable("Articles");
+                });
+
+            modelBuilder.Entity("MyBlog.Models.ArticleCategory", b =>
+                {
+                    b.Property<int>("ArticleID");
+
+                    b.Property<int>("CategoryID");
+
+                    b.HasKey("ArticleID", "CategoryID");
+
+                    b.HasIndex("CategoryID");
+
+                    b.ToTable("ArticleCategory");
                 });
 
             modelBuilder.Entity("MyBlog.Models.ArticleImage", b =>
@@ -207,6 +223,27 @@ namespace MyBlog.Data.Migrations
                     b.ToTable("ArticleImages");
                 });
 
+            modelBuilder.Entity("MyBlog.Models.Category", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256);
+
+                    b.Property<int?>("ParentCategoryID");
+
+                    b.Property<string>("Slot")
+                        .HasMaxLength(256);
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ParentCategoryID");
+
+                    b.ToTable("Category");
+                });
+
             modelBuilder.Entity("MyBlog.Models.Image", b =>
                 {
                     b.Property<int>("ID")
@@ -220,15 +257,12 @@ namespace MyBlog.Data.Migrations
                         .IsRequired();
 
                     b.Property<byte[]>("SHA1")
-                        .HasAnnotation("MaxLength", 20);
+                        .HasMaxLength(20);
 
                     b.Property<string>("Url")
                         .IsRequired();
 
                     b.HasKey("ID");
-
-                    b.HasIndex("SHA1")
-                        .IsUnique();
 
                     b.HasIndex("Url")
                         .IsUnique();
@@ -280,17 +314,37 @@ namespace MyBlog.Data.Migrations
                         .HasForeignKey("AuthorID");
                 });
 
+            modelBuilder.Entity("MyBlog.Models.ArticleCategory", b =>
+                {
+                    b.HasOne("MyBlog.Models.Article", "Article")
+                        .WithMany("Categories")
+                        .HasForeignKey("ArticleID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("MyBlog.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("MyBlog.Models.ArticleImage", b =>
                 {
                     b.HasOne("MyBlog.Models.Article", "Article")
-                        .WithMany()
+                        .WithMany("Images")
                         .HasForeignKey("ArticleID")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("MyBlog.Models.Image", "Image")
-                        .WithMany()
+                        .WithMany("Articles")
                         .HasForeignKey("ImageID")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("MyBlog.Models.Category", b =>
+                {
+                    b.HasOne("MyBlog.Models.Category", "ParentCategory")
+                        .WithMany("ChildCategories")
+                        .HasForeignKey("ParentCategoryID");
                 });
         }
     }

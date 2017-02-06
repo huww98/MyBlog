@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace MyBlog.Data.Migrations
+namespace MyBlog.Migrations
 {
     public partial class Init : Migration
     {
@@ -61,6 +61,27 @@ namespace MyBlog.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Category",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGeneratedOnAdd", true),
+                    Name = table.Column<string>(maxLength: 256, nullable: false),
+                    ParentCategoryID = table.Column<int>(nullable: true),
+                    Slot = table.Column<string>(maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Category", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Category_Category_ParentCategoryID",
+                        column: x => x.ParentCategoryID,
+                        principalTable: "Category",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -173,10 +194,10 @@ namespace MyBlog.Data.Migrations
                     ID = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGeneratedOnAdd", true),
                     AuthorID = table.Column<string>(nullable: true),
-                    Content = table.Column<string>(nullable: true),
+                    Content = table.Column<string>(maxLength: 4194304, nullable: false),
                     CreatedTime = table.Column<DateTime>(nullable: false),
                     EditedTime = table.Column<DateTime>(nullable: false),
-                    Title = table.Column<string>(nullable: true)
+                    Title = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -187,6 +208,30 @@ namespace MyBlog.Data.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ArticleCategory",
+                columns: table => new
+                {
+                    ArticleID = table.Column<int>(nullable: false),
+                    CategoryID = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ArticleCategory", x => new { x.ArticleID, x.CategoryID });
+                    table.ForeignKey(
+                        name: "FK_ArticleCategory_Articles_ArticleID",
+                        column: x => x.ArticleID,
+                        principalTable: "Articles",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ArticleCategory_Category_CategoryID",
+                        column: x => x.CategoryID,
+                        principalTable: "Category",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -256,15 +301,19 @@ namespace MyBlog.Data.Migrations
                 column: "AuthorID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ArticleCategory_CategoryID",
+                table: "ArticleCategory",
+                column: "CategoryID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ArticleImages_ImageID",
                 table: "ArticleImages",
                 column: "ImageID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Images_SHA1",
-                table: "Images",
-                column: "SHA1",
-                unique: true);
+                name: "IX_Category_ParentCategoryID",
+                table: "Category",
+                column: "ParentCategoryID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Images_Url",
@@ -291,10 +340,16 @@ namespace MyBlog.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "ArticleCategory");
+
+            migrationBuilder.DropTable(
                 name: "ArticleImages");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Category");
 
             migrationBuilder.DropTable(
                 name: "Articles");
