@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using System.Globalization;
 using System.IO;
 
 namespace MyBlog
@@ -8,6 +9,11 @@ namespace MyBlog
     {
         public static void Main(string[] args)
         {
+            CultureInfo.CurrentCulture
+                = CultureInfo.CurrentUICulture
+                = CultureInfo.DefaultThreadCurrentCulture
+                = CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("zh-cn");
+
             var config = new ConfigurationBuilder()
                .SetBasePath(Directory.GetCurrentDirectory())
                .AddJsonFile("hosting.json", optional: true)
