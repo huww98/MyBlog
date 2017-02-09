@@ -1,4 +1,9 @@
-﻿<script src="~/lib/bootstrap-treeview/src/js/bootstrap-treeview.js"></script>
+﻿<environment names="Development">
+    <script src="~/lib/bootstrap-treeview/src/js/bootstrap-treeview.js"></script>
+</environment>
+<environment names="Staging,Production">
+    <script src="~/lib/bootstrap-treeview/dist/bootstrap-treeview.min.js"></script>
+</environment>
 
 <script>
     $(".category-selector").each(function () {
@@ -13,7 +18,7 @@
         });
 
         function updateButtonContent() {
-            var content= "";
+            var content = "";
             if (buttonData.length === 0) {
                 content = "无";
             }
