@@ -1,22 +1,41 @@
 #!/bin/bash
 
-localDir="./bin/publishToRemote/"
-dotnet publish --configuration Release --output "$localDir"
+restart=true
+
+while :; do
+	case $1 in
+		--no-restart)
+			restart=false;;
+		*)
+			break;;
+	esac
+	shift
+done
+
+
+localDir="bin/publishToRemote/"
+dotnet publish --configuration Release --output "$localDir" || { echo Abort.; exit 1; }
 
 remoteTarget="/var/aspnetcore/myblog/"
 server="ubuntu@huww98.cn"
 echo Starting publish to $server:$remoteTarget
 
-echo Stoping remote service
-ssh $server sudo service kestrel-myblog stop
+if [ $restart = true ]; then
+	echo Stoping remote service
+	ssh $server sudo service kestrel-myblog stop
+fi
 
 echo transfering files
 rsync -rz "$localDir" "$server:$remoteTarget"
 
-echo setting permissions and restart service
+echo setting permissions
 ssh $server \
 "sudo chown -R www-data:www-data \"$remoteTarget\";
 sudo chmod -R 775 \"$remoteTarget\";
-sudo service kestrel-myblog start" 
+
+if [ $restart = true ]; then
+	echo restarting service
+	sudo service kestrel-myblog start;
+fi"
 
 echo Published to remote successfully.
