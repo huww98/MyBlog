@@ -85,16 +85,18 @@
       "wwwroot",
       "**/*.cshtml",
       "appsettings.json",
-      "appsettings.*.json",
       "web.config"
     ],
     "exclude": [
+      "bin",
       "wwwroot/UploadedImages"
     ]
   },
 
   "scripts": {
     "prepublish": [ "bower install", "dotnet bundle" ],
-    "postpublish": [ "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%" ]
+    "postpublish": [
+      "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%"
+    ]
   }
 }

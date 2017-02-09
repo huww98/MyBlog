@@ -1,0 +1,22 @@
+#!/bin/bash
+
+localDir="./bin/publishToRemote/"
+dotnet publish --configuration Release --output "$localDir"
+
+remoteTarget="/var/aspnetcore/myblog/"
+server="ubuntu@huww98.cn"
+echo Starting publish to $server:$remoteTarget
+
+echo Stoping remote service
+ssh $server sudo service kestrel-myblog stop
+
+echo transfering files
+rsync -rz "$localDir" "$server:$remoteTarget"
+
+echo setting permissions and restart service
+ssh $server \
+"sudo chown -R www-data:www-data \"$remoteTarget\";
+sudo chmod -R 775 \"$remoteTarget\";
+sudo service kestrel-myblog start" 
+
+echo Published to remote successfully.
