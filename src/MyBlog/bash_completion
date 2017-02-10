@@ -1,0 +1,20 @@
+#
+# MyBlog scripts bash-completion
+#
+#########################################################
+
+_publishToRemote_complete() {
+	local cur prev opts
+	COMPREPLY=()
+
+	cur="${COMP_WORDS[COMP_CWORD]}"
+	prev="${COMP_WORDS[COMP_CWORD-1]}"
+	opts="--no-restart"
+
+	if [[ ${cur} == -* ]] ; then
+		COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+		return 0
+	fi
+}
+
+complete -F  _publishToRemote_complete publishToRemote
