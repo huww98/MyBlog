@@ -11,11 +11,11 @@ namespace MyBlog.Models
 
         [Display(Name = "标题")]
         [Required]
+        [StringLength(255)]
         public string Title { get; set; }
 
         [DataType(DataType.Html)]
         [Display(Name = "内容")]
-        [StringLength(Microsoft.AspNetCore.WebUtilities.FormReader.DefaultValueLengthLimit)]
         [Required]
         public string Content { get; set; }
 
