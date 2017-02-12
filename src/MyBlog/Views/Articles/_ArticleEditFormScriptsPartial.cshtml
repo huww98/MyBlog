@@ -9,7 +9,31 @@
     <script src="~/lib/bootstrap-wysiwyg-steveathon/js/bootstrap-wysiwyg.min.js"></script>
 </environment>
 <script type='text/javascript'>
-    $('#editor').wysiwyg();
+    $('#editor').wysiwyg({
+        dragAndDropImages: false
+    });
+
+    function showHtml() {
+        var html = $("#html-group");
+        var wysiwyg = $("#wysiwyg-group");
+        html.css("display", "")
+        wysiwyg.css("display", "none");
+        html.children("textarea").val($("#editor").cleanHtml(false))
+    }
+    function showWysiwyg() {
+        var html = $("#html-group");
+        var wysiwyg = $("#wysiwyg-group");
+        html.css("display", "none")
+        wysiwyg.css("display", "");
+        $("#editor").html(html.children("textarea").val());
+    }
+    function prepareToSubmit() {
+        var html = $("#html-group");
+        var wysiwyg = $("#wysiwyg-group");
+        if (html.css("display")==="none") {
+            html.children("textarea").val($("#editor").cleanHtml(false))
+        }
+    }
 </script>
 
 <environment names="Development">
