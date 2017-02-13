@@ -58,18 +58,43 @@ namespace MyBlog.Controllers
                 return NotFound();
             }
 
-            var article = await _context.Articles
-                .AsNoTracking()
-                .Include(a => a.Categories).ThenInclude(ac => ac.Category)
-                .Include(a => a.Author)
-                .SingleOrDefaultAsync(a => a.ID == id);
+            var article = await getArticleToShow(q => q.Where(a => a.ID == id));
             if (article == null)
             {
                 return NotFound();
             }
-            article.CanEdit = await getCanEdit(article);
 
             return View(article);
+        }
+        public async Task<IActionResult> Slug(string slug)
+        {
+            if (string.IsNullOrEmpty(slug))
+            {
+                return NotFound();
+            }
+
+            var article = await getArticleToShow(q => q.Where(a => a.Slug == slug));
+            if (article == null)
+            {
+                return NotFound();
+            }
+
+            return View("Details",article);
+        }
+
+        private async Task<Article> getArticleToShow(Func<IQueryable<Article>, IQueryable<Article>> additionQuery)
+        {
+            var query = _context.Articles.AsNoTracking();
+            query = additionQuery(query);
+            var article = await query
+               .Include(a => a.Categories).ThenInclude(ac => ac.Category)
+               .Include(a => a.Author)
+               .SingleOrDefaultAsync();
+            if (article != null)
+            {
+                article.CanEdit = await getCanEdit(article);
+            }
+            return article;
         }
 
         private async Task<bool> getCanEdit(Article article)
@@ -88,7 +113,7 @@ namespace MyBlog.Controllers
         [HttpPost]
         [Authorize(Roles = SeedData.AuthorRoleName)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Content,Title")] Article article, ICollection<int> categoryIDs)
+        public async Task<IActionResult> Create([Bind("Content,Title,Slug")] Article article, ICollection<int> categoryIDs)
         {
             article.AuthorID = getCurrentUserID();
             article.CreatedTime = DateTime.Now;
@@ -143,7 +168,7 @@ namespace MyBlog.Controllers
                     .ThenInclude(ai => ai.Image)
                 .SingleOrDefaultAsync(a => a.ID == id);
 
-            if (await TryUpdateModelAsync(article, string.Empty, a => a.ID, a => a.Title, a => a.Content))
+            if (await TryUpdateModelAsync(article, string.Empty, a => a.ID, a => a.Title, a => a.Slug, a => a.Content))
             {
                 if (id != article.ID)
                 {

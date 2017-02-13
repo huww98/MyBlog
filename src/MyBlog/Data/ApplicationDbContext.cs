@@ -29,6 +29,9 @@ namespace MyBlog.Data
             builder.Entity<Image>()
                 .HasIndex(i => i.Url)
                 .IsUnique();
+            builder.Entity<Article>()
+                .HasIndex(a => a.Slug)
+                .IsUnique();
         }
 
         public DbSet<Article> Articles { get; set; }

@@ -29,7 +29,18 @@
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
-        </div><div class="form-group">
+        </div>
+        <div class="form-group">
+            <label class="col-md-2 control-label">链接</label>
+            <div class="col-md-10">
+                <div class="input-group">
+                    <span class="input-group-addon">@(Context.Request.Scheme)://@(Context.Request.Host)/</span>
+                    <input asp-for="Slug" class="form-control" />
+                </div>
+                <span asp-validation-for="Slug" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
             <label asp-for="Categories" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 @(await Component.InvokeAsync<CategorySelectorViewComponent>(new

@@ -14,6 +14,9 @@ namespace MyBlog.Models
         [StringLength(255)]
         public string Title { get; set; }
 
+        [StringLength(255)]
+        public string Slug { get; set; }
+
         [DataType(DataType.Html)]
         [Display(Name = "内容")]
         [Required]

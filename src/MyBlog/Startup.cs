@@ -105,6 +105,10 @@ namespace MyBlog
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute(
+                    name: "article",
+                    template: "{*slug:required}",
+                    defaults: new { controller = "Articles", action = "Slug" });
             });
 
             SeedData.Initialize(app.ApplicationServices).Wait();
