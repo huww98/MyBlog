@@ -62,7 +62,7 @@
         range.deleteContents();
         var el = document.createElement("img");
         el.src = response.src;
-        el.style.width = "100%";
+        el.style.maxWidth = "100%";
         var frag = document.createDocumentFragment();
         frag.appendChild(el);
         range.insertNode(frag);

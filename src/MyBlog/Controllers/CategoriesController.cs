@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MyBlog.Data;
 using MyBlog.Models;
 using System.Collections.Generic;
 using System.Linq;

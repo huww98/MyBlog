@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using MyBlog.Models;
 
-namespace MyBlog.Data
+namespace MyBlog.Models
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {

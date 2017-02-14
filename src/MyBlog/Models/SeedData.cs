@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using MyBlog.Data;
+using MyBlog.Models;
 using System;
 using System.Threading.Tasks;
 

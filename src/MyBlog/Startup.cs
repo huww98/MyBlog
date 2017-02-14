@@ -9,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MyBlog.Authorization;
-using MyBlog.Data;
 using MyBlog.Models;
 using MyBlog.Services;
 using System;
@@ -55,6 +54,7 @@ namespace MyBlog
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+            services.AddSingleton<ICurrentTime, CurrentTimeService>();
             services.AddSingleton(HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.BasicLatin, UnicodeRanges.CjkUnifiedIdeographs }));
 
             services.Configure<IdentityOptions>(o =>
@@ -71,7 +71,6 @@ namespace MyBlog
 
             services.AddSingleton<IAuthorizationHandler, IsArticleAuthorAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, IsEditorAuthorizationHandler>();
-            services.AddScoped(i => new HtmlSanitizer());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

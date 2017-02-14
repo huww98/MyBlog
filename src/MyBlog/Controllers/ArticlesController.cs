@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyBlog.Authorization;
-using MyBlog.Data;
 using MyBlog.Helpers;
 using MyBlog.Models;
+using MyBlog.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,17 +21,17 @@ namespace MyBlog.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IAuthorizationService _authorizationService;
-        private readonly HtmlSanitizer _santitizer;
+        private readonly ICurrentTime _currentTime;
 
         public ArticlesController(UserManager<ApplicationUser> userManager,
             ApplicationDbContext context,
             IAuthorizationService authorizationService,
-            HtmlSanitizer santitizer)
+            ICurrentTime currentTime)
         {
             _userManager = userManager;
             _context = context;
             _authorizationService = authorizationService;
-            _santitizer = santitizer;
+            _currentTime = currentTime;
         }
 
         // GET: Articles
@@ -79,7 +79,7 @@ namespace MyBlog.Controllers
                 return NotFound();
             }
 
-            return View("Details",article);
+            return View("Details", article);
         }
 
         private async Task<Article> getArticleToShow(Func<IQueryable<Article>, IQueryable<Article>> additionQuery)
@@ -116,24 +116,15 @@ namespace MyBlog.Controllers
         public async Task<IActionResult> Create([Bind("Content,Title,Slug")] Article article, ICollection<int> categoryIDs)
         {
             article.AuthorID = getCurrentUserID();
-            article.CreatedTime = DateTime.Now;
-            preprocessArticle(article, categoryIDs);
-            _context.Add(article);
+            var result = article.FinishCreate(_context, categoryIDs, _currentTime.Time);
+            processValidationResult(result);
             if (TryValidateModel(article))
             {
+                _context.Add(article);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             return View(article);
-        }
-
-        private void preprocessArticle(Article article, ICollection<int> categoryIDs)
-        {
-            article.EditedTime = DateTime.Now;
-            IDictionary<string, Image> imageUsed;  //Key is the URL of the image.
-            preprocessContent(article, out imageUsed);
-            updateImageArticleLinks(article, imageUsed);
-            updateCategoryArticleLinks(article, categoryIDs);
         }
 
         // GET: Articles/Edit/5
@@ -178,8 +169,8 @@ namespace MyBlog.Controllers
                 {
                     return Unauthorized();
                 }
-                preprocessArticle(article, categoryIDs);
-
+                var result = article.FinishEdit(_context, categoryIDs, _currentTime.Time);
+                processValidationResult(result);
                 if (TryValidateModel(article))
                 {
                     await _context.SaveChangesAsync();
@@ -189,59 +180,13 @@ namespace MyBlog.Controllers
             return View(article);
         }
 
-        private void updateCategoryArticleLinks(Article article, ICollection<int> categoryIDs)
+        private void processValidationResult(ValidationResult result)
         {
-            if (article.Categories == null)
+            if (!result.IsSucceeded)
             {
-                article.Categories = new List<ArticleCategory>();
-            }
-            CollectionUpdateHelper.updateCollection(
-                article.Categories,
-                ac => ac.CategoryID,
-                categoryIDs.ToDictionary(id => id),
-                id => new ArticleCategory { CategoryID = id });
-        }
-
-        private void updateImageArticleLinks(Article article, IDictionary<string, Image> imageUsed)
-        {
-            if (article.Images == null)
-            {
-                article.Images = new List<ArticleImage>();
-            }
-            CollectionUpdateHelper.updateCollection(article.Images, ai => ai.Image.Url, imageUsed, i => new ArticleImage { Image = i });
-        }
-
-        private void preprocessContent(Article article, out IDictionary<string, Image> usedImages)
-        {
-            article.Content = article.Content.Trim();
-            List<string> imgSrcs = new List<string>();
-            _santitizer.PostProcessNode += (s, e) =>
-            {
-                IHtmlImageElement ele = e.Node as IHtmlImageElement;
-                if (ele != null)
+                foreach (var error in result.Errors)
                 {
-                    Uri uri = new Uri(ele.GetAttribute("src"), UriKind.RelativeOrAbsolute);
-                    if (!uri.IsAbsoluteUri)
-                    {
-                        imgSrcs.Add(uri.OriginalString);
-                    }
-                }
-            };
-            article.Content = _santitizer.Sanitize(article.Content);
-            usedImages = _context.Images.Where(i => imgSrcs.Distinct().Contains(i.Url)).ToDictionary(s => s.Url);
-
-            if (usedImages.Count() == imgSrcs.Count)
-            {
-                return;
-            }
-            else
-            {
-                foreach (var item in imgSrcs)
-                {
-                    if (!usedImages.ContainsKey(item))
-                    {
-                        ModelState.AddModelError(string.Empty, $"图片{item}不存在或已被删除");
-                    }
+                    ModelState.AddModelError(error.Key, error.Value);
                 }
             }
         }

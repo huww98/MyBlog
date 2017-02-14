@@ -15,16 +15,18 @@ input,
 select {
     max-width: 280px;
 }
+
 #editor {
-	max-height: 300px;
-	height: 300px;
-	background-color: white;
-	overflow-y: scroll;
-	outline: none;
+    max-height: 300px;
+    height: 300px;
+    background-color: white;
+    overflow-y: scroll;
+    outline: none;
 }
-.indent{
-    margin-left:10px;
-    margin-right:10px
+
+.indent {
+    margin-left: 10px;
+    margin-right: 10px;
 }
 /* Carousel */
 .carousel-caption p {
@@ -34,12 +36,13 @@ select {
 
 /* buttons and links extension to use brackets: [ click me ] */
 .btn-bracketed::before {
-    display:inline-block;
+    display: inline-block;
     content: "[";
     padding-right: 0.5em;
 }
+
 .btn-bracketed::after {
-    display:inline-block;
+    display: inline-block;
     content: "]";
     padding-left: 0.5em;
 }
