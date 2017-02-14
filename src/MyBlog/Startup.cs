@@ -55,6 +55,7 @@ namespace MyBlog
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddSingleton<ICurrentTime, CurrentTimeService>();
+            services.AddSingleton<ISummaryGenerator, SanitizeSummaryGenerator>();
             services.AddSingleton(HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.BasicLatin, UnicodeRanges.CjkUnifiedIdeographs }));
 
             services.Configure<IdentityOptions>(o =>

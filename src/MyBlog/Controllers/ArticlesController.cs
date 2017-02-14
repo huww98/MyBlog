@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 
 namespace MyBlog.Controllers
 {
+    public enum ArticleViewMode { Summary, List }
+
     public class ArticlesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -35,7 +37,7 @@ namespace MyBlog.Controllers
         }
 
         // GET: Articles
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(ArticleViewMode viewMode = ArticleViewMode.Summary)
         {
             var list = await _context.Articles
                 .AsNoTracking()
@@ -47,6 +49,7 @@ namespace MyBlog.Controllers
                 a.CanEdit = await getCanEdit(a);
             }
             ViewData["CanCreate"] = User.IsInRole(SeedData.AuthorRoleName);
+            ViewData["ViewMode"] = viewMode;
             return base.View(list);
         }
 

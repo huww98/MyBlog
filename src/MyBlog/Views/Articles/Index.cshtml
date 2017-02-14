@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<Article>
+@inject ISummaryGenerator summaryGenerator
 
 @{
     ViewData["Title"] = "文章列表";
@@ -12,52 +13,86 @@
         <a asp-action="Create">写新文章</a>
     </p>
 }
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Author)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EditedTime)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Author.UserName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CreatedTime)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EditedTime)
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.ID">查看</a>
-                    @if (item.CanEdit)
-                    {
-                        @: |
+@if (ViewBag.ViewMode == MyBlog.Controllers.ArticleViewMode.Summary)
+{
+    @foreach (var item in Model)
+    {
+        <div class="article-summary">
+            <h3>
+                <a asp-action="Details" asp-route-id="@item.ID">@Html.DisplayFor(m => item.Title)</a>
+            </h3>
+            <p class="text-muted">
+                @Html.Raw(summaryGenerator.GenerateSummary(item.Content))
+            </p>
+            <div class="article-summary-tail">
+                <span>@Html.DisplayNameFor(model => model.EditedTime):@Html.DisplayFor(m => item.EditedTime)</span>
+                <span>@Html.DisplayNameFor(model => model.Author):@Html.DisplayFor(m => item.Author.UserName)</span>
+                <br class="visible-xs"/>
+                <span>
+                    <a asp-action="Details" asp-route-id="@item.ID">查看全文</a>
+                </span>
+                @if (item.CanEdit)
+                {
+                    <span>
                         <a asp-action="Edit" asp-route-id="@item.ID">编辑</a>
-                        @: |
+                    </span>
+                    <span>
                         <a asp-action="Delete" asp-route-id="@item.ID">删除</a>
-                    }
-                </td>
+                    </span>
+                }
+            </div>
+        </div>
+    }
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Title)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Author)
+                </th>
+                <th class="hidden-xs">
+                    @Html.DisplayNameFor(model => model.CreatedTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EditedTime)
+                </th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Author.UserName)
+                    </td>
+                    <td class="hidden-xs">
+                        @Html.DisplayFor(modelItem => item.CreatedTime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EditedTime)
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.ID">查看</a>
+                        @if (item.CanEdit)
+                    {
+                            @: |
+                            <a asp-action="Edit" asp-route-id="@item.ID">编辑</a>
+                            @: |
+                            <a asp-action="Delete" asp-route-id="@item.ID">删除</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

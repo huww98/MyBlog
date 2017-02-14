@@ -46,3 +46,14 @@ select {
     content: "]";
     padding-left: 0.5em;
 }
+
+.article-summary-tail {
+    padding: 5px 0;
+    color: #999;
+    font-size: 12px;
+    text-align: right;
+}
+
+.article-summary{
+    padding: 5px 0;
+}
