@@ -4,38 +4,82 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
+using AngleSharp.Dom;
 
 namespace MyBlog.Services
 {
+    //This class is NOT thread safe!
     public class SanitizeSummaryGenerator : ISummaryGenerator
     {
         HtmlSanitizer sanitizer;
         public SanitizeSummaryGenerator()
         {
             sanitizer = new HtmlSanitizer(
-                new[] { "b", "strong", "i" },
+                new[] { "b", "strong", "i", "h1", "h2", "h3", "h4", "h5", "h6" },
                 new string[0], new string[0], new string[0], new string[0]);
             sanitizer.KeepChildNodes = true;
-            sanitizer.RemovingTag += Sanitizer_RemovingTag;
+            sanitizer.PostProcessNode += replaceHeading;
+            sanitizer.PostProcessNode += calcLength;
         }
 
-        private void Sanitizer_RemovingTag(object sender, RemovingTagEventArgs e)
+        int summaryLength;
+        int currentLength = 0;
+        bool summaryLengthReached = false;
+        bool summaryLengthExeceeded = false;
+        private void calcLength(object sender, PostProcessNodeEventArgs e)
         {
-            if (e.Tag is IHtmlHeadingElement)
+            if (summaryLengthReached)
             {
-                e.Cancel = true;
-                var newElement = e.Tag.Owner.CreateElement("strong");
-                newElement.InnerHtml = e.Tag.InnerHtml;
-                e.Tag.Replace(newElement);
+                if (!summaryLengthExeceeded && e.Node.TextContent.Length > 0)
+                {
+                    summaryLengthExeceeded = true;
+                }
+                e.Node.Parent.RemoveChild(e.Node);
+                return;
+            }
+
+            var textNode = e.Node as IText;
+            if (textNode != null)
+            {
+                int nextLength = currentLength + textNode.Text.Length;
+                if (nextLength < summaryLength)
+                {
+                    currentLength += textNode.Text.Length;
+                }
+                else if (nextLength == summaryLength)
+                {
+                    summaryLengthReached = true;
+                }
+                else
+                {
+                    var newTextNode = e.Document.CreateTextNode(textNode.Text.Substring(0, summaryLength - currentLength));
+                    e.ReplacementNodes.Add(newTextNode);
+                    summaryLengthReached = summaryLengthExeceeded = true;
+                }
             }
         }
 
-        public string GenerateSummary(string content)
+        private void replaceHeading(object sender, PostProcessNodeEventArgs e)
         {
-            string summary = sanitizer.Sanitize(content);
-            if (summary.Length > 300)
+            var headingElement = e.Node as IHtmlHeadingElement;
+            if (headingElement != null)
             {
-                summary = summary.Substring(0, 300);
+                var newElement = e.Document.CreateElement("strong");
+                newElement.InnerHtml = headingElement.InnerHtml;
+                e.ReplacementNodes.Add(newElement);
+                return;
+            }
+        }
+
+        public string GenerateSummary(string content, int summaryLength)
+        {
+            this.summaryLength = summaryLength;
+            currentLength = 0;
+            summaryLengthReached = summaryLengthExeceeded = false;
+
+            string summary = sanitizer.Sanitize(content);
+            if (summaryLengthExeceeded)
+            {
                 summary += "…";
             }
             return summary;

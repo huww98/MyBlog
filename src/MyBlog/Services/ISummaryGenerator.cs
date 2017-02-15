@@ -7,6 +7,6 @@ namespace MyBlog.Services
 {
     public interface ISummaryGenerator
     {
-        string GenerateSummary(string content);
+        string GenerateSummary(string content, int summaryLength);
     }
 }
