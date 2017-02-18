@@ -59,7 +59,7 @@ namespace MyBlog.Controllers
                 TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
                 Logins = await _userManager.GetLoginsAsync(user),
                 BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
-                IsAdministrator = await _userManager.IsInRoleAsync(user, SeedData.AdministratorRoleName)
+                IsAdministrator = await _userManager.IsInRoleAsync(user, RoleInfo.AdministratorRoleName)
             };
             return View(model);
         }

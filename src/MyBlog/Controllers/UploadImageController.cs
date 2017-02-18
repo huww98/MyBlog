@@ -10,8 +10,6 @@ namespace MyBlog.Controllers
 {
     public class UploadImageController : Controller
     {
-        public const string ImagePath = "wwwroot\\UploadedImages";
-        public const string UrlPath = "/UploadedImages";
         private readonly ApplicationDbContext _context;
 
         public UploadImageController(ApplicationDbContext context)
@@ -45,16 +43,15 @@ namespace MyBlog.Controllers
 
         private static void generatePath(IFormFile picture, out string pathToSave, out string url)
         {
-            Directory.CreateDirectory(ImagePath);
+            Directory.CreateDirectory(ImagePath.StoragePath);
             long ticks = DateTime.Now.ToUniversalTime().Ticks;
             while (true)
             {
                 string fileName = ticks.ToString() + Path.GetExtension(picture.FileName);
-                pathToSave = Path.Combine(ImagePath, fileName);
+                pathToSave = Path.Combine(ImagePath.StoragePath, fileName);
                 if (!System.IO.File.Exists(pathToSave))
                 {
-                    url = Path.Combine(UrlPath, fileName);
-                    url = url.Replace('\\', '/');
+                    url = ImagePath.UrlPath + "/" + fileName;
                     break;
                 }
                 ticks++;

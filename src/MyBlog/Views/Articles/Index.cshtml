@@ -1,8 +1,10 @@
-﻿@model IEnumerable<Article>
+﻿@using MyBlog.Models.ArticleViewModels;
+@model ArticleFilterViewModel
 @inject ISummaryGenerator summaryGenerator
 
 @{
     ViewData["Title"] = "文章列表";
+    IEnumerable<Article> articles = (IEnumerable<Article>)ViewData["Articles"];
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -13,86 +15,125 @@
         <a asp-action="Create">写新文章</a>
     </p>
 }
-@if (ViewBag.ViewMode == MyBlog.Controllers.ArticleViewMode.Summary)
-{
-    @foreach (var item in Model)
-    {
-        <div class="article-summary">
-            <h3>
-                <a asp-action="Details" asp-route-id="@item.ID">@Html.DisplayFor(m => item.Title)</a>
-            </h3>
-            <p class="text-muted">
-                @Html.Raw(summaryGenerator.GenerateSummary(item.Content, 300))
-            </p>
-            <div class="article-summary-tail">
-                <span>@Html.DisplayNameFor(model => model.EditedTime):@Html.DisplayFor(m => item.EditedTime)</span>
-                <span>@Html.DisplayNameFor(model => model.Author):@Html.DisplayFor(m => item.Author.UserName)</span>
-                <br class="visible-xs"/>
-                <span>
-                    <a asp-action="Details" asp-route-id="@item.ID">查看全文</a>
-                </span>
-                @if (item.CanEdit)
+<div class="row">
+    <div class="col-md-3 col-md-push-9">
+        <form method="get" class="form-horizontal">
+            <div class="form-group">
+                <label for="categoryID" class="control-label col-xs-3">分类</label>
+                <div class="col-xs-9">
+                    @(await Component.InvokeAsync<CategorySelectorViewComponent>(new
                 {
-                    <span>
-                        <a asp-action="Edit" asp-route-id="@item.ID">编辑</a>
-                    </span>
-                    <span>
-                        <a asp-action="Delete" asp-route-id="@item.ID">删除</a>
-                    </span>
-                }
+                    Name = "categoryID",
+                    PreselectedIDs = Model.CategoryID == null ? null : new int[] { Model.CategoryID.Value }
+                }))
+                </div>
             </div>
-        </div>
-    }
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Title)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Author)
-                </th>
-                <th class="hidden-xs">
-                    @Html.DisplayNameFor(model => model.CreatedTime)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.EditedTime)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-
-            @foreach (var item in Model)
+            <div class="form-group">
+                <label for="date" class="control-label col-xs-3">日期</label>
+                <div class="col-xs-9">
+                    <input asp-for="FromDate" class="form-control" />
+                </div>
+                <label for="date" class="control-label col-xs-3">至</label>
+                <div class="col-xs-9">
+                    <input asp-for="ToDate" class="form-control" />
+                    <span asp-validation-for="ToDate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-9 col-xs-offset-3">
+                    <input type="submit" value="筛选" class="btn btn-default" /> |
+                    <a asp-action="Index">取消筛选</a>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-9 col-md-pull-3">
+        @if (ViewBag.ViewMode == MyBlog.Controllers.ArticleViewMode.Summary)
+        {
+            @foreach (var item in articles)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Title)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Author.UserName)
-                    </td>
-                    <td class="hidden-xs">
-                        @Html.DisplayFor(modelItem => item.CreatedTime)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.EditedTime)
-                    </td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@item.ID">查看</a>
+                <div class="article-summary">
+                    <h3>
+                        <a asp-action="Details" asp-route-id="@item.ID">@Html.DisplayFor(m => item.Title)</a>
+                    </h3>
+                    <p class="text-muted">
+                        @Html.Raw(summaryGenerator.GenerateSummary(item.Content, 300))
+                    </p>
+                    <div class="article-summary-tail">
+                        <span>@(Html.DisplayNameForInnerType<Article, DateTime>(a => a.EditedTime)):@Html.DisplayFor(m => item.EditedTime)</span>
+                        <span>@(Html.DisplayNameForInnerType<Article, ApplicationUser>(a => a.Author)):@Html.DisplayFor(m => item.Author.UserName)</span>
+                        <br class="visible-xs" />
+                        <span>
+                            <a asp-action="Details" asp-route-id="@item.ID">查看全文</a>
+                        </span>
                         @if (item.CanEdit)
-                    {
-                            @: |
-                            <a asp-action="Edit" asp-route-id="@item.ID">编辑</a>
-                            @: |
-                            <a asp-action="Delete" asp-route-id="@item.ID">删除</a>
+                        {
+                            <span>
+                                <a asp-action="Edit" asp-route-id="@item.ID">编辑</a>
+                            </span>
+                            <span>
+                                <a asp-action="Delete" asp-route-id="@item.ID">删除</a>
+                            </span>
                         }
-                    </td>
-                </tr>
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @(Html.DisplayNameForInnerType<Article, string>(a => a.Title))
+                        </th>
+                        <th>
+                            @(Html.DisplayNameForInnerType<Article, ApplicationUser>(a => a.Author))
+                        </th>
+                        <th class="hidden-xs">
+                            @(Html.DisplayNameForInnerType<Article, DateTime>(a => a.CreatedTime))
+                        </th>
+                        <th>
+                            @(Html.DisplayNameForInnerType<Article, DateTime>(a => a.EditedTime))
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in articles)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Title)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Author.UserName)
+                            </td>
+                            <td class="hidden-xs">
+                                @Html.DisplayFor(modelItem => item.CreatedTime)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.EditedTime)
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.ID">查看</a>
+                                @if (item.CanEdit)
+                                {
+                                    @: |
+                                    <a asp-action="Edit" asp-route-id="@item.ID">编辑</a>
+                                    @: |
+                                    <a asp-action="Delete" asp-route-id="@item.ID">删除</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_CategorySelectorScriptPartial");
+    }
 }

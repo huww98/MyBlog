@@ -13,7 +13,7 @@ namespace MyBlog.Authorization
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CanEditArticleRequirement requirement, Article article)
         {
-            if (context.User.IsInRole(SeedData.AuthorRoleName) && context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value == article.AuthorID)
+            if (context.User.IsInRole(RoleInfo.AuthorRoleName) && context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value == article.AuthorID)
             {
                 context.Succeed(requirement);
             }
@@ -25,7 +25,7 @@ namespace MyBlog.Authorization
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CanEditArticleRequirement requirement, Article article)
         {
-            if (context.User.IsInRole(SeedData.EditorRoleName))
+            if (context.User.IsInRole(RoleInfo.EditorRoleName))
             {
                 context.Succeed(requirement);
             }

@@ -1,4 +1,5 @@
 ﻿@model Article
+@inject Ganss.XSS.IHtmlSanitizer sanitizer
 
 @{
     ViewData["Title"] = Model.Title;
@@ -11,7 +12,7 @@
     作者：@await Html.PartialAsync("_UserDisplayNamePartial", Model.Author) <br />
     分类：@string.Join(", ", Model.Categories.Select(ac => ac.Category.Name))
     <hr />
-            @Html.DisplayFor(model => model.Content)
+            @Html.Raw(sanitizer.Sanitize(Model.Content))
 </div>
 <hr />
 <div>

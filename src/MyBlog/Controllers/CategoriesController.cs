@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MyBlog.Controllers
 {
-    [Authorize(Roles = SeedData.EditorRoleName)]
+    [Authorize(Roles = RoleInfo.EditorRoleName)]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;

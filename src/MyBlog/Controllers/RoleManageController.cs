@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MyBlog.Controllers
 {
-    [Authorize(Roles = SeedData.AdministratorRoleName)]
+    [Authorize(Roles = RoleInfo.AdministratorRoleName)]
     public class RoleManageController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -24,8 +24,8 @@ namespace MyBlog.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var authorRole = await _roleManager.FindByNameAsync(SeedData.AuthorRoleName);
-            var editorRole = await _roleManager.FindByNameAsync(SeedData.EditorRoleName);
+            var authorRole = await _roleManager.FindByNameAsync(RoleInfo.AuthorRoleName);
+            var editorRole = await _roleManager.FindByNameAsync(RoleInfo.EditorRoleName);
             var users = await _userManager.Users.Select(
                 u => new RoleManageViewModel
                 {
@@ -50,8 +50,8 @@ namespace MyBlog.Controllers
                     return NotFound();
                 }
                 var rawRoles = await _userManager.GetRolesAsync(user);
-                await updateRole(user, rawRoles, SeedData.AuthorRoleName, model.IsAuthor);
-                await updateRole(user, rawRoles, SeedData.EditorRoleName, model.IsEditor);
+                await updateRole(user, rawRoles, RoleInfo.AuthorRoleName, model.IsAuthor);
+                await updateRole(user, rawRoles, RoleInfo.EditorRoleName, model.IsEditor);
             }
             return RedirectToAction("Index");
         }

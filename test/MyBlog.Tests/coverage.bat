@@ -5,7 +5,7 @@ SET opencover=C:\Users\huww9\.nuget\packages\OpenCover\4.6.519\tools\OpenCover.C
 SET reportgenerator=C:\Users\huww9\.nuget\packages\ReportGenerator\2.5.2\tools\ReportGenerator.exe
 
 SET targetargs="test"  
-SET filter="+[*]MyBlog.* -[*.Test]* -[xunit.*]* -[FluentValidation]*"  
+SET filter="+[*]MyBlog.* -[*.Test]* -[xunit.*]* -[FluentValidation]* -[*]MyBlog.Migrations.*"
 SET coveragefile=Coverage.xml  
 SET coveragedir=Coverage
 

@@ -1,0 +1,140 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MyBlog.Models;
+using Microsoft.EntityFrameworkCore;
+using MyBlog.Controllers;
+using MyBlog.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Moq;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Xunit;
+using MyBlog.Models.ArticleViewModels;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using MyBlog.Authorization;
+
+namespace MyBlog.Tests
+{
+    public class ArticlesControllerTests
+    {
+        Mock<ICurrentTime> currentTimeMock;
+        DateTime mockedCurrentTime = new DateTime(3079, 3, 9, 8, 7, 34, 687);
+
+        ArticlesController buildController(Action<IServiceCollection> buildServices = null)
+        {
+            var services = new ServiceCollection();
+            buildServices?.Invoke(services);
+
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseInMemoryDatabase());
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
+            currentTimeMock = new Mock<ICurrentTime>();
+            currentTimeMock.Setup(t => t.Time).Returns(mockedCurrentTime);
+            services.AddSingleton(currentTimeMock.Object);
+
+            if (!services.Any(service => service.ServiceType == typeof(IAuthorizationService)))
+            {
+                var authMock = new Mock<IAuthorizationService>();
+                authMock.Setup(i => i.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.Is<IEnumerable<IAuthorizationRequirement>>(arg => arg.Single() is CanEditArticleRequirement)))
+                    .Returns(Task.FromResult(true));
+
+                authMock.Setup(i => i.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), "CanCreateArticle"))
+                    .Returns(Task.FromResult(true));
+                services.AddSingleton(authMock.Object);
+            }
+            var serviceProvider = services.BuildServiceProvider();
+
+            addTestArticles(serviceProvider.GetRequiredService<ApplicationDbContext>());
+
+            return ActivatorUtilities.CreateInstance<ArticlesController>(serviceProvider);
+        }
+
+        void addTestArticles(ApplicationDbContext dbContext)
+        {
+            dbContext.Database.EnsureDeleted();
+            dbContext.Articles.AddRange(
+            new Article
+            {
+                Title = "Test Article",
+                CreatedTime = new DateTime(2017, 1, 10, 16, 13, 21),
+                EditedTime = new DateTime(2017, 1, 10, 16, 13, 21),
+                Content = "<h4>Test Article</h4>\n<p>This is the first test article. This is within a 'p' tag.</p>",
+            },
+            new Article
+            {
+                Title = "测试文章",
+                CreatedTime = new DateTime(2017, 1, 11, 19, 24, 38),
+                EditedTime = new DateTime(2017, 1, 12, 9, 14, 26),
+                Content = "<h3>测试的文章标题-H3</h3>\n<p>这是一篇中文测试文章。</p>\n<p>这篇文章在创建的第二天被修改过。</p>",
+            }
+            );
+            dbContext.SaveChanges();
+        }
+
+        [Fact]
+        public async Task IndexReturnsAllArticles_PreservesParameters_CheckPermitions()
+        {
+            var authMock = new Mock<IAuthorizationService>();
+            authMock.Setup(i => i.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.Is<Article>(a => a.Title == "Test Article"), It.Is<IEnumerable<IAuthorizationRequirement>>(arg => arg.Single() is CanEditArticleRequirement)))
+                .Returns(Task.FromResult(true));
+            authMock.Setup(i => i.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.Is<Article>(a => a.Title == "测试文章"), It.Is<IEnumerable<IAuthorizationRequirement>>(arg => arg.Single() is CanEditArticleRequirement)))
+                .Returns(Task.FromResult(false));
+            authMock.Setup(i => i.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), "CanCreateArticle"))
+                .Returns(Task.FromResult(true));
+            var controller = buildController(services =>
+            {
+                services.AddSingleton(authMock.Object);
+            });
+            var filter = new ArticleFilterViewModel();
+            var result = await controller.Index(filter, ArticleViewMode.List);
+
+            var viewResult = Assert.IsType<ViewResult>(result);
+            //ReturnsAllArticles
+            var articles = Assert.IsAssignableFrom<IEnumerable<Article>>(viewResult.ViewData["Articles"]);
+            Assert.Equal(2, articles.Count());
+            Assert.Contains(articles, m => m.Title == "Test Article");
+            Assert.Contains(articles, m => m.Title == "测试文章");
+            //PreservesParameters
+            Assert.Equal(filter, viewResult.Model);
+            Assert.Equal(ArticleViewMode.List, viewResult.ViewData["ViewMode"]);
+            //CheckPermitions
+            authMock.VerifyAll();
+            Assert.Equal(true, articles.Where(a => a.Title == "Test Article").Single().CanEdit);
+            Assert.Equal(false, articles.Where(a => a.Title == "测试文章").Single().CanEdit);
+            Assert.Equal(true, viewResult.ViewData["CanCreate"]);
+        }
+
+        [Fact]
+        public async Task IndexReturnsAllArticlesWhenFilterIsInvalid()
+        {
+            var controller = buildController();
+            controller.ModelState.AddModelError("ToDate", "Some error");
+            var result = await controller.Index(new ArticleFilterViewModel { FromDate = new DateTime(2017, 1, 11) });
+
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var articles = Assert.IsAssignableFrom<IEnumerable<Article>>(viewResult.ViewData["Articles"]);
+            Assert.Equal(2, articles.Count());
+            Assert.Contains(articles, m => m.Title == "Test Article");
+            Assert.Contains(articles, m => m.Title == "测试文章");
+        }
+
+        [Fact]
+        public async Task IndexAppliesVaildFilter()
+        {
+            var controller = buildController();
+            var result = await controller.Index(new ArticleFilterViewModel { FromDate = new DateTime(2017, 1, 11) });
+
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var articles = Assert.IsAssignableFrom<IEnumerable<Article>>(viewResult.ViewData["Articles"]);
+            Assert.Equal(1, articles.Count());
+            Assert.Contains(articles, m => m.Title == "测试文章");
+        }
+    }
+}

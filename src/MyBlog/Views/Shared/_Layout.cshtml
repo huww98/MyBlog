@@ -38,7 +38,7 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="Contact">联系我</a></li>
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
-                @if (User.IsInRole(SeedData.EditorRoleName) || User.IsInRole(SeedData.AdministratorRoleName))
+                @if (User.IsInRole(RoleInfo.EditorRoleName) || User.IsInRole(RoleInfo.AdministratorRoleName))
                 {
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
@@ -46,11 +46,11 @@
                                 管理后台 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                @if (User.IsInRole(SeedData.EditorRoleName))
+                                @if (User.IsInRole(RoleInfo.EditorRoleName))
                                 {
                                     <li><a asp-area="" asp-controller="Categories" asp-action="Index">分类</a></li>
                                 }
-                                @if (User.IsInRole(SeedData.AdministratorRoleName))
+                                @if (User.IsInRole(RoleInfo.AdministratorRoleName))
                                 {
                                     <li class="divider" role="separator"></li>
                                     <li><a asp-area="" asp-controller="RoleManage" asp-action="Index">用户组管理</a></li>

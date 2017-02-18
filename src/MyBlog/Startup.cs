@@ -50,12 +50,17 @@ namespace MyBlog
                 .AddDefaultTokenProviders();
 
             services.AddMvc();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("CanCreateArticle", builder => builder.RequireRole(RoleInfo.EditorRoleName));
+            });
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddSingleton<ICurrentTime, CurrentTimeService>();
             services.AddTransient<ISummaryGenerator, SanitizeSummaryGenerator>();
+            services.AddSingleton<IHtmlSanitizer>(new HtmlSanitizer());
             services.AddSingleton(HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.BasicLatin, UnicodeRanges.CjkUnifiedIdeographs }));
 
             services.Configure<IdentityOptions>(o =>

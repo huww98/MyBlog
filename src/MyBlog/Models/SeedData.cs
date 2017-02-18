@@ -10,11 +10,7 @@ namespace MyBlog.Models
 {
     public static class SeedData
     {
-        public const string AdministratorUserName = "Administrator";
         private const string administratorDefaultPassword = "a123456";
-        public const string AdministratorRoleName = "Administrator";
-        public const string EditorRoleName = "Editor";
-        public const string AuthorRoleName = "Author";
 
         public static async Task Initialize(IServiceProvider serviceProvider)
         {
@@ -22,27 +18,27 @@ namespace MyBlog.Models
             await context.Database.MigrateAsync();
 
             UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            var admin = await userManager.FindByNameAsync(AdministratorUserName);
+            var admin = await userManager.FindByNameAsync(RoleInfo.AdministratorUserName);
             if (admin != null)
             {
                 return;
             }
 
-            admin = new ApplicationUser { UserName = AdministratorUserName };
+            admin = new ApplicationUser { UserName = RoleInfo.AdministratorUserName };
             var result = await userManager.CreateAsync(admin, administratorDefaultPassword);
             if (result != IdentityResult.Success)
             {
-                throw new Exception($"创建{AdministratorUserName}用户失败。{result.ToString()}");
+                throw new Exception($"创建{RoleInfo.AdministratorUserName}用户失败。{result.ToString()}");
             }
 
             RoleManager<IdentityRole> roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            await createRole(roleManager, AdministratorRoleName);
-            await createRole(roleManager, EditorRoleName);
-            await createRole(roleManager, AuthorRoleName);
+            await createRole(roleManager, RoleInfo.AdministratorRoleName);
+            await createRole(roleManager, RoleInfo.EditorRoleName);
+            await createRole(roleManager, RoleInfo.AuthorRoleName);
 
-            await addUserToRole(userManager, admin, AdministratorRoleName);
-            await addUserToRole(userManager, admin, EditorRoleName);
-            await addUserToRole(userManager, admin, AuthorRoleName);
+            await addUserToRole(userManager, admin, RoleInfo.AdministratorRoleName);
+            await addUserToRole(userManager, admin, RoleInfo.EditorRoleName);
+            await addUserToRole(userManager, admin, RoleInfo.AuthorRoleName);
 
             context.Articles.AddRange(
             new Article

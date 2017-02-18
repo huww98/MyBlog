@@ -11,7 +11,9 @@
     "xunit": "2.2.0-beta2-build3300",
     "OpenCover": "4.6.519",
     "ReportGenerator": "2.5.2",
-    "Microsoft.CodeCoverage": "1.0.2"
+    "Microsoft.CodeCoverage": "1.0.2",
+    "Microsoft.EntityFrameworkCore.InMemory": "1.1.0",
+    "Moq": "4.6.38-alpha"
   },
   "testRunner": "xunit",
   "frameworks": {

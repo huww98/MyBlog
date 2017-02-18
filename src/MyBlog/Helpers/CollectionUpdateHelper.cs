@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MyBlog.Helpers
 {
-    static class CollectionUpdateHelper
+    public static class CollectionUpdateHelper
     {
         public static CollectionUpdateChanges<T> updateCollection<T, TKey, TData>(
             ICollection<T> collectionToUpdate,
@@ -23,11 +23,11 @@ namespace MyBlog.Helpers
                 }
                 else
                 {
-                    changes.deletedObjects.Add(o);
+                    changes.DeletedObjects.Add(o);
                 }
             }
 
-            foreach (var o in changes.deletedObjects)
+            foreach (var o in changes.DeletedObjects)
             {
                 collectionToUpdate.Remove(o);
             }
@@ -35,17 +35,17 @@ namespace MyBlog.Helpers
             {
                 var newObj = newObjectFactory(data);
                 collectionToUpdate.Add(newObj);
-                changes.addedObjects.Add(newObj);
+                changes.AddedObjects.Add(newObj);
             }
 
             return changes;
         }
     }
 
-    class CollectionUpdateChanges<T>
+    public class CollectionUpdateChanges<T>
     {
-        public ICollection<T> deletedObjects { get; set; } = new List<T>();
-        public ICollection<T> addedObjects { get; set; } = new List<T>();
+        public ICollection<T> DeletedObjects { get; set; } = new List<T>();
+        public ICollection<T> AddedObjects { get; set; } = new List<T>();
 
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using MyBlog.Authorization;
 using MyBlog.Helpers;
 using MyBlog.Models;
+using MyBlog.Models.ArticleViewModels;
 using MyBlog.Services;
 using System;
 using System.Collections.Generic;
@@ -37,20 +38,26 @@ namespace MyBlog.Controllers
         }
 
         // GET: Articles
-        public async Task<IActionResult> Index(ArticleViewMode viewMode = ArticleViewMode.Summary)
+        public async Task<IActionResult> Index(ArticleFilterViewModel filter, ArticleViewMode viewMode = ArticleViewMode.Summary)
         {
-            var list = await _context.Articles
+            IQueryable<Article> query = _context.Articles
                 .AsNoTracking()
-                .Include(a => a.Author)
-                .ToListAsync();
+                .Include(a => a.Author);
+            if (ModelState.IsValid)
+            {
+                query = query.ApplyArticleFilter(filter);
+            }
+
+            var list = query.ToList();
 
             foreach (var a in list)
             {
                 a.CanEdit = await getCanEdit(a);
             }
-            ViewData["CanCreate"] = User.IsInRole(SeedData.AuthorRoleName);
+            ViewData["CanCreate"] = await _authorizationService.AuthorizeAsync(User, "CanCreateArticle");
             ViewData["ViewMode"] = viewMode;
-            return base.View(list);
+            ViewData["Articles"] = list;
+            return View(filter);
         }
 
         // GET: Articles/Details/5
@@ -106,7 +113,7 @@ namespace MyBlog.Controllers
         }
 
         // GET: Articles/Create
-        [Authorize(Roles = SeedData.AuthorRoleName)]
+        [Authorize(Roles = RoleInfo.AuthorRoleName)]
         public IActionResult Create()
         {
             return View();
@@ -114,13 +121,12 @@ namespace MyBlog.Controllers
 
         // POST: Articles/Create
         [HttpPost]
-        [Authorize(Roles = SeedData.AuthorRoleName)]
+        [Authorize(Roles = RoleInfo.AuthorRoleName)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Content,Title,Slug")] Article article, ICollection<int> categoryIDs)
         {
             article.AuthorID = getCurrentUserID();
-            var result = article.FinishCreate(_context, categoryIDs, _currentTime.Time);
-            processValidationResult(result);
+            article.FinishCreate(_context.Images, categoryIDs, _currentTime.Time);
             if (TryValidateModel(article))
             {
                 _context.Add(article);
@@ -172,8 +178,7 @@ namespace MyBlog.Controllers
                 {
                     return Unauthorized();
                 }
-                var result = article.FinishEdit(_context, categoryIDs, _currentTime.Time);
-                processValidationResult(result);
+                article.FinishEdit(_context.Images, categoryIDs, _currentTime.Time);
                 if (TryValidateModel(article))
                 {
                     await _context.SaveChangesAsync();
@@ -181,17 +186,6 @@ namespace MyBlog.Controllers
                 }
             }
             return View(article);
-        }
-
-        private void processValidationResult(ValidationResult result)
-        {
-            if (!result.IsSucceeded)
-            {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(error.Key, error.Value);
-                }
-            }
         }
 
         // GET: Articles/Delete/5
