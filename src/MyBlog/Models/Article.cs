@@ -34,10 +34,10 @@ namespace MyBlog.Models
         [ForeignKey(nameof(Author))]
         public string AuthorID { get; set; }
 
-        [Display(Name = "创建日期")]
+        [Display(Name = "创建时间")]
         public DateTime CreatedTime { get; set; }
 
-        [Display(Name = "编辑日期")]
+        [Display(Name = "编辑时间")]
         public DateTime EditedTime { get; set; }
 
         public ICollection<ArticleImage> Images { get; } = new List<ArticleImage>();
@@ -47,6 +47,15 @@ namespace MyBlog.Models
 
         [NotMapped]
         public bool CanEdit { get; set; }
+
+        [NotMapped]
+        public string HtmlContent
+        {
+            get
+            {
+                return Markdig.Markdown.ToHtml(Content);
+            }
+        }
 
         IDictionary<string, Image> usedImages;//Key is the URL of the image.
         ICollection<string> imgSrcs;
@@ -65,7 +74,7 @@ namespace MyBlog.Models
 
         private void updateImageArticleLinks(IQueryable<Image> imagesInDb)
         {
-            imgSrcs = ArticleContentHelper.GetImageSrcs(Content).Where(src=>src.StartsWith(ImagePath.UrlPath)).ToList();
+            imgSrcs = ArticleContentHelper.GetImageSrcs(Content).Where(src => src.StartsWith(ImagePath.UrlPath)).ToList();
             usedImages = imagesInDb.Where(i => imgSrcs.Distinct().Contains(i.Url)).ToDictionary(s => s.Url);
             CollectionUpdateHelper.updateCollection(Images, ai => ai.Image.Url, usedImages, i => new ArticleImage { Image = i });
         }
@@ -81,7 +90,7 @@ namespace MyBlog.Models
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (usedImages.Count() != imgSrcs.Count)
+            if (usedImages != null && imgSrcs != null && usedImages.Count() != imgSrcs.Count)
             {
                 foreach (var item in imgSrcs)
                 {

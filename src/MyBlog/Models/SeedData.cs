@@ -46,7 +46,7 @@ namespace MyBlog.Models
                 Title = "Test Article",
                 CreatedTime = new DateTime(2017, 1, 10, 16, 13, 21),
                 EditedTime = new DateTime(2017, 1, 10, 16, 13, 21),
-                Content = "<h4>Test Article</h4>\n<p>This is the first test article. This is within a 'p' tag.</p>",
+                Content = "## Test Article\nThis is the first test article. support **Markdown**!",
                 Author = admin
             },
             new Article
@@ -54,7 +54,7 @@ namespace MyBlog.Models
                 Title = "测试文章",
                 CreatedTime = new DateTime(2017, 1, 11, 19, 24, 38),
                 EditedTime = new DateTime(2017, 1, 12, 9, 14, 26),
-                Content = "<h3>测试的文章标题-H3</h3>\n<p>这是一篇中文测试文章。</p>\n<p>这篇文章在创建的第二天被修改过。</p>",
+                Content = "### 测试的文章标题-H3\n这是一篇中文测试文章。\n\n这篇文章在创建的第二天被修改过。",
                 Author = admin
             }
             );

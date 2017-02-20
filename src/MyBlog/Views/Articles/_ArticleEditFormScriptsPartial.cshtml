@@ -1,50 +1,24 @@
 ﻿@{await Html.RenderPartialAsync("_CategorySelectorScriptPartial");}
-<script src="~/lib/jquery.hotkeys/jquery.hotkeys.js"></script>
-<environment names="Development">
-    <script src="~/lib/google-code-prettify/src/prettify.js"></script>
-    <script src="~/lib/bootstrap-wysiwyg-steveathon/src/bootstrap-wysiwyg.js"></script>
-</environment>
-<environment names="Staging,Production">
-    <script src="~/lib/google-code-prettify/bin/prettify.min.js"></script>
-    <script src="~/lib/bootstrap-wysiwyg-steveathon/js/bootstrap-wysiwyg.min.js"></script>
-</environment>
-<script type='text/javascript'>
-    $('#editor').wysiwyg({
-        dragAndDropImages: false
-    });
-
-    function showHtml() {
-        var html = $("#html-group");
-        var wysiwyg = $("#wysiwyg-group");
-        html.css("display", "")
-        wysiwyg.css("display", "none");
-        html.children("textarea").val($("#editor").cleanHtml(false))
-    }
-    function showWysiwyg() {
-        var html = $("#html-group");
-        var wysiwyg = $("#wysiwyg-group");
-        html.css("display", "none")
-        wysiwyg.css("display", "");
-        $("#editor").html(html.children("textarea").val());
-    }
-    function prepareToSubmit() {
-        var html = $("#html-group");
-        var wysiwyg = $("#wysiwyg-group");
-        if (html.css("display")==="none") {
-            html.children("textarea").val($("#editor").cleanHtml(false))
-        }
-    }
-</script>
 
 <environment names="Development">
+    <script src="~/lib/remarkable/dist/remarkable.js"></script>
     <script src="~/lib/bootstrap-fileinput/js/fileinput.js"></script>
 </environment>
 <environment names="Staging,Production">
+    <script src="~/lib/remarkable/dist/remarkable.min.js"></script>
     <script src="~/lib/bootstrap-fileinput/js/fileinput.min.js"></script>
 </environment>
 <script src="~/lib/bootstrap-fileinput/themes/fa/theme.js"></script>
 <script src="~/lib/bootstrap-fileinput/js/locales/zh.js"></script>
 <script type='text/javascript'>
+    mdHtml = new window.Remarkable('commonmark');
+    function updatePreview() {
+        var source = $("#Content").val();
+        $('#markdown-html').html(mdHtml.render(source));
+    };
+    updatePreview();
+    $("#Content").on("input", updatePreview);
+
     $("#imageFile").fileinput({
         language: 'zh',
         theme: 'fa',
@@ -52,25 +26,14 @@
         allowedFileExtensions: ["jpg", "png", "gif"],
         fileActionSettings: { showZoom: false }
     });
-    $('.input-append').click(function (event) {
-        event.stopPropagation();
-    });
     $('#imageFile').on('fileuploaded', function (event, data, previewId, index) {
-        response = data.response;
-        sel = window.getSelection();
-        range = sel.getRangeAt(0);
-        range.deleteContents();
-        var el = document.createElement("img");
-        el.src = response.src;
-        el.style.maxWidth = "100%";
-        var frag = document.createDocumentFragment();
-        frag.appendChild(el);
-        range.insertNode(frag);
+        var response = data.response;
+        var content = document.getElementById("Content");
+        var startPos = content.selectionStart,
+            endPos = content.selectionEnd,
+            tmpStr = content.value;
+        content.value = tmpStr.substring(0, startPos) + "![](" + response.src + ")" + tmpStr.substring(endPos, tmpStr.length);
+        updatePreview();
     });
 </script>
 @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-<script type='text/javascript'>
-    $.validator.setDefaults({
-        ignore: [],
-    });
-</script>

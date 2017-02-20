@@ -13,15 +13,15 @@ namespace MyBlog.Tests
         {
             var content = "<p>123456</p>7890";
             var expected = "1234567890";
-            Assert.Equal(expected, generator.GenerateSummary(content, 100));
+            Assert.Equal(expected, generator.GenerateSummary(content, 100).Trim());
         }
 
         [Fact]
         public void SpecialHtmlTagsNotStripped()
         {
-            var content = "<p>1<strong>234</strong>5<b>67</b>8</p>9<i>0</i>";
-            var expected = "1<strong>234</strong>5<b>67</b>89<i>0</i>";
-            Assert.Equal(expected, generator.GenerateSummary(content, 1000));
+            var content = "<p>1<strong>234</strong>5<b>67</b>8</p>9<i>0</i>5<em>6</em>";
+            var expected = "1<strong>234</strong>5<b>67</b>89<i>0</i>5<em>6</em>";
+            Assert.Equal(expected, generator.GenerateSummary(content, 1000).Trim());
         }
 
         [Fact]
@@ -33,7 +33,7 @@ namespace MyBlog.Tests
             var expected =
                 "<strong>Heading</strong>some text<strong>Heading</strong>some text<strong>Heading</strong>some text" +
                 "<strong>Heading</strong>some text<strong>Heading</strong>some text<strong>Heading</strong>some text";
-            Assert.Equal(expected, generator.GenerateSummary(content, 1000));
+            Assert.Equal(expected, generator.GenerateSummary(content, 1000).Trim());
         }
 
         [Theory]
@@ -43,7 +43,7 @@ namespace MyBlog.Tests
         public void PlainTextNotCut(string content,int summaryLength) 
         {
             var summary = generator.GenerateSummary(content, summaryLength);
-            Assert.Equal(content, summary);
+            Assert.Equal(content, summary.Trim());
         }
 
 
@@ -54,7 +54,7 @@ namespace MyBlog.Tests
         {
             var summary = generator.GenerateSummary(content, summaryLength);
             var expected = content.Substring(0, summaryLength) + "…";
-            Assert.Equal(expected, summary);
+            Assert.Equal(expected, summary.Trim());
         }
 
         [Theory]
@@ -72,7 +72,7 @@ namespace MyBlog.Tests
         public void HtmlText(string content, int summaryLength, string result)
         {
             var summary = generator.GenerateSummary(content, summaryLength);
-            Assert.Equal(result, summary);
+            Assert.Equal(result, summary.Trim());
         }
     }
 }

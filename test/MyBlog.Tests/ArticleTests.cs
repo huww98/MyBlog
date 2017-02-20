@@ -20,15 +20,17 @@ namespace MyBlog.Tests
             var images = new List<Image> { new Image { ID = 2, Url = $"{ImagePath.UrlPath}/2.jpg" } };
             var fakeCurrentTime = new DateTime(2598, 8, 28, 16, 8, 7, 988);
 
+            var validateResult1 = article.Validate(new System.ComponentModel.DataAnnotations.ValidationContext(article));
             article.FinishEdit(images.AsQueryable(), new List<int> { 2 }, fakeCurrentTime);
-            var validateResult = article.Validate(new System.ComponentModel.DataAnnotations.ValidationContext(article));
+            var validateResult2 = article.Validate(new System.ComponentModel.DataAnnotations.ValidationContext(article));
 
+            Assert.Empty(validateResult1);
             Assert.Equal(fakeCurrentTime, article.EditedTime);
             Assert.Equal(1, article.Images.Count);
             Assert.Contains(article.Images, i => i.Image.ID == 2);
             Assert.Equal(1, article.Categories.Count);
             Assert.Contains(article.Categories, c => c.CategoryID == 2);
-            Assert.Empty(validateResult);
+            Assert.Empty(validateResult2);
         }
 
         [Fact]

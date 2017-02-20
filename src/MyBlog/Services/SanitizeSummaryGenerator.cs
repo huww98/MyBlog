@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
 using AngleSharp.Dom;
+using Markdig;
 
 namespace MyBlog.Services
 {
@@ -15,7 +16,7 @@ namespace MyBlog.Services
         public SanitizeSummaryGenerator()
         {
             sanitizer = new HtmlSanitizer(
-                new[] { "b", "strong", "i", "h1", "h2", "h3", "h4", "h5", "h6" },
+                new[] { "b", "strong", "i", "em", "h1", "h2", "h3", "h4", "h5", "h6" },
                 new string[0], new string[0], new string[0], new string[0]);
             sanitizer.KeepChildNodes = true;
             sanitizer.PostProcessNode += replaceHeading;
@@ -71,13 +72,13 @@ namespace MyBlog.Services
             }
         }
 
-        public string GenerateSummary(string content, int summaryLength)
+        public string GenerateSummary(string htmlContent, int summaryLength)
         {
             this.summaryLength = summaryLength;
             currentLength = 0;
             summaryLengthReached = summaryLengthExeceeded = false;
 
-            string summary = sanitizer.Sanitize(content);
+            string summary = sanitizer.Sanitize(htmlContent);
             if (summaryLengthExeceeded)
             {
                 summary += "…";

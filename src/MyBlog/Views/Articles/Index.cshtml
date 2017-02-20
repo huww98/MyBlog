@@ -57,7 +57,7 @@
                         <a asp-action="Details" asp-route-id="@item.ID">@Html.DisplayFor(m => item.Title)</a>
                     </h3>
                     <p class="text-muted">
-                        @Html.Raw(summaryGenerator.GenerateSummary(item.Content, 300))
+                        @Html.Raw(summaryGenerator.GenerateSummary(item.HtmlContent, 300))
                     </p>
                     <div class="article-summary-tail">
                         <span>@(Html.DisplayNameForInnerType<Article, DateTime>(a => a.EditedTime)):@Html.DisplayFor(m => item.EditedTime)</span>
