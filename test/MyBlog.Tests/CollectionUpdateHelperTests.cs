@@ -10,7 +10,7 @@ namespace MyBlog.Tests
     public class CollectionUpdateHelperTests
     {
         [Fact]
-        public void UpdateCollection()
+        public void UpdateCollection_newDataShouldNotBeChanged()
         {
             var collection = new List<string> { "item1", "item2" };
             var newData = new Dictionary<char, string>
@@ -24,6 +24,10 @@ namespace MyBlog.Tests
                 newData,
                 s => s.Substring(0, 5));
 
+            Assert.Equal(2, newData.Count);
+            Assert.Contains('2', newData.Keys);
+            Assert.Contains('3', newData.Keys);
+
             Assert.Equal(2, collection.Count);
             Assert.Contains("item2", collection);
             Assert.Contains("item3", collection);
@@ -33,7 +37,6 @@ namespace MyBlog.Tests
 
             Assert.Equal(1, changes.DeletedObjects.Count);
             Assert.Contains("item1", changes.DeletedObjects);
-
         }
     }
 }

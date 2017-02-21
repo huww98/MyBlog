@@ -8,7 +8,8 @@
 <h1>@Model.Title</h1>
 
 <div>
-    编写时间：@Html.DisplayFor(model => model.CreatedTime) 最后修改时间：@Html.DisplayFor(model => model.EditedTime) <br />
+    @Html.DisplayNameFor(model => model.CreatedTime)：@Html.DisplayFor(model => model.CreatedTime)
+    @Html.DisplayNameFor(model => model.EditedTime)：@Html.DisplayFor(model => model.EditedTime) <br />
     作者：@await Html.PartialAsync("_UserDisplayNamePartial", Model.Author) <br />
     分类：@string.Join(", ", Model.Categories.Select(ac => ac.Category.Name))
     <hr />

@@ -53,6 +53,10 @@ namespace MyBlog.Models
         {
             get
             {
+                if (Content==null)
+                {
+                    return null;
+                }
                 return Markdig.Markdown.ToHtml(Content);
             }
         }
@@ -74,7 +78,7 @@ namespace MyBlog.Models
 
         private void updateImageArticleLinks(IQueryable<Image> imagesInDb)
         {
-            imgSrcs = ArticleContentHelper.GetImageSrcs(Content).Where(src => src.StartsWith(ImagePath.UrlPath)).ToList();
+            imgSrcs = ArticleContentHelper.GetImageSrcs(HtmlContent).Where(src => src.StartsWith(ImagePath.UrlPath)).ToList();
             usedImages = imagesInDb.Where(i => imgSrcs.Distinct().Contains(i.Url)).ToDictionary(s => s.Url);
             CollectionUpdateHelper.updateCollection(Images, ai => ai.Image.Url, usedImages, i => new ArticleImage { Image = i });
         }

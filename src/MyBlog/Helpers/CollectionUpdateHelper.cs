@@ -14,12 +14,13 @@ namespace MyBlog.Helpers
             Func<TData, T> newObjectFactory)
         {
             CollectionUpdateChanges<T> changes = new CollectionUpdateChanges<T>();
+            var addedData = new Dictionary<TKey, TData>(newData);
             foreach (var o in collectionToUpdate)
             {
                 var key = keySelector(o);
-                if (newData.ContainsKey(key))
+                if (addedData.ContainsKey(key))
                 {
-                    newData.Remove(key);
+                    addedData.Remove(key);
                 }
                 else
                 {
@@ -31,7 +32,7 @@ namespace MyBlog.Helpers
             {
                 collectionToUpdate.Remove(o);
             }
-            foreach (var data in newData.Values)
+            foreach (var data in addedData.Values)
             {
                 var newObj = newObjectFactory(data);
                 collectionToUpdate.Add(newObj);
@@ -46,6 +47,5 @@ namespace MyBlog.Helpers
     {
         public ICollection<T> DeletedObjects { get; set; } = new List<T>();
         public ICollection<T> AddedObjects { get; set; } = new List<T>();
-
     }
 }
