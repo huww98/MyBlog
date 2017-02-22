@@ -16,6 +16,10 @@ select {
     max-width: 280px;
 }
 
+.file-form {
+    max-width: 400px;
+}
+
 img {
     max-width: 100%;
 }
@@ -68,4 +72,8 @@ img {
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+
+.img-preview {
+    width: 225px;
 }

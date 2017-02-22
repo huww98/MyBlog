@@ -11,11 +11,10 @@
         <link rel="stylesheet" href="~/lib/fontawesome/css/font-awesome.css" />
     </environment>
     <environment names="Staging,Production">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
-        <link rel="stylesheet" href="~/lib/fontawesome/css/font-awesome.min.css"/>
+        <link rel="stylesheet" href="~/lib/fontawesome/css/font-awesome.min.css" />
     </environment>
-    <link href="~/lib/google-code-prettify/src/prettify.css" rel="stylesheet" />
     <link href="~/lib/bootstrap-fileinput/css/fileinput.css" media="all" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -49,6 +48,7 @@
                                 @if (User.IsInRole(RoleInfo.EditorRoleName))
                                 {
                                     <li><a asp-area="" asp-controller="Categories" asp-action="Index">分类</a></li>
+                                    <li><a asp-area="" asp-controller="Images" asp-action="Index">图片</a></li>
                                 }
                                 @if (User.IsInRole(RoleInfo.AdministratorRoleName))
                                 {

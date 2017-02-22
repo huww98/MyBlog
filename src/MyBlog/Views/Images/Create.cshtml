@@ -1,0 +1,67 @@
+﻿@model MyBlog.Models.Image
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="form-horizontal">
+        <h4>Image</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label class="col-md-2 control-label">文件</label>
+            <div class="col-md-10">
+                <div class="file-form">
+                    <input id="file" name="file" type="file" class="file-loading" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Alt" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Alt" class="form-control" />
+                <span asp-validation-for="Alt" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Discription" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Discription" class="form-control" />
+                <span asp-validation-for="Discription" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <environment names="Development">
+        <script src="~/lib/bootstrap-fileinput/js/fileinput.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/lib/bootstrap-fileinput/js/fileinput.min.js"></script>
+    </environment>
+    <script src="~/lib/bootstrap-fileinput/themes/fa/theme.js"></script>
+    <script src="~/lib/bootstrap-fileinput/js/locales/zh.js"></script>
+    <script>
+        $("#file").fileinput({
+            language: 'zh',
+            theme: 'fa',
+            showUpload: false,
+            allowedFileExtensions: ["jpg", "png", "gif"],
+            fileActionSettings: { showUpload: false }
+        });
+    </script>
+}

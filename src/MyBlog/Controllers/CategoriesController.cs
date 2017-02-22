@@ -138,15 +138,16 @@ namespace MyBlog.Controllers
             return View(category);
         }
 
-        // GET: Categories/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // POST: Categories/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
+            var category = await _context.Category.SingleOrDefaultAsync(m => m.ID == id);
+            if (category == null)
             {
                 return NotFound();
             }
-
-            var category = await _context.Category.SingleOrDefaultAsync(m => m.ID == id);
             _context.Category.Remove(category);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");

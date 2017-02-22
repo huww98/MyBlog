@@ -1,0 +1,84 @@
+﻿@model IEnumerable<MyBlog.Models.Image>
+
+@{
+    ViewData["Title"] = "图片列表";
+}
+
+<h2>图片列表</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<div class="img-preview-grid" data-masonry='{ "itemSelector": ".img-preview", "columnWidth": 228 }'>
+    @foreach (var img in Model)
+    {
+        var isUsed = img.Articles.Count > 0;
+        <div class="img-preview">
+            <div class="thumbnail">
+                <img src="@img.Url" />
+                <div class="caption">
+                    <p>
+                        @img.Discription<br />
+                        @Html.DisplayNameFor(i => i.UploadedTime)：@Html.DisplayFor(model => img.UploadedTime)
+                    </p>
+                    <p>
+                        @if (isUsed)
+                        {
+                            @:在以下文章中使用：
+                            <ul>
+                                @foreach (var ai in img.Articles)
+                                {
+                                    <li>
+                                        <a asp-controller="Articles" asp-action="Details" asp-route-id="@ai.ArticleID">@ai.Article.Title</a>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            @:未使用此图片
+                        }
+                    </p>
+                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#imgPreviewModal" data-preview-url="@img.Url"
+                            onclick="$('#imgPreview')[0].src=$(this).data('previewUrl')">
+                        <i class="fa fa-arrows-alt" aria-hidden="true"></i>
+                    </button>
+                    <form method="post" asp-action="Delete" asp-route-id="@img.ID" class="pull-right">
+                        <a asp-action="Edit" asp-route-id="@img.ID" class="btn btn-default">编辑</a>
+                        @if (isUsed)
+                        {
+                            <span title="只能删除未使用的图片">
+                                <button type="submit" class="btn btn-danger" disabled="disabled">删除</button>
+                            </span>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('确定删除？')">删除</button>
+                        }
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<div class="modal fade" id="imgPreviewModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-window-close" aria-hidden="true"></i></button>
+                <h4 class="modal-title" id="myModalLabel">图片查看</h4>
+            </div>
+            <div class="modal-body">
+                <img id="imgPreview" />
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <environment names="Development">
+        <script src="~/lib/masonry/dist/masonry.pkgd.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/lib/masonry/dist/masonry.pkgd.min.js"></script>
+    </environment>
+}

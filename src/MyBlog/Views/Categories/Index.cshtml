@@ -1,4 +1,4 @@
-@model IEnumerable<MyBlog.Models.Category>
+﻿@model IEnumerable<MyBlog.Models.Category>
 
 @{
     ViewData["Title"] = "Index";
@@ -30,10 +30,20 @@
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    <form asp-action="Delete" asp-route-id="@item.ID">
+                        <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                        <input type="submit" value="Delete" class="btn btn-danger" onclick="return deleteConfirm()" />
+                    </form>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@section Scripts{
+    <script>
+        function deleteConfirm() {
+            return confirm('确定删除？\n注意：子分类将同时被删除。')
+        }
+    </script>
+}

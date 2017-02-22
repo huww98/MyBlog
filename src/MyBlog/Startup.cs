@@ -61,6 +61,7 @@ namespace MyBlog
             services.AddSingleton<ICurrentTime, CurrentTimeService>();
             services.AddTransient<ISummaryGenerator, SanitizeSummaryGenerator>();
             services.AddSingleton<IHtmlSanitizer>(new HtmlSanitizer());
+            services.AddScoped<IImageProcessor, ImageService>();
             services.AddSingleton(HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.BasicLatin, UnicodeRanges.CjkUnifiedIdeographs }));
 
             services.Configure<IdentityOptions>(o =>

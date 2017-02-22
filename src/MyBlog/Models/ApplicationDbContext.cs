@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace MyBlog.Models
 {
@@ -23,7 +24,8 @@ namespace MyBlog.Models
             builder.Entity<Category>()
                 .HasOne(c => c.ParentCategory)
                 .WithMany(c => c.ChildCategories)
-                .HasForeignKey(c => c.ParentCategoryID);
+                .HasForeignKey(c => c.ParentCategoryID)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Image>()
                 .HasIndex(i => i.Url)

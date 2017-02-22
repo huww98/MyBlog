@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,20 +9,28 @@ namespace MyBlog.Models
     {
         public int ID { get; set; }
 
+        [Display(Name = "替代文本")]
         public string Alt { get; set; }
 
+        [Display(Name = "描述")]
         public string Discription { get; set; }
 
         [MaxLength(20)]
+        [Required]
         public byte[] SHA1 { get; set; }
 
         [Required]
         public string Path { get; set; }
 
         [Required]
+        [DataType(DataType.ImageUrl)]
         public string Url { get; set; }
 
-        public ICollection<ArticleImage> Articles { get; set; }
+        [Required]
+        [Display(Name = "上传时间")]
+        public DateTime UploadedTime { get; set; }
+
+        public ICollection<ArticleImage> Articles { get; } = new List<ArticleImage>();
     }
 
     public class ArticleImage
