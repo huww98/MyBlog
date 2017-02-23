@@ -3,10 +3,12 @@
 <environment names="Development">
     <script src="~/lib/remarkable/dist/remarkable.js"></script>
     <script src="~/lib/bootstrap-fileinput/js/fileinput.js"></script>
+    <script src="~/lib/masonry/dist/masonry.pkgd.js"></script>
 </environment>
 <environment names="Staging,Production">
     <script src="~/lib/remarkable/dist/remarkable.min.js"></script>
     <script src="~/lib/bootstrap-fileinput/js/fileinput.min.js"></script>
+    <script src="~/lib/masonry/dist/masonry.pkgd.min.js"></script>
 </environment>
 <script src="~/lib/bootstrap-fileinput/themes/fa/theme.js"></script>
 <script src="~/lib/bootstrap-fileinput/js/locales/zh.js"></script>
@@ -26,14 +28,43 @@
         allowedFileExtensions: ["jpg", "png", "gif"],
         fileActionSettings: { showZoom: false }
     });
-    $('#imageFile').on('fileuploaded', function (event, data, previewId, index) {
-        var response = data.response;
+
+    function addImage(src, alt, title) {
         var content = document.getElementById("Content");
         var startPos = content.selectionStart,
             endPos = content.selectionEnd,
             tmpStr = content.value;
-        content.value = tmpStr.substring(0, startPos) + "![](" + response.src + ")" + tmpStr.substring(endPos, tmpStr.length);
+        content.value = tmpStr.substring(0, startPos) + "![";
+        if (alt !== undefined) {
+            content.value += alt;
+        }
+        content.value += ("](" + src);
+        if (title !== undefined && (title + "").length > 0) {
+            content.value += (' "' + title + '"');
+        }
+        content.value += (")" + tmpStr.substring(endPos, tmpStr.length));
         updatePreview();
+    }
+
+    $('#imageFile').on('fileuploaded', function (event, data, previewId, index) {
+        var response = data.response;
+        addImage(response.src);
     });
+
+    var grid = $('.img-select-grid').masonry({
+        itemSelector: '.img-select-item',
+        columnWidth: 180
+    });
+    $('#imageModal').on('shown.bs.modal', function (e) {
+        grid.masonry();
+    })
+    $('#imageSelectTab').on('shown.bs.tab', function (e) {
+        grid.masonry();
+    })
+
+    $('.img-select-item').click(function () {
+        var selectedItem = $(this);
+        addImage(selectedItem.data("src"), selectedItem.data("alt"), selectedItem.data("title"));
+    })
 </script>
 @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

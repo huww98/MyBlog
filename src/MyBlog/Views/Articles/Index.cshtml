@@ -54,7 +54,14 @@
             {
                 <div class="article-summary">
                     <h3>
-                        <a asp-action="Details" asp-route-id="@item.ID">@Html.DisplayFor(m => item.Title)</a>
+                        @if (string.IsNullOrWhiteSpace(item.Slug))
+                        {
+                            <a asp-action="Details" asp-route-id="@item.ID">@Html.DisplayFor(m => item.Title)</a>
+                        }
+                        else
+                        {
+                            <a asp-route="article" asp-route-slug="@item.Slug">@Html.DisplayFor(m => item.Title)</a>
+                        }
                     </h3>
                     <p class="text-muted">
                         @Html.Raw(summaryGenerator.GenerateSummary(item.HtmlContent, 300))

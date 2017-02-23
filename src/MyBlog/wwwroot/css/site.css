@@ -77,3 +77,8 @@ img {
 .img-preview {
     width: 225px;
 }
+
+.img-select-item {
+    width: 180px;
+    padding: 2px;
+}

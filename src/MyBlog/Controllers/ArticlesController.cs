@@ -76,6 +76,7 @@ namespace MyBlog.Controllers
 
             return View(article);
         }
+
         public async Task<IActionResult> Slug(string slug)
         {
             if (string.IsNullOrEmpty(slug))
@@ -116,6 +117,7 @@ namespace MyBlog.Controllers
         [Authorize(Roles = RoleInfo.AuthorRoleName)]
         public IActionResult Create()
         {
+            ViewData["Images"] = _context.Images.ToList();
             return View();
         }
 
@@ -154,6 +156,7 @@ namespace MyBlog.Controllers
                 return Unauthorized();
             }
             ViewData["CategoryIDs"] = article.Categories.Select(c => c.CategoryID).ToList();
+            ViewData["Images"] = _context.Images.ToList();
             return View(article);
         }
 

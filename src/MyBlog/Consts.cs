@@ -7,7 +7,20 @@ namespace MyBlog
 {
     public static class ImagePath
     {
-        public const string StoragePath = "wwwroot\\UploadedImages";
+        private static string _storagePath;
+
+        public static string StoragePath
+        {
+            get
+            {
+                if (_storagePath == null)
+                {
+                    _storagePath = System.IO.Path.Combine("wwwroot", "UploadedImages");
+                }
+                return _storagePath;
+            }
+        }
+
         public const string UrlPath = "/UploadedImages";
     }
 

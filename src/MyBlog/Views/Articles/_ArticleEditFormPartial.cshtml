@@ -2,14 +2,36 @@
 
 @{string actionName = Model == null ? "Create" : "Edit";}
 <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="imageModalLabel">插入图片</h4>
             </div>
             <div class="modal-body">
-                <input id="imageFile" name="imageFile" type="file" multiple class="file-loading">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#imageUpload" aria-controls="imageUpload" role="tab" data-toggle="tab">上传图片</a></li>
+                    <li role="presentation"><a href="#imageSelect" aria-controls="imageSelect" role="tab" data-toggle="tab" id="imageSelectTab">选择图片</a></li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="imageUpload">
+                        <input id="imageFile" name="imageFile" type="file" multiple class="file-loading">
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="imageSelect">
+                        @{ IEnumerable<Image> images = ViewBag.Images; }
+                        <div class="img-select-grid">
+                            @foreach (var img in images)
+                            {
+                                <div role="checkbox" class="img-select-item" data-src="@img.Url" data-alt="@img.Alt" data-title="@img.Discription">
+                                    <img src="@img.Url" alt="@img.Alt" title="@img.Discription" />
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
