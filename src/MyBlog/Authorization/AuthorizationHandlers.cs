@@ -46,7 +46,7 @@ namespace MyBlog.Authorization
         {
             if (context.User != null && context.User.IsInRole(RoleInfo.EditorRoleName))
             {
-                foreach (var r in context.PendingRequirements)
+                foreach (var r in context.PendingRequirements.ToList())
                 {
                     if (r is CanEditArticleRequirement || r is CanDeleteCommentRequirement)
                     {
