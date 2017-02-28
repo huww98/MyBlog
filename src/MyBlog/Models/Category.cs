@@ -13,19 +13,7 @@ namespace MyBlog.Models
         [Display(Name = "父分类")]
         public Category ParentCategory { get; set; }
 
-        private ICollection<Category> _childCategories;
-
-        public ICollection<Category> ChildCategories
-        {
-            get
-            {
-                if (_childCategories == null)
-                {
-                    _childCategories = new List<Category>();
-                }
-                return _childCategories;
-            }
-        }
+        public ICollection<Category> ChildCategories { get; } = new List<Category>();
 
         [Display(Name = "名称")]
         [StringLength(256)]

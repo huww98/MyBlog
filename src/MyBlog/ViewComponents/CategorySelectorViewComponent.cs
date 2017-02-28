@@ -24,13 +24,13 @@ namespace MyBlog.ViewComponents
             int exceptionID = -1)
         {
             CategorySelectorViewModel viewModel = new CategorySelectorViewModel { ButtonClasses = buttonClasses, Name = name, IsMultiple = isMultiple };
-            await _context.Category.LoadAsync();
+            await _context.Categories.LoadAsync();
             if (preselectedIDs != null)
             {
-                viewModel.PreselectedCategories = _context.Category.Local.Where(c => preselectedIDs.Contains(c.ID)).ToList();
+                viewModel.PreselectedCategories = _context.Categories.Local.Where(c => preselectedIDs.Contains(c.ID)).ToList();
             }
 
-            var roots = _context.Category.Local.Where(c => c.ParentCategory == null);
+            var roots = _context.Categories.Local.Where(c => c.ParentCategory == null);
             foreach (var root in roots)
             {
                 if (root.ID != exceptionID)

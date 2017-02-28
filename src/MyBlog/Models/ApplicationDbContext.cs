@@ -38,6 +38,6 @@ namespace MyBlog.Models
         public DbSet<Article> Articles { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<ArticleImage> ArticleImages { get; set; }
-        public DbSet<Category> Category { get; set; }
+        public DbSet<Category> Categories { get; set; }
     }
 }

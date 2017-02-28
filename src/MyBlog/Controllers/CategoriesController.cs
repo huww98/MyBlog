@@ -44,7 +44,7 @@ namespace MyBlog.Controllers
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            var categories = _context.Category;
+            var categories = _context.Categories;
             await categories.LoadAsync();
             return View(SettleCategories(categories));
         }
@@ -57,7 +57,7 @@ namespace MyBlog.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Category
+            var category = await _context.Categories
                 .Include(c => c.ParentCategory)
                 .SingleOrDefaultAsync(m => m.ID == id);
             if (category == null)
@@ -71,7 +71,7 @@ namespace MyBlog.Controllers
         // GET: Categories/Create
         public async Task<IActionResult> Create()
         {
-            await _context.Category.LoadAsync();
+            await _context.Categories.LoadAsync();
             return View();
         }
 
@@ -97,7 +97,7 @@ namespace MyBlog.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Category.SingleOrDefaultAsync(m => m.ID == id);
+            var category = await _context.Categories.SingleOrDefaultAsync(m => m.ID == id);
             if (category == null)
             {
                 return NotFound();
@@ -143,24 +143,24 @@ namespace MyBlog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var category = await _context.Category.SingleOrDefaultAsync(m => m.ID == id);
+            var category = await _context.Categories.SingleOrDefaultAsync(m => m.ID == id);
             if (category == null)
             {
                 return NotFound();
             }
-            _context.Category.Remove(category);
+            _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
         private bool CategoryExists(int id)
         {
-            return _context.Category.Any(e => e.ID == id);
+            return _context.Categories.Any(e => e.ID == id);
         }
 
         private async Task<List<Category>> GetValidParentCategories(Category category)
         {
-            var categories = await _context.Category.ToListAsync();
+            var categories = await _context.Categories.ToListAsync();
             categories.Remove(category);
             removeChildren(categories, category);
             return categories;
