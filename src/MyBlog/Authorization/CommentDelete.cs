@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MyBlog.Authorization
 {
-    public class CanEditArticleRequirement : IAuthorizationRequirement
+    public class CanDeleteCommentRequirement : IAuthorizationRequirement
     {
     }
 }

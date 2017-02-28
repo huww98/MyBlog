@@ -76,5 +76,9 @@
             prompt.append(hiddenInput);
             prompt.css("display", "");
         })
+
+        function deleteConfirm() {
+            return confirm('确定删除？\n注意：该评论下所有回复都会被删除。')
+        }
     </script>
 }

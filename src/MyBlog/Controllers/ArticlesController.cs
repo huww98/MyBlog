@@ -105,6 +105,10 @@ namespace MyBlog.Controllers
             if (article != null)
             {
                 article.CanEdit = await getCanEdit(article);
+                foreach (var c in article.Comments)
+                {
+                    c.CanDelete = await getCanDeleteComment(c);
+                }
             }
             return article;
         }
@@ -112,6 +116,11 @@ namespace MyBlog.Controllers
         private async Task<bool> getCanEdit(Article article)
         {
             return await _authorizationService.AuthorizeAsync(User, article, new CanEditArticleRequirement());
+        }
+
+        private async Task<bool> getCanDeleteComment(Comment comment)
+        {
+            return await _authorizationService.AuthorizeAsync(User, comment, new CanDeleteCommentRequirement());
         }
 
         // GET: Articles/Create
@@ -256,6 +265,7 @@ namespace MyBlog.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddComment(Comment comment)
         {
@@ -266,6 +276,24 @@ namespace MyBlog.Controllers
                 _context.Add(comment);
                 await _context.SaveChangesAsync();
             }
+            return RedirectToAction("Details", new { id = comment.ArticleID });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteComment(int id)
+        {
+            var comment = await _context.Comments.Include(c => c.Article).SingleOrDefaultAsync(c => c.ID == id);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+            if (!await getCanDeleteComment(comment))
+            {
+                return Unauthorized();
+            }
+            _context.Remove(comment);
+            _context.SaveChanges();
             return RedirectToAction("Details", new { id = comment.ArticleID });
         }
 

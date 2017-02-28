@@ -31,5 +31,8 @@ namespace MyBlog.Models
         public ApplicationUser Author { get; set; }
 
         public DateTime CreatedTime { get; set; }
+
+        [NotMapped]
+        public bool CanDelete { get; set; }
     }
 }
