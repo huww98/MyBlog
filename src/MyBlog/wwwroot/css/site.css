@@ -20,16 +20,9 @@ select {
     max-width: 400px;
 }
 
-img {
+.img-select-item img,
+.article-content img {
     max-width: 100%;
-}
-
-#editor {
-    max-height: 300px;
-    height: 300px;
-    background-color: white;
-    overflow-y: scroll;
-    outline: none;
 }
 
 .indent {

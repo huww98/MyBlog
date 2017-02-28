@@ -1,26 +1,19 @@
-﻿@{await Html.RenderPartialAsync("_CategorySelectorScriptPartial");}
+﻿@{
+    await Html.RenderPartialAsync("_CategorySelectorScriptPartial");
+    await Html.RenderPartialAsync("_MarkdownEditorScriptPartial");
+}
 
 <environment names="Development">
-    <script src="~/lib/remarkable/dist/remarkable.js"></script>
     <script src="~/lib/bootstrap-fileinput/js/fileinput.js"></script>
     <script src="~/lib/masonry/dist/masonry.pkgd.js"></script>
 </environment>
 <environment names="Staging,Production">
-    <script src="~/lib/remarkable/dist/remarkable.min.js"></script>
     <script src="~/lib/bootstrap-fileinput/js/fileinput.min.js"></script>
     <script src="~/lib/masonry/dist/masonry.pkgd.min.js"></script>
 </environment>
 <script src="~/lib/bootstrap-fileinput/themes/fa/theme.js"></script>
 <script src="~/lib/bootstrap-fileinput/js/locales/zh.js"></script>
 <script type='text/javascript'>
-    mdHtml = new window.Remarkable('commonmark');
-    function updatePreview() {
-        var source = $("#Content").val();
-        $('#markdown-html').html(mdHtml.render(source));
-    };
-    updatePreview();
-    $("#Content").on("input", updatePreview);
-
     $("#imageFile").fileinput({
         language: 'zh',
         theme: 'fa',
@@ -43,7 +36,7 @@
             content.value += (' "' + title + '"');
         }
         content.value += (")" + tmpStr.substring(endPos, tmpStr.length));
-        updatePreview();
+        updatePreview($(".markdown-editor"));
     }
 
     $('#imageFile').on('fileuploaded', function (event, data, previewId, index) {

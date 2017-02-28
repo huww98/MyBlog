@@ -1,5 +1,5 @@
 ﻿@model Article
-@inject Ganss.XSS.IHtmlSanitizer sanitizer
+@inject IMarkdownRenderer renderer
 
 @{
     ViewData["Title"] = Model.Title;
@@ -8,12 +8,14 @@
 <h1>@Model.Title</h1>
 
 <div>
-    @Html.DisplayNameFor(model => model.CreatedTime)：@Html.DisplayFor(model => model.CreatedTime)
+    @Html.DisplayNameFor(model => model.CreatedTime)：@Html.DisplayFor(model => model.CreatedTime) <br class="visible-xs" />
     @Html.DisplayNameFor(model => model.EditedTime)：@Html.DisplayFor(model => model.EditedTime) <br />
     作者：@await Html.PartialAsync("_UserDisplayNamePartial", Model.Author) <br />
     分类：@string.Join(", ", Model.Categories.Select(ac => ac.Category.Name))
     <hr />
-            @Html.Raw(sanitizer.Sanitize(Model.HtmlContent))
+    <div class="article-content">
+        @Html.Raw(renderer.RenderHtml(Model.Content))
+    </div>
 </div>
 <hr />
 <div>
@@ -26,3 +28,53 @@
     }
     <a asp-action="Index">返回文章列表</a>
 </div>
+<hr />
+<h3>评论</h3>
+<div>
+    @foreach (var c in Model.Comments.Where(c => c.ParentCommentID == null))
+    {
+        @await Html.PartialAsync("_CommentPartial", c);
+    }
+</div>
+<h3>发表评论 <small>使用Markdown编辑</small></h3>
+<form asp-action="AddComment" method="post">
+    <input type="hidden" name="ArticleID" value="@Model.ID" />
+    <div id="replyPrompt" style="display:none">
+        正在回复：<span class="reply-user"></span>
+        <button type="button" onclick="cancelReply();" class="btn btn-default">取消</button>
+    </div>
+    <div class="form-group row markdown-editor">
+        <div class="col-sm-6">
+            <textarea id="commentEditor" name="content" class="form-control markdown-edit" style="height:200px"></textarea>
+        </div>
+        <div class="col-sm-6">
+            <div style="height:200px" class="markdown-preview article-content"></div>
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary btn-lg">发布</button>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_MarkdownEditorScriptPartial");}
+    <script>
+        function cancelReply() {
+            var prompt = $("#replyPrompt");
+            prompt.find("input").remove();
+            prompt.css("display", "none");
+        }
+        $(".btn-reply").on("click", function () {
+            cancelReply();
+            var btn = $(this);
+            var hiddenInput = document.createElement("input");
+            hiddenInput.name = "parentCommentID";
+            hiddenInput.type = "hidden"
+            hiddenInput.value = btn.data("replyId");
+            var prompt = $("#replyPrompt");
+            prompt.find(".reply-user").html(btn.data("replyUser"))
+            prompt.append(hiddenInput);
+            prompt.css("display", "");
+        })
+    </script>
+}

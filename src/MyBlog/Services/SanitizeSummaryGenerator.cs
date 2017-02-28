@@ -12,7 +12,8 @@ namespace MyBlog.Services
     //This class is NOT thread safe!
     public class SanitizeSummaryGenerator : ISummaryGenerator
     {
-        HtmlSanitizer sanitizer;
+        private HtmlSanitizer sanitizer;
+
         public SanitizeSummaryGenerator()
         {
             sanitizer = new HtmlSanitizer(
@@ -23,10 +24,11 @@ namespace MyBlog.Services
             sanitizer.PostProcessNode += calcLength;
         }
 
-        int summaryLength;
-        int currentLength = 0;
-        bool summaryLengthReached = false;
-        bool summaryLengthExeceeded = false;
+        private int summaryLength;
+        private int currentLength = 0;
+        private bool summaryLengthReached = false;
+        private bool summaryLengthExeceeded = false;
+
         private void calcLength(object sender, PostProcessNodeEventArgs e)
         {
             if (summaryLengthReached)
@@ -72,13 +74,14 @@ namespace MyBlog.Services
             }
         }
 
-        public string GenerateSummary(string htmlContent, int summaryLength)
+        public string GenerateSummary(string content, int summaryLength)
         {
             this.summaryLength = summaryLength;
             currentLength = 0;
             summaryLengthReached = summaryLengthExeceeded = false;
+            var html = Markdown.ToHtml(content);
 
-            string summary = sanitizer.Sanitize(htmlContent);
+            string summary = sanitizer.Sanitize(html);
             if (summaryLengthExeceeded)
             {
                 summary += "…";

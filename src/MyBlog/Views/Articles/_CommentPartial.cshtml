@@ -1,0 +1,19 @@
+﻿@model Comment
+@inject IMarkdownRenderer renderer
+
+<div class="media">
+    <div class="media-left">
+        <img class="media-object" src="~/images/HeadPortraitPlaceHolder.svg" alt="暂无头像" style="width:64px;height:64px" />
+    </div>
+    <div class="media-body">
+        <h4 class="media-heading">@Html.Partial("_UserDisplayNamePartial", Model.Author)</h4>
+        @Html.Raw(renderer.RenderHtml(Model.Content))
+        <p>
+            <a href="#commentEditor" class="btn-bracketed btn-reply" data-reply-id="@Model.ID" data-reply-user="@Model.Author.UserName">回复</a>
+        </p>
+        @foreach (var c in Model.ChildrenComments)
+        {
+            @await Html.PartialAsync("_CommentPartial", c);
+        }
+    </div>
+</div>

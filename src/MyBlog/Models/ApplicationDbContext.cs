@@ -26,6 +26,11 @@ namespace MyBlog.Models
                 .WithMany(c => c.ChildCategories)
                 .HasForeignKey(c => c.ParentCategoryID)
                 .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Comment>()
+                .HasOne(c => c.ParentComment)
+                .WithMany(c => c.ChildrenComments)
+                .HasForeignKey(c => c.ParentCommentID)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Image>()
                 .HasIndex(i => i.Url)
@@ -39,5 +44,6 @@ namespace MyBlog.Models
         public DbSet<Image> Images { get; set; }
         public DbSet<ArticleImage> ArticleImages { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Comment> Comments { get; set; }
     }
 }

@@ -79,12 +79,12 @@
                 <div class="btn-group">
                     <a class="btn btn-default" data-toggle="modal" data-target="#imageModal" title="插入图片"><i class="fa fa-picture-o"></i></a>
                 </div>
-                <div class="row">
+                <div class="row markdown-editor">
                     <div class="col-sm-6">
-                        <textarea asp-for="Content" class="form-control" style="height:500px"></textarea>
+                        <textarea asp-for="Content" class="form-control markdown-edit" style="height:500px"></textarea>
                     </div>
                     <div class="col-sm-6">
-                        <div id="markdown-html" style="height:500px" class="markdown-preview"></div>
+                        <div style="height:500px" class="markdown-preview article-content"></div>
                     </div>
                 </div>
                 <span class="text-danger" asp-validation-for="Content"></span>

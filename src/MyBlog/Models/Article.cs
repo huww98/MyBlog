@@ -45,29 +45,20 @@ namespace MyBlog.Models
         [Display(Name = "分类")]
         public ICollection<ArticleCategory> Categories { get; } = new List<ArticleCategory>();
 
+        public ICollection<Comment> Comments { get; } = new List<Comment>();
+
         [NotMapped]
         public bool CanEdit { get; set; }
 
-        [NotMapped]
-        public string HtmlContent
-        {
-            get
-            {
-                if (Content==null)
-                {
-                    return null;
-                }
-                return Markdig.Markdown.ToHtml(Content);
-            }
-        }
+        private IDictionary<string, Image> usedImages;//Key is the URL of the image.
+        private ICollection<string> imgSrcs;
 
-        IDictionary<string, Image> usedImages;//Key is the URL of the image.
-        ICollection<string> imgSrcs;
         public void FinishCreate(IQueryable<Image> imagesInDb, ICollection<int> newCategoryIDs, DateTime currentTime)
         {
             this.CreatedTime = currentTime;
             FinishEdit(imagesInDb, newCategoryIDs, currentTime);
         }
+
         public void FinishEdit(IQueryable<Image> imagesInDb, ICollection<int> newCategoryIDs, DateTime currentTime)
         {
             this.EditedTime = currentTime;
@@ -78,7 +69,7 @@ namespace MyBlog.Models
 
         private void updateImageArticleLinks(IQueryable<Image> imagesInDb)
         {
-            imgSrcs = ArticleContentHelper.GetImageSrcs(HtmlContent).Where(src => src.StartsWith(ImagePath.UrlPath)).ToList();
+            imgSrcs = ArticleContentHelper.GetImageSrcs(Content).Where(src => src.StartsWith(ImagePath.UrlPath)).ToList();
             usedImages = imagesInDb.Where(i => imgSrcs.Distinct().Contains(i.Url)).ToDictionary(s => s.Url);
             CollectionUpdateHelper.updateCollection(Images, ai => ai.Image.Url, usedImages, i => new ArticleImage { Image = i });
         }

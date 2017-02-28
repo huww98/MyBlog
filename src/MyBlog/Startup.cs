@@ -60,7 +60,7 @@ namespace MyBlog
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddSingleton<ICurrentTime, CurrentTimeService>();
             services.AddTransient<ISummaryGenerator, SanitizeSummaryGenerator>();
-            services.AddSingleton<IHtmlSanitizer>(new HtmlSanitizer());
+            services.AddTransient<IMarkdownRenderer, MarkdigSanitizedService>();
             services.AddScoped<IImageProcessor, ImageService>();
             services.AddSingleton(HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.BasicLatin, UnicodeRanges.CjkUnifiedIdeographs }));
 

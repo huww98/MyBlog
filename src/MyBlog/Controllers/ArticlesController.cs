@@ -95,11 +95,12 @@ namespace MyBlog.Controllers
 
         private async Task<Article> getArticleToShow(Func<IQueryable<Article>, IQueryable<Article>> additionQuery)
         {
-            var query = _context.Articles.AsNoTracking();
+            IQueryable<Article> query = _context.Articles;
             query = additionQuery(query);
             var article = await query
                .Include(a => a.Categories).ThenInclude(ac => ac.Category)
                .Include(a => a.Author)
+               .Include(a => a.Comments).ThenInclude(c => c.Author)
                .SingleOrDefaultAsync();
             if (article != null)
             {
@@ -252,6 +253,20 @@ namespace MyBlog.Controllers
             _context.Remove(article);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddComment(Comment comment)
+        {
+            if (ModelState.IsValid)
+            {
+                comment.CreatedTime = _currentTime.Time;
+                comment.AuthorID = getCurrentUserID();
+                _context.Add(comment);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("Details", new { id = comment.ArticleID });
         }
 
         private string getCurrentUserID()
