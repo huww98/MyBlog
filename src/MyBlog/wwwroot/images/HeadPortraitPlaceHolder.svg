@@ -1,18 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 64 64" style="enable-background:new 0 0 64 64;" xml:space="preserve">
-<style type="text/css">
-	.st0{clip-path:url(#XMLID_32_);fill:#EEEEEE;}
-	.st1{clip-path:url(#XMLID_32_);fill:#AAAAAA;}
-</style>
-<defs>
-	<rect id="XMLID_30_" width="64" height="64"/>
-</defs>
-<clipPath id="XMLID_32_">
-	<use xlink:href="#XMLID_30_"  style="overflow:visible;"/>
-</clipPath>
-<rect id="XMLID_27_" class="st0" width="64" height="64"/>
-<circle id="XMLID_28_" class="st1" cx="32" cy="24" r="15"/>
-<circle id="XMLID_29_" class="st1" cx="32" cy="64" r="25"/>
+<?xml version="1.0" encoding="utf-8" ?>
+<svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64;" xml:space="preserve">
+<style type="text/css">.st0{clip-path:url(#XMLID_32_);fill:#EEEEEE;} .st1{clip-path:url(#XMLID_32_);fill:#AAAAAA;}</style>
+<defs><rect id="XMLID_30_" width="64" height="64" /></defs>
+<clipPath id="XMLID_32_"><use xlink:href="#XMLID_30_" style="overflow:visible;" /></clipPath>
+<rect id="XMLID_27_" class="st0" width="64" height="64" />
+<circle id="XMLID_28_" class="st1" cx="32" cy="24" r="15" />
+<circle id="XMLID_29_" class="st1" cx="32" cy="64" r="25" />
 </svg>

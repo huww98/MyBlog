@@ -12,7 +12,7 @@ namespace MyBlog.Authorization
     {
         public Task HandleAsync(AuthorizationHandlerContext context)
         {
-            if (context.User != null && context.User.IsInRole(RoleInfo.AuthorRoleName))
+            if (context.User.IsInRole(RoleInfo.AuthorRoleName))
             {
                 var currentUserID = context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value;
                 if (context.Resource is Article && currentUserID == ((Article)context.Resource).AuthorID)
@@ -26,7 +26,7 @@ namespace MyBlog.Authorization
                 else if (context.Resource is Comment)
                 {
                     var comment = (Comment)context.Resource;
-                    if (comment.AuthorID == currentUserID || comment.Article.AuthorID == currentUserID)
+                    if (currentUserID == ((Comment)context.Resource).Article.AuthorID)
                     {
                         var requirement = context.PendingRequirements.SingleOrDefault(r => r is CanDeleteCommentRequirement);
                         if (requirement != null)
@@ -40,11 +40,23 @@ namespace MyBlog.Authorization
         }
     }
 
+    internal class IsCommentAuthorAuthorizationHandler : AuthorizationHandler<CanDeleteCommentRequirement, Comment>
+    {
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CanDeleteCommentRequirement requirement, Comment resource)
+        {
+            if (resource.AuthorID == context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value)
+            {
+                context.Succeed(requirement);
+            }
+            return Task.CompletedTask;
+        }
+    }
+
     internal class IsEditorAuthorizationHandler : IAuthorizationHandler
     {
         public Task HandleAsync(AuthorizationHandlerContext context)
         {
-            if (context.User != null && context.User.IsInRole(RoleInfo.EditorRoleName))
+            if (context.User.IsInRole(RoleInfo.EditorRoleName))
             {
                 foreach (var r in context.PendingRequirements.ToList())
                 {

@@ -77,6 +77,7 @@ namespace MyBlog
             });
 
             services.AddSingleton<IAuthorizationHandler, IsArticleAuthorAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, IsCommentAuthorAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, IsEditorAuthorizationHandler>();
         }
 

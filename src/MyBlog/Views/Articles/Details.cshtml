@@ -1,5 +1,6 @@
 ﻿@model Article
 @inject IMarkdownRenderer renderer
+@inject SignInManager<ApplicationUser> SignInManager
 
 @{
     ViewData["Title"] = Model.Title;
@@ -36,26 +37,39 @@
         @await Html.PartialAsync("_CommentPartial", c);
     }
 </div>
-<h3>发表评论 <small>使用Markdown编辑</small></h3>
-<form asp-action="AddComment" method="post">
-    <input type="hidden" name="ArticleID" value="@Model.ID" />
-    <div id="replyPrompt" style="display:none">
-        正在回复：<span class="reply-user"></span>
-        <button type="button" onclick="cancelReply();" class="btn btn-default">取消</button>
-    </div>
-    <div class="form-group row markdown-editor">
-        <div class="col-sm-6">
-            <textarea id="commentEditor" name="content" class="form-control markdown-edit" style="height:200px"></textarea>
-        </div>
-        <div class="col-sm-6">
-            <div style="height:200px" class="markdown-preview article-content"></div>
-        </div>
-    </div>
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary btn-lg">发布</button>
-    </div>
-</form>
 
+@if (SignInManager.IsSignedIn(User))
+{
+    <h3>发表评论 <small>使用Markdown编辑</small></h3>
+    <form asp-action="AddComment" method="post">
+        <input type="hidden" name="ArticleID" value="@Model.ID" />
+        <div id="replyPrompt" style="display:none">
+            正在回复：<span class="reply-user"></span>
+            <button type="button" onclick="cancelReply();" class="btn btn-default">取消</button>
+        </div>
+        <div class="form-group row markdown-editor">
+            <div class="col-sm-6">
+                <textarea id="commentEditor" name="content" class="form-control markdown-edit" style="height:200px"></textarea>
+            </div>
+            <div class="col-sm-6">
+                <div style="height:200px" class="markdown-preview article-content"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary btn-lg">发布</button>
+        </div>
+    </form>
+}
+else
+{
+    <p>
+        请
+        <a asp-controller="Account" asp-action="Login" asp-route-ReturnUrl="@(Context.Request.Path+"#commentEditor")">登录</a>
+        /
+        <a asp-controller="Account" asp-action="Register" asp-route-ReturnUrl="@(Context.Request.Path+"#commentEditor")">注册</a>
+        后发布评论
+    </p>
+}
 @section Scripts {
     @{await Html.RenderPartialAsync("_MarkdownEditorScriptPartial");}
     <script>

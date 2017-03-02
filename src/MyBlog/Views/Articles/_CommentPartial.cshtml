@@ -6,7 +6,7 @@
         <img class="media-object" src="~/images/HeadPortraitPlaceHolder.svg" alt="暂无头像" style="width:64px;height:64px" />
     </div>
     <div class="media-body">
-        <h4 class="media-heading">@Html.Partial("_UserDisplayNamePartial", Model.Author)</h4>
+        <h4 class="media-heading">@Html.DisplayFor(c => c.Author.UserName) <small style="display:inline-block">@Html.DisplayFor(model => model.CreatedTime)</small></h4>
         @Html.Raw(renderer.RenderHtml(Model.Content))
 
         <form asp-action="DeleteComment" asp-route-id="@Model.ID">
