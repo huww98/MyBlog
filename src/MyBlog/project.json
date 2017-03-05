@@ -6,7 +6,6 @@
     "Microsoft.AspNetCore.Diagnostics": "1.1.0",
     "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "1.1.0",
     "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.1.0",
-    "Microsoft.AspNetCore.Mvc": "1.1.0",
     "Microsoft.AspNetCore.Razor.Tools": {
       "version": "1.1.0-preview4-final",
       "type": "build"
@@ -39,10 +38,12 @@
     "Newtonsoft.Json": "9.0.1",
     "Pomelo.EntityFrameworkCore.MySql": "1.1.0",
     "HtmlSanitizer": "3.4.156",
-    "Markdig": "0.10.5"
+    "Markdig": "0.10.6",
+    "Microsoft.AspNetCore.Mvc": "1.1.1"
   },
 
   "tools": {
+    "BundlerMinifier.Core": "2.3.327",
     "Microsoft.AspNetCore.Razor.Tools": "1.1.0-preview4-final",
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.1.0-preview4-final",
     "Microsoft.EntityFrameworkCore.Tools.DotNet": "1.1.0-preview4-final",
@@ -52,8 +53,7 @@
       "imports": [
         "portable-net45+win8"
       ]
-    },
-    "BundlerMinifier.Core": "2.3.327"
+    }
   },
 
   "frameworks": {

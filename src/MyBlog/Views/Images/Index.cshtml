@@ -7,7 +7,7 @@
 <h2>图片列表</h2>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">上传新图片</a>
 </p>
 <div class="img-preview-grid" data-masonry='{ "itemSelector": ".img-preview", "columnWidth": 228 }'>
     @foreach (var img in Model)
@@ -69,7 +69,7 @@
                 <h4 class="modal-title" id="myModalLabel">图片查看</h4>
             </div>
             <div class="modal-body">
-                <img id="imgPreview" />
+                <img id="imgPreview" class="img-responsive" />
             </div>
         </div>
     </div>

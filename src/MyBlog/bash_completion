@@ -4,15 +4,11 @@
 #########################################################
 
 _publishToRemote_complete() {
-	local cur prev opts
+	local opts="--no-restart"
 	COMPREPLY=()
 
-	cur="${COMP_WORDS[COMP_CWORD]}"
-	prev="${COMP_WORDS[COMP_CWORD-1]}"
-	opts="--no-restart"
-
-	if [[ ${cur} == -* ]] ; then
-		COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+	if [[ $2 == -* ]] ; then
+		COMPREPLY=( $(compgen -W "${opts}" -- $2) )
 		return 0
 	fi
 }

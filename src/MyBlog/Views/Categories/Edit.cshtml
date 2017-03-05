@@ -1,14 +1,14 @@
-@model MyBlog.Models.Category
+﻿@model Category
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "编辑分类";
 }
 
-<h2>Edit</h2>
+<h2>编辑</h2>
 
 <form asp-action="Edit">
     <div class="form-horizontal">
-        <h4>Category</h4>
+        <h4>分类</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="ID" />
@@ -18,7 +18,7 @@
                 @(await Component.InvokeAsync<CategorySelectorViewComponent>(new
             {
                 Name = "ParentCategoryID",
-                PreselectedIDs = Model.ParentCategoryID==null ? null : new int[] { Model.ParentCategoryID.Value },
+                PreselectedIDs = Model.ParentCategoryID == null ? null : new int[] { Model.ParentCategoryID.Value },
                 ExceptionID = Model.ID
             }))
             </div>
@@ -32,14 +32,14 @@
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="保存" class="btn btn-default" />
             </div>
         </div>
     </div>
 </form>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">返回分类列表</a>
 </div>
 
 @section Scripts {

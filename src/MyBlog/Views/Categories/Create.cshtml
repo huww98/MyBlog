@@ -1,20 +1,20 @@
-@model MyBlog.Models.Category
+﻿@model MyBlog.Models.Category
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "新建分类";
 }
 
-<h2>Create</h2>
+<h2>新建</h2>
 
 <form asp-action="Create">
     <div class="form-horizontal">
-        <h4>Category</h4>
+        <h4>分类</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group">
             <label asp-for="ParentCategory" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                @(await Component.InvokeAsync<CategorySelectorViewComponent>(new { Name= "ParentCategoryID" }))
+                @(await Component.InvokeAsync<CategorySelectorViewComponent>(new { Name = "ParentCategoryID" }))
             </div>
         </div>
         <div class="form-group">
@@ -26,14 +26,14 @@
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="新建" class="btn btn-default" />
             </div>
         </div>
     </div>
 </form>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">返回分类列表</a>
 </div>
 
 @section Scripts {
