@@ -12,6 +12,10 @@ namespace MyBlog.Helpers
     {
         public static ICollection<string> GetImageSrcs(string content)
         {
+            if (string.IsNullOrEmpty(content))
+            {
+                return new List<string>();
+            }
             var parser = new HtmlParser();
             var document = parser.Parse(Markdig.Markdown.ToHtml(content));
             return document.Images.Select(img => img.GetAttribute("src")).ToList();

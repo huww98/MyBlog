@@ -1,20 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4EFB9554-E95A-4790-9FB8-931F353D6CC0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5D51F8B8-CB5E-4B3D-B2D9-807AA90C61F2}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MyBlog", "src\MyBlog\MyBlog.xproj", "{63AB199F-B84E-4D40-8B89-EAD46BD56323}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{07B16E78-63F8-4F4B-B38C-519E32182E23}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MyBlog.Tests", "test\MyBlog.Tests\MyBlog.Tests.xproj", "{3B40EABB-CD68-43F5-ADB6-5271B228B857}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyBlog", "src\MyBlog\MyBlog.csproj", "{63AB199F-B84E-4D40-8B89-EAD46BD56323}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyBlog.Tests", "test\MyBlog.Tests\MyBlog.Tests.csproj", "{3B40EABB-CD68-43F5-ADB6-5271B228B857}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

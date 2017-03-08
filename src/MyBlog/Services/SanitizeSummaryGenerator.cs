@@ -79,7 +79,7 @@ namespace MyBlog.Services
             this.summaryLength = summaryLength;
             currentLength = 0;
             summaryLengthReached = summaryLengthExeceeded = false;
-            var html = Markdown.ToHtml(content);
+            var html = Markdown.ToHtml(content).Trim();
 
             string summary = sanitizer.Sanitize(html);
             if (summaryLengthExeceeded)
