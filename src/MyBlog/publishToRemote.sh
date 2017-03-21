@@ -14,8 +14,6 @@ while :; do
 done
 
 localDir="bin/publishToRemote/"
-dotnet publish --configuration Release --output "$localDir" || { echo Abort.; exit 1; }
-
 remoteTarget="/var/aspnetcore/myblog/"
 server="ubuntu@huww98.cn"
 echo Starting publish to $server:$remoteTarget
