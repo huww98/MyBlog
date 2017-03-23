@@ -52,7 +52,7 @@ namespace MyBlog.Controllers
 
             foreach (var a in list)
             {
-                a.CanEdit = await getCanEdit(a);
+                a.CanEdit = await GetCanEdit(a);
             }
             ViewData["CanCreate"] = await _authorizationService.AuthorizeAsync(User, "CanCreateArticle");
             ViewData["ViewMode"] = viewMode;
@@ -68,7 +68,7 @@ namespace MyBlog.Controllers
                 return NotFound();
             }
 
-            var article = await getArticleToShow(q => q.Where(a => a.ID == id));
+            var article = await GetArticleToShow(q => q.Where(a => a.ID == id));
             if (article == null)
             {
                 return NotFound();
@@ -84,7 +84,7 @@ namespace MyBlog.Controllers
                 return NotFound();
             }
 
-            var article = await getArticleToShow(q => q.Where(a => a.Slug == slug));
+            var article = await GetArticleToShow(q => q.Where(a => a.Slug == slug));
             if (article == null)
             {
                 return NotFound();
@@ -93,7 +93,7 @@ namespace MyBlog.Controllers
             return View("Details", article);
         }
 
-        private async Task<Article> getArticleToShow(Func<IQueryable<Article>, IQueryable<Article>> additionQuery)
+        private async Task<Article> GetArticleToShow(Func<IQueryable<Article>, IQueryable<Article>> additionQuery)
         {
             IQueryable<Article> query = _context.Articles;
             query = additionQuery(query);
@@ -104,21 +104,21 @@ namespace MyBlog.Controllers
                .SingleOrDefaultAsync();
             if (article != null)
             {
-                article.CanEdit = await getCanEdit(article);
+                article.CanEdit = await GetCanEdit(article);
                 foreach (var c in article.Comments)
                 {
-                    c.CanDelete = await getCanDeleteComment(c);
+                    c.CanDelete = await GetCanDeleteComment(c);
                 }
             }
             return article;
         }
 
-        private async Task<bool> getCanEdit(Article article)
+        private async Task<bool> GetCanEdit(Article article)
         {
             return await _authorizationService.AuthorizeAsync(User, article, new CanEditArticleRequirement());
         }
 
-        private async Task<bool> getCanDeleteComment(Comment comment)
+        private async Task<bool> GetCanDeleteComment(Comment comment)
         {
             return await _authorizationService.AuthorizeAsync(User, comment, new CanDeleteCommentRequirement());
         }
@@ -135,17 +135,34 @@ namespace MyBlog.Controllers
         [HttpPost]
         [Authorize(Roles = RoleInfo.AuthorRoleName)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Content,Title,Slug")] Article article, ICollection<int> categoryIDs)
+        public async Task<IActionResult> Create(ICollection<int> categoryIDs, int draftId)
         {
-            article.AuthorID = getCurrentUserID();
-            article.FinishCreate(_context.Images, categoryIDs, _currentTime.Time);
-            if (TryValidateModel(article))
+            Article article;
+            if (draftId != 0)
             {
-                _context.Add(article);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                article = await _context.Articles.Where(a => a.ID == draftId).SingleOrDefaultAsync();
             }
-            return View(article);
+            else
+            {
+                article = new Article
+                {
+                    AuthorID = getCurrentUserID(),
+                    CreatedTime=_currentTime.Time
+                };
+                _context.Add(article);
+            }
+            article.Status = ArticleStatus.Published;
+            var result = await UpdateArticle(article, categoryIDs);
+
+            switch (result)
+            {
+                case OkResult r:
+                    return RedirectToAction("Detail", new { id = article.ID });
+                case BadRequestResult r:
+                    return View(article);
+                default:
+                    return result;
+            }
         }
 
         // GET: Articles/Edit/5
@@ -156,49 +173,124 @@ namespace MyBlog.Controllers
                 return NotFound();
             }
 
-            var article = await _context.Articles.AsNoTracking().Include(a => a.Categories).SingleOrDefaultAsync(m => m.ID == id);
+            var article = await _context.Articles.AsNoTracking()
+                .Include(a => a.Categories)
+                .Include(a => a.DraftArticle).ThenInclude(a => a.Categories)
+                .SingleOrDefaultAsync(m => m.ID == id);
             if (article == null)
             {
                 return NotFound();
             }
-            if (!await getCanEdit(article))
+            if (!await GetCanEdit(article))
             {
                 return Unauthorized();
+            }
+            if (article.DraftArticle != null)
+            {
+                article = article.DraftArticle;
             }
             ViewData["CategoryIDs"] = article.Categories.Select(c => c.CategoryID).ToList();
             ViewData["Images"] = _context.Images.ToList();
             return View(article);
         }
 
+        private async Task<IActionResult> UpdateArticle(Article articleToUpdate, ICollection<int> categoryIDs)
+        {
+            if (articleToUpdate == null)
+            {
+                return NotFound();
+            }
+            if (!await GetCanEdit(articleToUpdate))
+            {
+                return Unauthorized();
+            }
+
+            if (await TryUpdateModelAsync(articleToUpdate, string.Empty, a => a.Title, a => a.Slug, a => a.Content))
+            {
+                articleToUpdate.FinishEdit(_context.Images, categoryIDs, _currentTime.Time);
+                if (TryValidateModel(articleToUpdate))
+                {
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+            }
+            return BadRequest(ModelState.Select(s => s.Value));
+        }
+
         // POST: Articles/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ICollection<int> categoryIDs)
+        public async Task<IActionResult> Edit(int id, ICollection<int> categoryIDs, ArticleStatus status)
         {
             var article = await _context.Articles
-                .Include(a => a.Categories)
-                .Include(a => a.Images)
-                    .ThenInclude(ai => ai.Image)
-                .SingleOrDefaultAsync(a => a.ID == id);
+                    .Include(a => a.DraftArticle)
+                    .Include(a => a.Categories)
+                    .Include(a => a.Images)
+                        .ThenInclude(ai => ai.Image)
+                    .SingleOrDefaultAsync(a => a.ID == id);
 
-            if (await TryUpdateModelAsync(article, string.Empty, a => a.ID, a => a.Title, a => a.Slug, a => a.Content))
+            if (article?.DraftArticle != null)
             {
-                if (id != article.ID)
+                _context.Remove(article);
+            }
+            var result = await UpdateArticle(article, categoryIDs);
+
+            switch (result)
+            {
+                case OkResult r:
+                    return RedirectToAction("Detail", new { id = article.ID });
+                case BadRequestResult r:
+                    return View(article);
+                default:
+                    return result;
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveDraft(int draftID, ICollection<int> categoryIDs)
+        {
+            var article = await _context.Articles
+                   .Include(a => a.Categories)
+                   .Include(a => a.Images)
+                       .ThenInclude(ai => ai.Image)
+                   .SingleOrDefaultAsync(a => a.ID == draftID);
+
+            var result = await UpdateArticle(article, categoryIDs);
+            switch (result)
+            {
+                case OkResult r:
+                    return Json(new { IsSuccess = true });
+                default:
+                    return result;
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateDraft(int id)
+        {
+            Article draft;
+            if (id == 0)
+            {
+                draft = new Article { Status = ArticleStatus.Draft, AuthorID = getCurrentUserID() };
+                _context.Add(draft);
+            }
+            else
+            {
+                var rawArticle = await _context.Articles.Where(a => a.ID == id).FirstOrDefaultAsync();
+                if (rawArticle == null)
                 {
                     return NotFound();
                 }
-                if (!await getCanEdit(article))
+                if (rawArticle.Status == ArticleStatus.Draft)
                 {
-                    return Unauthorized();
+                    return BadRequest("不能创建草稿的草稿。");
                 }
-                article.FinishEdit(_context.Images, categoryIDs, _currentTime.Time);
-                if (TryValidateModel(article))
-                {
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction("Index");
-                }
+                draft = rawArticle.CreateDraft();
             }
-            return View(article);
+            await _context.SaveChangesAsync();
+            return Json(new { DraftId = draft.ID });
         }
 
         // GET: Articles/Delete/5
@@ -217,7 +309,7 @@ namespace MyBlog.Controllers
             {
                 return NotFound();
             }
-            if (!await getCanEdit(article))
+            if (!await GetCanEdit(article))
             {
                 return Unauthorized();
             }
@@ -243,7 +335,7 @@ namespace MyBlog.Controllers
             {
                 return NotFound();
             }
-            if (!await getCanEdit(article))
+            if (!await GetCanEdit(article))
             {
                 return Unauthorized();
             }
@@ -288,7 +380,7 @@ namespace MyBlog.Controllers
             {
                 return NotFound();
             }
-            if (!await getCanDeleteComment(comment))
+            if (!await GetCanDeleteComment(comment))
             {
                 return Unauthorized();
             }

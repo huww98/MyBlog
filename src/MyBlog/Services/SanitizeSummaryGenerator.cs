@@ -18,8 +18,10 @@ namespace MyBlog.Services
         {
             sanitizer = new HtmlSanitizer(
                 new[] { "b", "strong", "i", "em", "h1", "h2", "h3", "h4", "h5", "h6" },
-                new string[0], new string[0], new string[0], new string[0]);
-            sanitizer.KeepChildNodes = true;
+                new string[0], new string[0], new string[0], new string[0])
+            {
+                KeepChildNodes = true
+            };
             sanitizer.PostProcessNode += replaceHeading;
             sanitizer.PostProcessNode += calcLength;
         }
@@ -41,8 +43,7 @@ namespace MyBlog.Services
                 return;
             }
 
-            var textNode = e.Node as IText;
-            if (textNode != null)
+            if (e.Node is IText textNode)
             {
                 int nextLength = currentLength + textNode.Text.Length;
                 if (nextLength < summaryLength)
@@ -64,8 +65,7 @@ namespace MyBlog.Services
 
         private void replaceHeading(object sender, PostProcessNodeEventArgs e)
         {
-            var headingElement = e.Node as IHtmlHeadingElement;
-            if (headingElement != null)
+            if (e.Node is IHtmlHeadingElement headingElement)
             {
                 var newElement = e.Document.CreateElement("strong");
                 newElement.InnerHtml = headingElement.InnerHtml;
