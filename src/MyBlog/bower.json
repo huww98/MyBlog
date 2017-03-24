@@ -2,11 +2,11 @@
   "name": "asp.net",
   "private": true,
   "dependencies": {
-    "bootstrap": "3.3.6",
+    "bootstrap": "3.3.7",
     "jquery": "2.1.4",
     "jquery-validation-unobtrusive": "3.2.6",
     "jquery-validation": "1.16.0",
-    "bootstrap-fileinput": "4.3.6",
+    "bootstrap-fileinput": "4.3.8",
     "bootstrap-treeview": "1.2.0",
     "fontawesome": "4.7.0",
     "remarkable": "1.7.1",

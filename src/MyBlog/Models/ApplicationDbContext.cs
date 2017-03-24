@@ -41,8 +41,7 @@ namespace MyBlog.Models
                 .HasIndex(i => i.Url)
                 .IsUnique();
             builder.Entity<Article>()
-                .HasIndex(a => a.Slug)
-                .IsUnique();
+                .HasIndex(a => a.Slug);
         }
 
         public DbSet<Article> Articles { get; set; }

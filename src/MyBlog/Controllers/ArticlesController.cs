@@ -42,7 +42,7 @@ namespace MyBlog.Controllers
         {
             IQueryable<Article> query = _context.Articles
                 .AsNoTracking()
-                .Include(a => a.Author);
+                .Include(a => a.Author).Where(a=>a.Status==ArticleStatus.Published);
             if (ModelState.IsValid)
             {
                 query = query.ApplyArticleFilter(filter);
@@ -147,17 +147,17 @@ namespace MyBlog.Controllers
                 article = new Article
                 {
                     AuthorID = getCurrentUserID(),
-                    CreatedTime=_currentTime.Time
                 };
                 _context.Add(article);
             }
+            article.CreatedTime = _currentTime.Time;
             article.Status = ArticleStatus.Published;
             var result = await UpdateArticle(article, categoryIDs);
 
             switch (result)
             {
                 case OkResult r:
-                    return RedirectToAction("Detail", new { id = article.ID });
+                    return RedirectToAction("Details", new { id = article.ID });
                 case BadRequestResult r:
                     return View(article);
                 default:
@@ -231,14 +231,14 @@ namespace MyBlog.Controllers
 
             if (article?.DraftArticle != null)
             {
-                _context.Remove(article);
+                _context.Remove(article.DraftArticle);
             }
             var result = await UpdateArticle(article, categoryIDs);
 
             switch (result)
             {
                 case OkResult r:
-                    return RedirectToAction("Detail", new { id = article.ID });
+                    return RedirectToAction("Details", new { id = article.ID });
                 case BadRequestResult r:
                     return View(article);
                 default:
@@ -257,18 +257,12 @@ namespace MyBlog.Controllers
                    .SingleOrDefaultAsync(a => a.ID == draftID);
 
             var result = await UpdateArticle(article, categoryIDs);
-            switch (result)
-            {
-                case OkResult r:
-                    return Json(new { IsSuccess = true });
-                default:
-                    return result;
-            }
+            return generateJsonResult(article, result);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateDraft(int id)
+        public async Task<IActionResult> CreateDraft(int id, ICollection<int> categoryIDs)
         {
             Article draft;
             if (id == 0)
@@ -278,7 +272,13 @@ namespace MyBlog.Controllers
             }
             else
             {
-                var rawArticle = await _context.Articles.Where(a => a.ID == id).FirstOrDefaultAsync();
+                var rawArticle = await _context.Articles
+                    .Include(a => a.DraftArticle)
+                        .ThenInclude(a => a.Categories)
+                    .Include(a => a.DraftArticle)
+                        .ThenInclude(a => a.Images)
+                            .ThenInclude(ai => ai.Image)
+                    .Where(a => a.ID == id).FirstOrDefaultAsync();
                 if (rawArticle == null)
                 {
                     return NotFound();
@@ -287,10 +287,22 @@ namespace MyBlog.Controllers
                 {
                     return BadRequest("不能创建草稿的草稿。");
                 }
-                draft = rawArticle.CreateDraft();
+               
+                draft = rawArticle.DraftArticle ?? rawArticle.CreateDraft();
             }
-            await _context.SaveChangesAsync();
-            return Json(new { DraftId = draft.ID });
+            var result = await UpdateArticle(draft, categoryIDs);
+            return generateJsonResult(draft, result);
+        }
+
+        private IActionResult generateJsonResult(Article draft, IActionResult result)
+        {
+            switch (result)
+            {
+                case OkResult r:
+                    return Json(new { IsSuccess = true, DraftId = draft.ID, Message = $"于{_currentTime.Time}保存草稿成功" });
+                default:
+                    return result;
+            }
         }
 
         // GET: Articles/Delete/5
