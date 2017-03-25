@@ -37,12 +37,12 @@ namespace MyBlog.Controllers
             _currentTime = currentTime;
         }
 
-        // GET: Articles
-        public async Task<IActionResult> Index(ArticleFilterViewModel filter, ArticleViewMode viewMode = ArticleViewMode.Summary)
+        public async Task<IActionResult> GetArticleListResult(
+            IQueryable<Article> query,
+            ArticleFilterViewModel filter,
+            ArticleViewMode viewMode,
+            bool showOnlyCanEdit = false)
         {
-            IQueryable<Article> query = _context.Articles
-                .AsNoTracking()
-                .Include(a => a.Author).Where(a=>a.Status==ArticleStatus.Published);
             if (ModelState.IsValid)
             {
                 query = query.ApplyArticleFilter(filter);
@@ -54,10 +54,31 @@ namespace MyBlog.Controllers
             {
                 a.CanEdit = await GetCanEdit(a);
             }
+            if (showOnlyCanEdit)
+            {
+                list = list.Where(a => a.CanEdit).ToList();
+            }
             ViewData["CanCreate"] = await _authorizationService.AuthorizeAsync(User, "CanCreateArticle");
             ViewData["ViewMode"] = viewMode;
             ViewData["Articles"] = list;
-            return View(filter);
+            return View("Index",filter);
+        }
+
+        // GET: Articles
+        public async Task<IActionResult> Index(ArticleFilterViewModel filter, ArticleViewMode viewMode = ArticleViewMode.Summary)
+        {
+            IQueryable<Article> query = _context.Articles
+                .AsNoTracking()
+                .Include(a => a.Author).Where(a => a.Status == ArticleStatus.Published);
+            return await GetArticleListResult(query, filter, viewMode);
+        }
+
+        public async Task<IActionResult> Drafts(ArticleFilterViewModel filter, ArticleViewMode viewMode = ArticleViewMode.Summary)
+        {
+            IQueryable<Article> query = _context.Articles
+                .AsNoTracking()
+                .Include(a => a.Author).Where(a => a.Status == ArticleStatus.Draft);
+            return await GetArticleListResult(query, filter, viewMode, true);
         }
 
         // GET: Articles/Details/5
@@ -105,6 +126,10 @@ namespace MyBlog.Controllers
             if (article != null)
             {
                 article.CanEdit = await GetCanEdit(article);
+                if (article.Status==ArticleStatus.Draft && !article.CanEdit)
+                {
+                    return null;
+                }
                 foreach (var c in article.Comments)
                 {
                     c.CanDelete = await GetCanDeleteComment(c);
@@ -287,9 +312,10 @@ namespace MyBlog.Controllers
                 {
                     return BadRequest("不能创建草稿的草稿。");
                 }
-               
+
                 draft = rawArticle.DraftArticle ?? rawArticle.CreateDraft();
             }
+            draft.CreatedTime = _currentTime.Time;
             var result = await UpdateArticle(draft, categoryIDs);
             return generateJsonResult(draft, result);
         }

@@ -22,6 +22,7 @@ namespace MyBlog.Tests
     public class ArticlesControllerTests
     {
         Mock<ICurrentTime> currentTimeMock;
+        Mock<IAuthorizationService> authMock;
         DateTime mockedCurrentTime = new DateTime(3079, 3, 9, 8, 7, 34, 687);
 
         ArticlesController buildController(Action<IServiceCollection> buildServices = null)
@@ -41,10 +42,11 @@ namespace MyBlog.Tests
 
             if (!services.Any(service => service.ServiceType == typeof(IAuthorizationService)))
             {
-                var authMock = new Mock<IAuthorizationService>();
-                authMock.Setup(i => i.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.Is<IEnumerable<IAuthorizationRequirement>>(arg => arg.Single() is CanEditArticleRequirement)))
+                authMock = new Mock<IAuthorizationService>();
+                authMock.Setup(i => i.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.Is<Article>(a => a.Title == "Test Article"), It.Is<IEnumerable<IAuthorizationRequirement>>(arg => arg.Single() is CanEditArticleRequirement)))
                     .Returns(Task.FromResult(true));
-
+                authMock.Setup(i => i.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.Is<Article>(a => a.Title == "测试文章"), It.Is<IEnumerable<IAuthorizationRequirement>>(arg => arg.Single() is CanEditArticleRequirement)))
+                    .Returns(Task.FromResult(false));
                 authMock.Setup(i => i.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), "CanCreateArticle"))
                     .Returns(Task.FromResult(true));
                 services.AddSingleton(authMock.Object);
@@ -66,6 +68,7 @@ namespace MyBlog.Tests
                 CreatedTime = new DateTime(2017, 1, 10, 16, 13, 21),
                 EditedTime = new DateTime(2017, 1, 10, 16, 13, 21),
                 Content = "<h4>Test Article</h4>\n<p>This is the first test article. This is within a 'p' tag.</p>",
+                Status = ArticleStatus.Published,
             },
             new Article
             {
@@ -73,25 +76,32 @@ namespace MyBlog.Tests
                 CreatedTime = new DateTime(2017, 1, 11, 19, 24, 38),
                 EditedTime = new DateTime(2017, 1, 12, 9, 14, 26),
                 Content = "<h3>测试的文章标题-H3</h3>\n<p>这是一篇中文测试文章。</p>\n<p>这篇文章在创建的第二天被修改过。</p>",
+                Status = ArticleStatus.Published,
+            },
+            new Article
+            {
+                Title = "Test Article",
+                CreatedTime = new DateTime(2017, 1, 15, 16, 13, 29),
+                EditedTime = new DateTime(2017, 1, 15, 16, 13, 29),
+                Content = "<h4>Test Article</h4>\n<p>Modified Draft</p>",
+                Status = ArticleStatus.Draft,
+            },
+            new Article
+            {
+                Title = "测试文章",
+                CreatedTime = new DateTime(2017, 1, 17, 19, 24, 38),
+                EditedTime = new DateTime(2017, 1, 23, 9, 14, 26),
+                Content = "<h3>测试的文章标题-H3</h3>\n<p>这是一篇中文测试文章。</p>\n<p>这是草稿。</p>",
+                Status = ArticleStatus.Draft,
             }
             );
             dbContext.SaveChanges();
         }
 
         [Fact]
-        public async Task IndexReturnsAllArticles_PreservesParameters_CheckPermitions()
+        public async Task Index_WithoutDraft_PreservesParameters_CheckPermitions()
         {
-            var authMock = new Mock<IAuthorizationService>();
-            authMock.Setup(i => i.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.Is<Article>(a => a.Title == "Test Article"), It.Is<IEnumerable<IAuthorizationRequirement>>(arg => arg.Single() is CanEditArticleRequirement)))
-                .Returns(Task.FromResult(true));
-            authMock.Setup(i => i.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.Is<Article>(a => a.Title == "测试文章"), It.Is<IEnumerable<IAuthorizationRequirement>>(arg => arg.Single() is CanEditArticleRequirement)))
-                .Returns(Task.FromResult(false));
-            authMock.Setup(i => i.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), "CanCreateArticle"))
-                .Returns(Task.FromResult(true));
-            var controller = buildController(services =>
-            {
-                services.AddSingleton(authMock.Object);
-            });
+            var controller = buildController();
             var filter = new ArticleFilterViewModel();
             var result = await controller.Index(filter, ArticleViewMode.List);
 
@@ -135,6 +145,21 @@ namespace MyBlog.Tests
             var articles = Assert.IsAssignableFrom<IEnumerable<Article>>(viewResult.ViewData["Articles"]);
             Assert.Equal(1, articles.Count());
             Assert.Contains(articles, m => m.Title == "测试文章");
+        }
+
+        [Fact]
+        public async Task Draft_ReturnEditableDrafts()
+        {
+            var controller = buildController();
+            var filter = new ArticleFilterViewModel();
+            var result = await controller.Drafts(filter);
+
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var articles = Assert.IsAssignableFrom<IEnumerable<Article>>(viewResult.ViewData["Articles"]);
+
+            Assert.Equal(1, articles.Count());
+            Assert.True(articles.All(a => a.Status == ArticleStatus.Draft));
+            Assert.Contains(articles, m => m.Title == "Test Article");
         }
     }
 }
