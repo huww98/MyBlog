@@ -35,16 +35,6 @@ namespace MyBlog.Tests
         }
 
         [Fact]
-        public void FinishArticleCreate_UpdateCreatedTime()
-        {
-            var article = new Article();
-
-            article.FinishCreate((new Image[0]).AsQueryable(), new int[0], fakeCurrentTime);
-
-            Assert.Equal(fakeCurrentTime, article.CreatedTime);
-        }
-
-        [Fact]
         public void FinishArticleEdit_NonExistentImageCauseInvalid()
         {
             var article = new Article { Content = $"<img src='{ImagePath.UrlPath}/1.jpg'/><img src='{ImagePath.UrlPath}/2.jpg'/>" };

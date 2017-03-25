@@ -11,6 +11,11 @@ using System.Text.RegularExpressions;
 
 namespace MyBlog.Models
 {
+    public enum ArticleStatus
+    {
+        Published, Draft
+    }
+
     public class Article : IValidatableObject
     {
         public int ID { get; set; }
@@ -47,17 +52,19 @@ namespace MyBlog.Models
 
         public ICollection<Comment> Comments { get; } = new List<Comment>();
 
+        public ArticleStatus Status { get; set; }
+
+        [ForeignKey(nameof(ParentArticle))]
+        public int? ParentArticleID { get; set; }
+
+        public Article ParentArticle { get; set; }
+        public Article DraftArticle { get; set; }
+
         [NotMapped]
         public bool CanEdit { get; set; }
 
         private IDictionary<string, Image> usedImages;//Key is the URL of the image.
         private ICollection<string> imgSrcs;
-
-        public void FinishCreate(IQueryable<Image> imagesInDb, ICollection<int> newCategoryIDs, DateTime currentTime)
-        {
-            this.CreatedTime = currentTime;
-            FinishEdit(imagesInDb, newCategoryIDs, currentTime);
-        }
 
         public void FinishEdit(IQueryable<Image> imagesInDb, ICollection<int> newCategoryIDs, DateTime currentTime)
         {
@@ -95,6 +102,17 @@ namespace MyBlog.Models
                     }
                 }
             }
+        }
+
+        public Article CreateDraft()
+        {
+            this.DraftArticle = new Article
+            {
+                ParentArticle = this,
+                Status = ArticleStatus.Draft,
+                AuthorID = this.AuthorID
+            };
+            return this.DraftArticle;
         }
     }
 }

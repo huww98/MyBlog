@@ -13,6 +13,12 @@
 {
     <p>
         <a asp-action="Create">写新文章</a>
+        @{ string draftPath = Url.Action("Drafts"); }
+        @if (Context.Request.Path != draftPath)
+        {
+             @:|
+             <a asp-action="Draft">查看草稿</a>
+        }
     </p>
 }
 <div class="row">
@@ -73,6 +79,12 @@
                         <span>
                             <a asp-action="Details" asp-route-id="@item.ID">查看全文</a>
                         </span>
+                        @if (item.Status == ArticleStatus.Draft && item.ParentArticleID != null)
+                        {
+                            <span>
+                                <a asp-action="Details" asp-route-id="@item.ParentArticleID">查看原文</a>
+                            </span>
+                        }
                         @if (item.CanEdit)
                         {
                             <span>
