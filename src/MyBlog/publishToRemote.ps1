@@ -13,6 +13,6 @@ if(!$?)
 $bashParams=,"publishToRemote.sh"
 if($norestart)
 {
-	$bashParams += " --no-restart"
+	$bashParams += "--no-restart"
 }
 & bash $bashParams

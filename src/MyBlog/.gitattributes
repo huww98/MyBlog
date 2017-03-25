@@ -1,2 +1,2 @@
-publishToRemote	text eol=lf
+publishToRemote.sh	text eol=lf
 bash_completion	text eol=lf
