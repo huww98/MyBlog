@@ -187,6 +187,7 @@ namespace MyBlog.Controllers
                 // If the user does not have an account, then ask the user to create an account.
                 ViewData["ReturnUrl"] = returnUrl;
                 ViewData["LoginProvider"] = info.LoginProvider;
+                ViewData["NickName"] = info.Principal.Identity.Name;
                 var email = info.Principal.FindFirstValue(ClaimTypes.Email);
                 return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
             }
@@ -208,7 +209,7 @@ namespace MyBlog.Controllers
                     return View("ExternalLoginFailure");
                 }
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                UpdateExternalUserInfoHelper.Update(user,info);
+                UpdateExternalUserInfoHelper.Update(user, info);
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

@@ -1,15 +1,15 @@
 ﻿@model ManageLoginsViewModel
 @using Microsoft.AspNetCore.Http.Authentication
 @{
-    ViewData["Title"] = "Manage your external logins";
+    ViewData["Title"] = "管理关联的账号";
 }
 
-<h2>@ViewData["Title"].</h2>
+<h2>@ViewData["Title"]</h2>
 
 <p class="text-success">@ViewData["StatusMessage"]</p>
 @if (Model.CurrentLogins.Count > 0)
 {
-    <h4>Registered Logins</h4>
+    <h4>已关联账号：</h4>
     <table class="table">
         <tbody>
             @for (var index = 0; index < Model.CurrentLogins.Count; index++)
@@ -23,7 +23,7 @@
                                 <div>
                                     <input asp-for="@Model.CurrentLogins[index].LoginProvider" name="LoginProvider" type="hidden" />
                                     <input asp-for="@Model.CurrentLogins[index].ProviderKey" name="ProviderKey" type="hidden" />
-                                    <input type="submit" class="btn btn-default" value="Remove" title="Remove this @Model.CurrentLogins[index].LoginProvider login from your account" />
+                                    <input type="submit" class="btn btn-default" value="Remove" title="将 @Model.CurrentLogins[index].LoginProvider 账号取消关联" />
                                 </div>
                             </form>
                         }
@@ -39,14 +39,14 @@
 }
 @if (Model.OtherLogins.Count > 0)
 {
-    <h4>Add another service to log in.</h4>
+    <h4>关联其他账号</h4>
     <hr />
     <form asp-controller="Manage" asp-action="LinkLogin" method="post" class="form-horizontal">
         <div id="socialLoginList">
             <p>
                 @foreach (var provider in Model.OtherLogins)
                 {
-                    <button type="submit" class="btn btn-default" name="provider" value="@provider.AuthenticationScheme" title="Log in using your @provider.DisplayName account">@provider.AuthenticationScheme</button>
+                    <button type="submit" class="btn btn-default" name="provider" value="@provider.AuthenticationScheme" title="关联 @provider.DisplayName 账号">@provider.AuthenticationScheme</button>
                 }
             </p>
         </div>
