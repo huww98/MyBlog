@@ -1,4 +1,5 @@
-﻿using Ganss.XSS;
+﻿using AspNet.Security.OAuth.QQ;
+using Ganss.XSS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -106,6 +107,11 @@ namespace MyBlog
             app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
+            app.UseQQAuthentication(new QQAuthenticationOptions
+            {
+                ClientId = Configuration["Authentication:QQ:AppId"],
+                ClientSecret = Configuration["Authentication:QQ:AppKey"]
+            });
 
             app.UseMvc(routes =>
             {

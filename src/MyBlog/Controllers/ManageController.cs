@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MyBlog.Helpers;
 using MyBlog.Models;
 using MyBlog.Models.ManageViewModels;
 using MyBlog.Services;
@@ -78,6 +79,7 @@ namespace MyBlog.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
+                    await HttpContext.Authentication.SignOutAsync("Identity.External");
                     message = ManageMessageId.RemoveLoginSuccess;
                 }
             }
@@ -323,7 +325,17 @@ namespace MyBlog.Controllers
                 return RedirectToAction(nameof(ManageLogins), new { Message = ManageMessageId.Error });
             }
             var result = await _userManager.AddLoginAsync(user, info);
-            var message = result.Succeeded ? ManageMessageId.AddLoginSuccess : ManageMessageId.Error;
+            ManageMessageId message;
+            if (result == IdentityResult.Success)
+            {
+                message = ManageMessageId.AddLoginSuccess;
+                UpdateExternalUserInfoHelper.Update(user, info);
+                await _userManager.UpdateAsync(user);
+            }
+            else
+            {
+                message = ManageMessageId.Error;
+            }
             return RedirectToAction(nameof(ManageLogins), new { Message = message });
         }
 

@@ -9,8 +9,8 @@ namespace MyBlog.Models.AccountViewModels
     public class LoginViewModel
     {
         [Required]
-        [Display(Name = "E-mail/用户名")]
-        public string EmailOrUserName { get; set; }
+        [Display(Name = "E-mail")]
+        public string Email { get; set; }
 
         [Required]
         [DataType(DataType.Password)]

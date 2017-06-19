@@ -9,5 +9,7 @@ namespace MyBlog.Models
     // Add profile data for application users by adding properties to the ApplicationUser class
     public class ApplicationUser : IdentityUser
     {
+        public string NickName { get; set; }
+        public string AvatarUrl { get; set; }
     }
 }

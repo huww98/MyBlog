@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using MyBlog.Helpers;
 using MyBlog.Models;
 using MyBlog.Models.AccountViewModels;
 using MyBlog.Services;
@@ -39,9 +40,10 @@ namespace MyBlog.Controllers
         // GET: /Account/Login
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login(string returnUrl = null)
+        public async Task<IActionResult> Login(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+            await HttpContext.Authentication.SignOutAsync("Identity.External");
             return View();
         }
 
@@ -57,17 +59,7 @@ namespace MyBlog.Controllers
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var user = await _userManager.FindByEmailAsync(model.EmailOrUserName);
-                if (user == null)
-                {
-                    user = await _userManager.FindByNameAsync(model.EmailOrUserName);
-                }
-                if (user == null)
-                {
-                    ModelState.AddModelError(string.Empty, "用户不存在。");
-                    return View(model);
-                }
-                var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation(1, "User logged in.");
@@ -113,7 +105,7 @@ namespace MyBlog.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, NickName = model.NickName };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -216,6 +208,7 @@ namespace MyBlog.Controllers
                     return View("ExternalLoginFailure");
                 }
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                UpdateExternalUserInfoHelper.Update(user,info);
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

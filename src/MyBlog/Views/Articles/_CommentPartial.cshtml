@@ -3,10 +3,17 @@
 
 <div class="media">
     <div class="media-left">
-        <img class="media-object" src="~/img/HeadPortraitPlaceHolder.svg" alt="暂无头像" style="width:64px;height:64px" />
+        @{ 
+            var src = "~/img/HeadPortraitPlaceHolder.svg";
+            if (!string.IsNullOrEmpty(Model.Author.AvatarUrl))
+            {
+                src = Model.Author.AvatarUrl;
+            }
+        }
+        <img class="media-object" src="@src" style="width:64px;height:64px" />
     </div>
     <div class="media-body">
-        <h4 class="media-heading">@Html.DisplayFor(c => c.Author.UserName) <small style="display:inline-block">@Html.DisplayFor(model => model.CreatedTime)</small></h4>
+        <h4 class="media-heading">@Html.DisplayFor(c => c.Author.NickName) <small style="display:inline-block">@Html.DisplayFor(model => model.CreatedTime)</small></h4>
         @Html.Raw(renderer.RenderHtml(Model.Content))
 
         <form asp-action="DeleteComment" asp-route-id="@Model.ID">
