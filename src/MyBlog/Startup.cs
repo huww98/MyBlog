@@ -1,4 +1,5 @@
-﻿using AspNet.Security.OAuth.QQ;
+﻿using AspNet.Security.OAuth.GitHub;
+using AspNet.Security.OAuth.QQ;
 using Ganss.XSS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -111,6 +112,12 @@ namespace MyBlog
             {
                 ClientId = Configuration["Authentication:QQ:AppId"],
                 ClientSecret = Configuration["Authentication:QQ:AppKey"]
+            });
+            app.UseGitHubAuthentication(new GitHubAuthenticationOptions
+            {
+                ClientId = Configuration["Authentication:GitHub:ClientID"],
+                ClientSecret = Configuration["Authentication:GitHub:ClientSecret"],
+                Scope = { "user:email" }
             });
 
             app.UseMvc(routes =>

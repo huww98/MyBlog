@@ -5,8 +5,14 @@
 }
 
 <h2>@ViewData["Title"]</h2>
-
-<p class="text-success">@ViewData["StatusMessage"]</p>
+@if ((bool)@ViewData["Error"])
+{
+    <p class="text-danger">@ViewData["StatusMessage"]</p>
+}
+else
+{
+    <p class="text-success">@ViewData["StatusMessage"]</p>
+}
 @if (Model.CurrentLogins.Count > 0)
 {
     <h4>已关联账号：</h4>

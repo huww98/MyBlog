@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.Extensions" Version="1.0.0-rc2-t004a2a15b" />
+    <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="1.0.0-rc2-t004a2a15b" />
     <PackageReference Include="System.ValueTuple " Version="4.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.2" />

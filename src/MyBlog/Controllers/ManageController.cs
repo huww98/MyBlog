@@ -275,12 +275,13 @@ namespace MyBlog.Controllers
 
         //GET: /Manage/ManageLogins
         [HttpGet]
-        public async Task<IActionResult> ManageLogins(ManageMessageId? message = null)
+        public async Task<IActionResult> ManageLogins(ManageMessageId? message = null, string error = null)
         {
+            ViewData["Error"] = message == ManageMessageId.Error;
             ViewData["StatusMessage"] =
                 message == ManageMessageId.RemoveLoginSuccess ? "账号已取消关联"
                 : message == ManageMessageId.AddLoginSuccess ? "账号关联成功"
-                : message == ManageMessageId.Error ? "错误。"
+                : message == ManageMessageId.Error ? error
                 : "";
             var user = await GetCurrentUserAsync();
             if (user == null)
@@ -325,18 +326,21 @@ namespace MyBlog.Controllers
                 return RedirectToAction(nameof(ManageLogins), new { Message = ManageMessageId.Error });
             }
             var result = await _userManager.AddLoginAsync(user, info);
-            ManageMessageId message;
             if (result == IdentityResult.Success)
             {
-                message = ManageMessageId.AddLoginSuccess;
                 UpdateExternalUserInfoHelper.Update(user, info);
                 await _userManager.UpdateAsync(user);
+                return RedirectToAction(nameof(ManageLogins), new { Message = ManageMessageId.AddLoginSuccess });
             }
             else
             {
-                message = ManageMessageId.Error;
+                await HttpContext.Authentication.SignOutAsync("Identity.External");
+                return RedirectToAction(nameof(ManageLogins), new
+                {
+                    Message = ManageMessageId.Error,
+                    Error = string.Join("\n", result.Errors.Select(e=>e.Description))
+                });
             }
-            return RedirectToAction(nameof(ManageLogins), new { Message = message });
         }
 
         #region Helpers

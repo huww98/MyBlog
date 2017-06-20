@@ -30,7 +30,7 @@ namespace MyBlog.Controllers
                 u => new RoleManageViewModel
                 {
                     UserId = u.Id,
-                    UserName = u.UserName,
+                    NickName = u.NickName,
                     Email = u.Email,
                     IsAuthor = u.Roles.Any(r => r.RoleId == authorRole.Id),
                     IsEditor = u.Roles.Any(r => r.RoleId == editorRole.Id)

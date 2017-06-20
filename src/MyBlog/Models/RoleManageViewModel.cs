@@ -11,18 +11,11 @@ namespace MyBlog.Models
         {
             get
             {
-                if (string.IsNullOrEmpty(Email))
-                {
-                    return UserName;
-                }
-                else
-                {
-                    return $"{UserName} ({Email})";
-                }
+                return $"{NickName} ({Email})";
             }
         }
 
-        public string UserName { get; set; }
+        public string NickName { get; set; }
 
         public string Email { get; set; }
 
