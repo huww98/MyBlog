@@ -10,7 +10,14 @@
     <h4>更改账户设定</h4>
     <hr />
     <dl class="dl-horizontal">
-        <dt>密码:</dt>
+        <dt>昵称：</dt>
+        <dd>
+            <form class="form-inline" asp-controller="Manage" asp-action="UpdateNickName" method="post">
+                <input asp-for="User.NickName" type="text" name="nickName" class="form-control"/>
+                <button type="submit" class="btn btn-default">更新</button>
+            </form>
+        </dd>
+        <dt>密码：</dt>
         <dd>
             @if (Model.HasPassword)
             {
@@ -21,7 +28,7 @@
                 <a asp-controller="Manage" asp-action="SetPassword" class="btn-bracketed">创建</a>
             }
         </dd>
-        <dt>关联的账号:</dt>
+        <dt>关联的账号：</dt>
         <dd>
 
             @Model.Logins.Count <a asp-controller="Manage" asp-action="ManageLogins" class="btn-bracketed">管理</a>

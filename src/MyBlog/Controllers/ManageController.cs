@@ -42,6 +42,7 @@ namespace MyBlog.Controllers
             ViewData["StatusMessage"] =
                 message == ManageMessageId.ChangePasswordSuccess ? "修改密码成功"
                 : message == ManageMessageId.SetPasswordSuccess ? "设置密码成功"
+                : message == ManageMessageId.UpdateInfoSuccess ? "更新个人信息成功"
                 : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
                 : message == ManageMessageId.Error ? "An error has occurred."
                 : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
@@ -55,6 +56,7 @@ namespace MyBlog.Controllers
             }
             var model = new IndexViewModel
             {
+                User = user,
                 HasPassword = await _userManager.HasPasswordAsync(user),
                 PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
                 TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
@@ -338,9 +340,19 @@ namespace MyBlog.Controllers
                 return RedirectToAction(nameof(ManageLogins), new
                 {
                     Message = ManageMessageId.Error,
-                    Error = string.Join("\n", result.Errors.Select(e=>e.Description))
+                    Error = string.Join("\n", result.Errors.Select(e => e.Description))
                 });
             }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> UpdateNickName(string nickName)
+        {
+            var user = await GetCurrentUserAsync();
+            user.NickName = nickName;
+            await _userManager.UpdateAsync(user);
+            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.UpdateInfoSuccess });
         }
 
         #region Helpers
@@ -355,6 +367,7 @@ namespace MyBlog.Controllers
 
         public enum ManageMessageId
         {
+            UpdateInfoSuccess,
             AddPhoneSuccess,
             AddLoginSuccess,
             ChangePasswordSuccess,
