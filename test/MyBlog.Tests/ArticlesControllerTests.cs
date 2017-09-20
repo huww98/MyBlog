@@ -21,17 +21,17 @@ namespace MyBlog.Tests
 {
     public class ArticlesControllerTests
     {
-        Mock<ICurrentTime> currentTimeMock;
-        Mock<IAuthorizationService> authMock;
-        DateTime mockedCurrentTime = new DateTime(3079, 3, 9, 8, 7, 34, 687);
+        private Mock<ICurrentTime> currentTimeMock;
+        private Mock<IAuthorizationService> authMock;
+        private DateTime mockedCurrentTime = new DateTime(3079, 3, 9, 8, 7, 34, 687);
 
-        ArticlesController buildController(Action<IServiceCollection> buildServices = null)
+        private ArticlesController buildController(Action<IServiceCollection> buildServices = null)
         {
             var services = new ServiceCollection();
             buildServices?.Invoke(services);
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseInMemoryDatabase());
+                options.UseInMemoryDatabase("test"));
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
@@ -44,11 +44,11 @@ namespace MyBlog.Tests
             {
                 authMock = new Mock<IAuthorizationService>();
                 authMock.Setup(i => i.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.Is<Article>(a => a.Title == "Test Article"), It.Is<IEnumerable<IAuthorizationRequirement>>(arg => arg.Single() is CanEditArticleRequirement)))
-                    .Returns(Task.FromResult(true));
+                    .Returns(Task.FromResult(AuthorizationResult.Success()));
                 authMock.Setup(i => i.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.Is<Article>(a => a.Title == "测试文章"), It.Is<IEnumerable<IAuthorizationRequirement>>(arg => arg.Single() is CanEditArticleRequirement)))
-                    .Returns(Task.FromResult(false));
+                    .Returns(Task.FromResult(AuthorizationResult.Failed()));
                 authMock.Setup(i => i.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), "CanCreateArticle"))
-                    .Returns(Task.FromResult(true));
+                    .Returns(Task.FromResult(AuthorizationResult.Success()));
                 services.AddSingleton(authMock.Object);
             }
             var serviceProvider = services.BuildServiceProvider();
@@ -58,7 +58,7 @@ namespace MyBlog.Tests
             return ActivatorUtilities.CreateInstance<ArticlesController>(serviceProvider);
         }
 
-        void addTestArticles(ApplicationDbContext dbContext)
+        private void addTestArticles(ApplicationDbContext dbContext)
         {
             dbContext.Database.EnsureDeleted();
             dbContext.Articles.AddRange(
