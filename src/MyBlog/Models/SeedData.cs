@@ -12,7 +12,7 @@ namespace MyBlog.Models
     {
         private const string administratorDefaultPassword = "a123456";
 
-        public static async Task Initialize(IServiceProvider serviceProvider)
+        public static async Task InitializeAsync(IServiceProvider serviceProvider)
         {
             var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
             await context.Database.MigrateAsync();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace MyBlog.Models
 {
@@ -11,5 +12,10 @@ namespace MyBlog.Models
     {
         public string NickName { get; set; }
         public string AvatarUrl { get; set; }
+
+        /// <summary>
+        /// Navigation property for the roles this user belongs to.
+        /// </summary>
+        public virtual ICollection<IdentityUserRole<string>> Roles { get; } = new List<IdentityUserRole<string>>();
     }
 }

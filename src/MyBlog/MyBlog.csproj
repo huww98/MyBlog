@@ -1,57 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
-    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <AssemblyName>MyBlog</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>MyBlog</PackageId>
     <UserSecretsId>aspnet-MyBlog-feb1b213-dc65-49ab-9b2a-961c3c5c67ee</UserSecretsId>
-    <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="wwwroot\**\*">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-    <None Update="bin\**\*;wwwroot\UploadedImages\**\*">
+    <None Update="wwwroot\UploadedImages\**\*">
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNet.Security.OAuth.Extensions" Version="1.0.0-rc2-t004a2a15b" />
-    <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="1.0.0-rc2-t004a2a15b" />
+    <ProjectReference Include="C:\Users\huww9\Source\Repos\AspNet.Security.OAuth.Providers\src\AspNet.Security.OAuth.QQ\AspNet.Security.OAuth.QQ.csproj" />
+    <ProjectReference Include="C:\Users\huww9\Source\Repos\AspNet.Security.OAuth.Providers\src\AspNet.Security.OAuth.GitHub\AspNet.Security.OAuth.GitHub.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.ValueTuple " Version="4.3.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Routing" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="1.1.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="1.1.1">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.2" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="1.1.1">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.0" />
     <PackageReference Include="HtmlSanitizer" Version="3.4.156" />
-    <PackageReference Include="Markdig" Version="0.12.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
-    <PackageReference Include="AspNet.Security.OAuth.QQ" Version="1.0.0-rc2-t004a2a15b" />
+    <PackageReference Include="Markdig" Version="0.13.3" />
   </ItemGroup>
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
@@ -60,10 +33,13 @@
   </Target>
 
   <ItemGroup>
-    <DotNetCliToolReference Include="BundlerMinifier.Core" Version="2.2.301" />
-    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.0" />
-    <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="1.0.0" />
-    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />
+    <DotNetCliToolReference Include="BundlerMinifier.Core" Version="2.5.357" />
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
+    <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.0" />
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="System.ValueTuple" Version="4.4.0" />
+  </ItemGroup>
 </Project>

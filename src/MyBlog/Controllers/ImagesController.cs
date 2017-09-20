@@ -37,17 +37,18 @@ namespace MyBlog.Controllers
         // POST: Images/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Alt,Discription")] Image image, IFormFile file, [FromServices]IImageProcessor processor)
+        public async Task<IActionResult> Create(
+            [Bind("Alt,Description")] Image image,
+            IFormFile file,
+            [FromServices]IImageUploader uploader)
         {
             if (file == null)
             {
                 ModelState.AddModelError(string.Empty, "必须选择文件");
                 return View(image);
             }
-            using (var stream = file.OpenReadStream())
-            {
-                await processor.SaveImageAsync(file.FileName, stream, image);
-            }
+
+            await uploader.UploadImageAsync(file, image);
 
             return RedirectToAction("Index");
         }
@@ -79,7 +80,7 @@ namespace MyBlog.Controllers
                 return NotFound();
             }
 
-            if (await TryUpdateModelAsync(image, string.Empty, i => i.ID, i => i.Alt, i => i.Discription))
+            if (await TryUpdateModelAsync(image, string.Empty, i => i.ID, i => i.Alt, i => i.Description))
             {
                 if (id != image.ID)
                 {
@@ -95,22 +96,24 @@ namespace MyBlog.Controllers
         // POST: Images/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, [FromServices]IImageProcessor processor)
+        public async Task<IActionResult> Delete(int id)
         {
-            var result = await processor.DeleteImageAsync(id);
-            switch (result)
+            var image = await _context.Images.Include(i => i.Articles).SingleOrDefaultAsync(m => m.ID == id);
+            if (image == null)
             {
-                case ImageDeleteResult.NotFount:
-                    return NotFound();
-
-                case ImageDeleteResult.InUse:
-                    return BadRequest();
-
-                case ImageDeleteResult.Successed:
-                    return RedirectToAction("Index");
+                return NotFound();
             }
-
-            return StatusCode(500);
+            if (image.Articles.Count > 0)
+            {
+                return BadRequest();
+            }
+            _context.Images.Remove(image);
+            await _context.SaveChangesAsync();
+            if (System.IO.File.Exists(image.Path))
+            {
+                System.IO.File.Delete(image.Path);
+            }
+            return RedirectToAction("Index");
         }
     }
 }

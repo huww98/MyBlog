@@ -52,7 +52,7 @@ else
             <p>
                 @foreach (var provider in Model.OtherLogins)
                 {
-                    <button type="submit" class="btn btn-default" name="provider" value="@provider.AuthenticationScheme" title="关联 @provider.DisplayName 账号">@provider.AuthenticationScheme</button>
+                    <button type="submit" class="btn btn-default" name="provider" value="@provider.Name" title="关联 @provider.DisplayName 账号">@provider.DisplayName</button>
                 }
             </p>
         </div>

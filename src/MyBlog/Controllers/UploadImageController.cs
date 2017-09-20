@@ -11,20 +11,17 @@ namespace MyBlog.Controllers
 {
     public class UploadImageController : Controller
     {
-        private readonly IImageProcessor _processor;
+        private readonly IImageUploader _uploader;
 
-        public UploadImageController(IImageProcessor processor)
+        public UploadImageController(IImageUploader uploader)
         {
-            _processor = processor;
+            _uploader = uploader;
         }
 
         public async Task<IActionResult> Index(IFormFile imageFile, int file_id)
         {
             Image img = new Image();
-            using (var stream = imageFile.OpenReadStream())
-            {
-                await _processor.SaveImageAsync(imageFile.FileName, stream, img);
-            }
+            await _uploader.UploadImageAsync(imageFile, img);
             return Json(new { src = img.Url });
         }
     }

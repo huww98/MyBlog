@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -81,7 +82,7 @@ namespace MyBlog.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    await HttpContext.Authentication.SignOutAsync("Identity.External");
+                    await HttpContext.SignOutAsync("Identity.External");
                     message = ManageMessageId.RemoveLoginSuccess;
                 }
             }
@@ -291,7 +292,8 @@ namespace MyBlog.Controllers
                 return View("Error");
             }
             var userLogins = await _userManager.GetLoginsAsync(user);
-            var otherLogins = _signInManager.GetExternalAuthenticationSchemes().Where(auth => userLogins.All(ul => auth.AuthenticationScheme != ul.LoginProvider)).ToList();
+            var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
+            var otherLogins = schemes.Where(auth => userLogins.All(ul => auth.Name != ul.LoginProvider)).ToList();
             ViewData["ShowRemoveButton"] = user.PasswordHash != null || userLogins.Count > 1;
             return View(new ManageLoginsViewModel
             {
@@ -336,7 +338,7 @@ namespace MyBlog.Controllers
             }
             else
             {
-                await HttpContext.Authentication.SignOutAsync("Identity.External");
+                await HttpContext.SignOutAsync("Identity.External");
                 return RedirectToAction(nameof(ManageLogins), new
                 {
                     Message = ManageMessageId.Error,

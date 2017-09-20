@@ -37,7 +37,7 @@ namespace MyBlog.Tests
                 .AddDefaultTokenProviders();
 
             currentTimeMock = new Mock<ICurrentTime>();
-            currentTimeMock.Setup(t => t.Time).Returns(mockedCurrentTime);
+            currentTimeMock.Setup(t => t.CurrentTime).Returns(mockedCurrentTime);
             services.AddSingleton(currentTimeMock.Object);
 
             if (!services.Any(service => service.ServiceType == typeof(IAuthorizationService)))

@@ -7,12 +7,6 @@ namespace MyBlog.Services
 {
     public class CurrentTimeService : ICurrentTime
     {
-        public DateTime Time
-        {
-            get
-            {
-                return DateTime.Now;
-            }
-        }
+        public DateTime CurrentTime => DateTime.Now;
     }
 }

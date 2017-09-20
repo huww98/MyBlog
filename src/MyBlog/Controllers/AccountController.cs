@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -43,7 +44,7 @@ namespace MyBlog.Controllers
         public async Task<IActionResult> Login(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            await HttpContext.Authentication.SignOutAsync("Identity.External");
+            await HttpContext.SignOutAsync("Identity.External");
             return View();
         }
 

@@ -58,10 +58,10 @@ namespace MyBlog.Controllers
             {
                 list = list.Where(a => a.CanEdit).ToList();
             }
-            ViewData["CanCreate"] = await _authorizationService.AuthorizeAsync(User, "CanCreateArticle");
+            ViewData["CanCreate"] = (await _authorizationService.AuthorizeAsync(User, "CanCreateArticle")).Succeeded;
             ViewData["ViewMode"] = viewMode;
             ViewData["Articles"] = list;
-            return View("Index",filter);
+            return View("Index", filter);
         }
 
         // GET: Articles
@@ -126,7 +126,7 @@ namespace MyBlog.Controllers
             if (article != null)
             {
                 article.CanEdit = await GetCanEdit(article);
-                if (article.Status==ArticleStatus.Draft && !article.CanEdit)
+                if (article.Status == ArticleStatus.Draft && !article.CanEdit)
                 {
                     return null;
                 }
@@ -140,12 +140,12 @@ namespace MyBlog.Controllers
 
         private async Task<bool> GetCanEdit(Article article)
         {
-            return await _authorizationService.AuthorizeAsync(User, article, new CanEditArticleRequirement());
+            return (await _authorizationService.AuthorizeAsync(User, article, new CanEditArticleRequirement())).Succeeded;
         }
 
         private async Task<bool> GetCanDeleteComment(Comment comment)
         {
-            return await _authorizationService.AuthorizeAsync(User, comment, new CanDeleteCommentRequirement());
+            return (await _authorizationService.AuthorizeAsync(User, comment, new CanDeleteCommentRequirement())).Succeeded;
         }
 
         // GET: Articles/Create
@@ -175,7 +175,7 @@ namespace MyBlog.Controllers
                 };
                 _context.Add(article);
             }
-            article.CreatedTime = _currentTime.Time;
+            article.CreatedTime = _currentTime.CurrentTime;
             article.Status = ArticleStatus.Published;
             var result = await UpdateArticle(article, categoryIDs);
 
@@ -183,8 +183,10 @@ namespace MyBlog.Controllers
             {
                 case OkResult r:
                     return RedirectToAction("Details", new { id = article.ID });
+
                 case BadRequestResult r:
                     return View(article);
+
                 default:
                     return result;
             }
@@ -232,7 +234,7 @@ namespace MyBlog.Controllers
 
             if (await TryUpdateModelAsync(articleToUpdate, string.Empty, a => a.Title, a => a.Slug, a => a.Content))
             {
-                articleToUpdate.FinishEdit(_context.Images, categoryIDs, _currentTime.Time);
+                articleToUpdate.FinishEdit(_context.Images, categoryIDs, _currentTime.CurrentTime);
                 if (TryValidateModel(articleToUpdate))
                 {
                     await _context.SaveChangesAsync();
@@ -264,8 +266,10 @@ namespace MyBlog.Controllers
             {
                 case OkResult r:
                     return RedirectToAction("Details", new { id = article.ID });
+
                 case BadRequestResult r:
                     return View(article);
+
                 default:
                     return result;
             }
@@ -315,7 +319,7 @@ namespace MyBlog.Controllers
 
                 draft = rawArticle.DraftArticle ?? rawArticle.CreateDraft();
             }
-            draft.CreatedTime = _currentTime.Time;
+            draft.CreatedTime = _currentTime.CurrentTime;
             var result = await UpdateArticle(draft, categoryIDs);
             return generateJsonResult(draft, result);
         }
@@ -325,7 +329,8 @@ namespace MyBlog.Controllers
             switch (result)
             {
                 case OkResult r:
-                    return Json(new { IsSuccess = true, DraftId = draft.ID, Message = $"于{_currentTime.Time}保存草稿成功" });
+                    return Json(new { IsSuccess = true, DraftId = draft.ID, Message = $"于{_currentTime.CurrentTime}保存草稿成功" });
+
                 default:
                     return result;
             }
@@ -401,7 +406,7 @@ namespace MyBlog.Controllers
         {
             if (ModelState.IsValid)
             {
-                comment.CreatedTime = _currentTime.Time;
+                comment.CreatedTime = _currentTime.CurrentTime;
                 comment.AuthorID = getCurrentUserID();
                 _context.Add(comment);
                 await _context.SaveChangesAsync();

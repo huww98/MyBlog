@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -63,7 +64,7 @@ namespace MyBlog
             services.AddSingleton<ICurrentTime, CurrentTimeService>();
             services.AddTransient<ISummaryGenerator, SanitizeSummaryGenerator>();
             services.AddTransient<IMarkdownRenderer, MarkdigSanitizedService>();
-            services.AddScoped<IImageProcessor, ImageService>();
+            services.AddScoped<IImageUploader, ImageUploader>();
             services.AddSingleton(HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.BasicLatin, UnicodeRanges.CjkUnifiedIdeographs }));
 
             services.Configure<IdentityOptions>(o =>
@@ -73,10 +74,20 @@ namespace MyBlog
                 o.Password.RequireUppercase = false;
                 o.Password.RequireNonAlphanumeric = false;
 
-                o.SecurityStampValidationInterval = TimeSpan.FromSeconds(30);
-
                 //o.User.RequireUniqueEmail = true;
             });
+            services.AddAuthentication()
+                .AddQQ(options =>
+                {
+                    options.ClientId = Configuration["Authentication:QQ:AppId"];
+                    options.ClientSecret = Configuration["Authentication:QQ:AppKey"];
+                })
+                .AddGitHub(options =>
+                {
+                    options.ClientId = Configuration["Authentication:GitHub:ClientID"];
+                    options.ClientSecret = Configuration["Authentication:GitHub:ClientSecret"];
+                    options.Scope.Add("user:email");
+                });
 
             services.AddSingleton<IAuthorizationHandler, IsArticleAuthorAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, IsCommentAuthorAuthorizationHandler>();
@@ -84,11 +95,8 @@ namespace MyBlog
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -105,20 +113,7 @@ namespace MyBlog
             {
                 ForwardedHeaders = ForwardedHeaders.All
             });
-            app.UseIdentity();
-
-            // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
-            app.UseQQAuthentication(new QQAuthenticationOptions
-            {
-                ClientId = Configuration["Authentication:QQ:AppId"],
-                ClientSecret = Configuration["Authentication:QQ:AppKey"]
-            });
-            app.UseGitHubAuthentication(new GitHubAuthenticationOptions
-            {
-                ClientId = Configuration["Authentication:GitHub:ClientID"],
-                ClientSecret = Configuration["Authentication:GitHub:ClientSecret"],
-                Scope = { "user:email" }
-            });
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {
@@ -130,8 +125,6 @@ namespace MyBlog
                     template: "{*slug:required}",
                     defaults: new { controller = "Articles", action = "Slug" });
             });
-
-            SeedData.Initialize(app.ApplicationServices).Wait();
         }
     }
 }

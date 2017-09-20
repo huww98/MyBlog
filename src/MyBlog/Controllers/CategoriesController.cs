@@ -26,18 +26,18 @@ namespace MyBlog.Controllers
             {
                 cate.IndentLevel = 0;
                 result.Add(cate);
-                addChildrenToList(cate, result);
+                AddChildrenToList(cate, result);
             }
             return result;
         }
 
-        private void addChildrenToList(Category category, IList<Category> list)
+        private void AddChildrenToList(Category category, IList<Category> list)
         {
             foreach (var child in category.ChildCategories)
             {
                 child.IndentLevel = category.IndentLevel + 1;
                 list.Add(child);
-                addChildrenToList(child, list);
+                AddChildrenToList(child, list);
             }
         }
 
@@ -108,31 +108,22 @@ namespace MyBlog.Controllers
         // POST: Categories/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,ParentCategoryID,Name")] Category category)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id != category.ID)
+            var category = _context.Categories.SingleOrDefault(c => c.ID == id);
+            if (category == null)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (await TryUpdateModelAsync(category, string.Empty, c => c.ParentCategoryID, c => c.Name))
             {
-                try
+                if (!await IsParentCategoryValid(category))
                 {
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
+                    return BadRequest("父分类无效");
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoryExists(category.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+
+                await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             return View(category);
@@ -153,35 +144,12 @@ namespace MyBlog.Controllers
             return RedirectToAction("Index");
         }
 
-        private bool CategoryExists(int id)
+        private async Task<bool> IsParentCategoryValid(Category category)
         {
-            return _context.Categories.Any(e => e.ID == id);
+            return !await IsAncestorOf(category.ParentCategory, category);
         }
 
-        private async Task<List<Category>> GetValidParentCategories(Category category)
-        {
-            var categories = await _context.Categories.ToListAsync();
-            categories.Remove(category);
-            removeChildren(categories, category);
-            return categories;
-        }
-
-        private void removeChildren(ICollection<Category> categories, Category toRemoveChildren)
-        {
-            var children = categories.Where(c => c.ParentCategory == toRemoveChildren).ToList();
-            foreach (var child in children)
-            {
-                categories.Remove(child);
-                removeChildren(categories, child);
-            }
-        }
-
-        private async Task<bool> isParentCategoryValid(Category category)
-        {
-            return category != category.ParentCategory && !await isAncestorOf(category.ParentCategory, category);
-        }
-
-        private async Task<bool> isAncestorOf(Category category, Category ancestor)
+        private async Task<bool> IsAncestorOf(Category category, Category ancestor)
         {
             await _context.Entry(category).Reference(c => c.ParentCategory).LoadAsync();
             if (category.ParentCategory == null)
@@ -192,7 +160,7 @@ namespace MyBlog.Controllers
             {
                 return true;
             }
-            return await isAncestorOf(category.ParentCategory, ancestor);
+            return await IsAncestorOf(category.ParentCategory, ancestor);
         }
     }
 }

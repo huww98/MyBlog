@@ -59,7 +59,7 @@
             <h4>使用其他账号登录</h4>
             <hr />
             @{
-                var loginProviders = SignInManager.GetExternalAuthenticationSchemes().ToList();
+                var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
                 if (loginProviders.Count == 0)
                 {
                     <div>
@@ -75,8 +75,7 @@
                             <p>
                                 @foreach (var provider in loginProviders)
                                 {
-                                    <button type="submit" class="btn btn-default" name="provider" value="@provider.AuthenticationScheme" title="使用 @provider.DisplayName 账号登录">@provider.AuthenticationScheme</button>
-                                }
+                                    <button type="submit" class="btn btn-default" name="provider" value="@provider.Name" title="使用 @provider.DisplayName 登录">@provider.DisplayName</button>                                }
                             </p>
                         </div>
                     </form>

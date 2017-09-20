@@ -13,7 +13,7 @@ namespace MyBlog.Models
         public string Alt { get; set; }
 
         [Display(Name = "描述")]
-        public string Discription { get; set; }
+        public string Description { get; set; }
 
         [MaxLength(20)]
         [Required]
