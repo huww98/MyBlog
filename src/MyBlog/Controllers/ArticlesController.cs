@@ -200,10 +200,10 @@ namespace MyBlog.Controllers
                 return NotFound();
             }
 
-            var article = await _context.Articles.AsNoTracking()
+            var article = _context.Articles.AsNoTracking()
                 .Include(a => a.Categories)
                 .Include(a => a.DraftArticle).ThenInclude(a => a.Categories)
-                .SingleOrDefaultAsync(m => m.ID == id);
+                .SingleOrDefault(m => m.ID == id); // use sync method as a workaround of https://github.com/aspnet/EntityFrameworkCore/issues/9038
             if (article == null)
             {
                 return NotFound();
@@ -264,10 +264,10 @@ namespace MyBlog.Controllers
 
             switch (result)
             {
-                case OkResult r:
+                case OkResult _:
                     return RedirectToAction("Details", new { id = article.ID });
 
-                case BadRequestResult r:
+                case BadRequestObjectResult _:
                     return View(article);
 
                 default:
