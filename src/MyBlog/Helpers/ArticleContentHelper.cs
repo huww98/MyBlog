@@ -18,7 +18,10 @@ namespace MyBlog.Helpers
             }
             var parser = new HtmlParser();
             var document = parser.Parse(Markdig.Markdown.ToHtml(content));
-            return document.Images.Select(img => img.GetAttribute("src")).ToList();
+            return document.QuerySelectorAll("img,video,source")
+                .Select(e => e.GetAttribute("src"))
+                .Where(s => s != null)
+                .ToList();
         }
     }
 }

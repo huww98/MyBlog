@@ -74,7 +74,7 @@
                     </p>
                     <div class="article-summary-tail">
                         <span>@(Html.DisplayNameForInnerType<Article, DateTime>(a => a.EditedTime)):@Html.DisplayFor(m => item.EditedTime)</span>
-                        <span>@(Html.DisplayNameForInnerType<Article, ApplicationUser>(a => a.Author)):@Html.DisplayFor(m => item.Author.UserName)</span>
+                        <span>@(Html.DisplayNameForInnerType<Article, ApplicationUser>(a => a.Author)):@Html.DisplayFor(m => item.Author.NickName)</span>
                         <br class="visible-xs" />
                         <span>
                             <a asp-action="Details" asp-route-id="@item.ID">查看全文</a>

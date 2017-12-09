@@ -21,8 +21,10 @@ select {
 }
 
 .img-select-item img,
-.article-content img {
+.article-content img,
+.article-content video {
     max-width: 100%;
+    max-height: 100vh;
 }
 
 .indent {

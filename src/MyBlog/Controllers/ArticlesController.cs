@@ -165,7 +165,11 @@ namespace MyBlog.Controllers
             Article article;
             if (draftId != 0)
             {
-                article = await _context.Articles.Where(a => a.ID == draftId).SingleOrDefaultAsync();
+                article = await _context.Articles
+                    .Include(a => a.Categories)
+                    .Include(a => a.Images)
+                        .ThenInclude(ai => ai.Image)
+                    .SingleOrDefaultAsync(a => a.ID == draftId);
             }
             else
             {
