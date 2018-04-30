@@ -15,7 +15,7 @@ done
 
 localDir="bin/publishToRemote/"
 remoteTarget="/var/aspnetcore/myblog/"
-server="ubuntu@huww98.cn"
+server="qcloud"
 echo Starting publish to $server:$remoteTarget
 
 if [ $restart = true ]; then

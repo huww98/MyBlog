@@ -15,15 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.ValueTuple " Version="4.3.1" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
+    <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="2.0.0-rc2-final" />
+    <PackageReference Include="AspNet.Security.OAuth.QQ" Version="2.0.0-rc2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.1" />
-    <PackageReference Include="HtmlSanitizer" Version="4.0.181" />
-    <PackageReference Include="Markdig" Version="0.14.8" />
-
-    <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="2.0.0-rc2-0535" />
-    <PackageReference Include="AspNet.Security.OAuth.QQ" Version="2.0.0-rc2-0535" />
-
+    <PackageReference Include="HtmlSanitizer" Version="4.0.185" />
+    <PackageReference Include="Markdig" Version="0.15.0" />
   </ItemGroup>
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
@@ -36,9 +33,5 @@
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.0" />
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
 </Project>

@@ -17,7 +17,11 @@ namespace MyBlog.Helpers
             if (info.LoginProvider == QQAuthenticationDefaults.AuthenticationScheme)
             {
                 user.NickName = info.Principal.Identity.Name;
-                user.AvatarUrl = info.Principal.FindFirstValue("urn:qq:figureurl_qq_2");
+                if (Uri.TryCreate(info.Principal.FindFirstValue("urn:qq:figureurl_qq_2"), UriKind.Absolute, out var uri))
+                {
+                    user.AvatarUrl = "//" + uri.GetComponents(UriComponents.AbsoluteUri & ~UriComponents.Scheme, UriFormat.UriEscaped);
+                }
+
             }
             if (info.LoginProvider == GitHubAuthenticationDefaults.AuthenticationScheme)
             {

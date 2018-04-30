@@ -26,7 +26,6 @@ namespace MyBlog
 
                 try
                 {
-                    // Requires using RazorPagesMovie.Models;
                     SeedData.InitializeAsync(services).Wait();
                 }
                 catch (Exception ex)
