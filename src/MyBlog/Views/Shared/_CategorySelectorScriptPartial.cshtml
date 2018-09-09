@@ -1,9 +1,4 @@
-﻿<environment names="Development">
-    <script src="~/lib/bootstrap-treeview/src/js/bootstrap-treeview.js"></script>
-</environment>
-<environment names="Staging,Production">
-    <script src="~/lib/bootstrap-treeview/dist/bootstrap-treeview.min.js"></script>
-</environment>
+<script src="~/lib/bootstrap-treeview.min.js"></script>
 
 <script>
     $(".category-selector").each(function () {
@@ -38,7 +33,7 @@
             onNodeSelected: function (event, data) {
                 var hiddenInput = document.createElement("input");
                 hiddenInput.name = root.data("input-name");
-                hiddenInput.type = "hidden"
+                hiddenInput.type = "hidden";
                 hiddenInput.value = data.category_id;
                 root.append(hiddenInput);
                 buttonData.push(data.text);

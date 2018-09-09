@@ -1,4 +1,4 @@
-﻿@model Comment
+@model Comment
 @inject IMarkdownRenderer renderer
 
 <div class="media">
@@ -20,7 +20,7 @@
             <a href="#commentEditor" class="btn-reply btn btn-default btn-sm" data-reply-id="@Model.ID" data-reply-user="@Model.Author.UserName">回复</a>
             @if (Model.CanDelete)
             {
-                <button type="submit" class="btn btn-danger btn-sm" onclick="return deleteConfirm()">删除</button>
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return deleteConfirm();">删除</button>
             }
         </form>
 

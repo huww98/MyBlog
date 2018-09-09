@@ -1,18 +1,20 @@
-﻿@{
+@{
     await Html.RenderPartialAsync("_CategorySelectorScriptPartial");
     await Html.RenderPartialAsync("_MarkdownEditorScriptPartial");
 }
 @model Article
 <environment names="Development">
-    <script src="~/lib/bootstrap-fileinput/js/fileinput.js"></script>
-    <script src="~/lib/masonry/dist/masonry.pkgd.js"></script>
+    <script src="~/lib/fileinput/js/fileinput.js"></script>
+    <script src="~/lib/masonry.pkgd.js"></script>
+    <script src="~/lib/fileinput/themes/fa/theme.js"></script>
+    <script src="~/lib/fileinput/js/locales/zh.js"></script>
 </environment>
 <environment names="Staging,Production">
-    <script src="~/lib/bootstrap-fileinput/js/fileinput.min.js"></script>
-    <script src="~/lib/masonry/dist/masonry.pkgd.min.js"></script>
+    <script src="~/lib/fileinput/js/fileinput.min.js"></script>
+    <script src="~/lib/masonry.pkgd.min.js"></script>
+    <script src="~/lib/fileinput/themes/fa/theme.min.js"></script>
+    <script src="~/lib/fileinput/js/locales/zh.min.js"></script>
 </environment>
-<script src="~/lib/bootstrap-fileinput/themes/fa/theme.js"></script>
-<script src="~/lib/bootstrap-fileinput/js/locales/zh.js"></script>
 <script type='text/javascript'>
     $("#imageFile").fileinput({
         language: 'zh',
@@ -31,11 +33,11 @@
         if (alt !== undefined) {
             content.value += alt;
         }
-        content.value += ("](" + src);
+        content.value += "](" + src;
         if (title !== undefined && (title + "").length > 0) {
-            content.value += (' "' + title + '"');
+            content.value += ' "' + title + '"';
         }
-        content.value += (")" + tmpStr.substring(endPos, tmpStr.length));
+        content.value += ")" + tmpStr.substring(endPos, tmpStr.length);
         updatePreview($(".markdown-editor"));
     }
 
@@ -50,15 +52,15 @@
     });
     $('#imageModal').on('shown.bs.modal', function (e) {
         grid.masonry();
-    })
+    });
     $('#imageSelectTab').on('shown.bs.tab', function (e) {
         grid.masonry();
-    })
+    });
 
     $('.img-select-item').click(function () {
         var selectedItem = $(this);
         addImage(selectedItem.data("src"), selectedItem.data("alt"), selectedItem.data("title"));
-    })
+    });
 
     function saveDraft() {
         var form = $("#article-form");
@@ -66,14 +68,14 @@
         var draftId = form.data("draftId");
         var url = draftId !== 0 ? "@(Url.Action("SaveDraft"))?draftId=" + draftId : "@Url.Action("CreateDraft",new { id=Model?.ID })";
 
-        $.post(url, data, function(data) {
+        $.post(url, data, function (data) {
             $("#draftStatus").html(data.message);
             if (data.isSuccess) {
                 if (draftId === 0) {
                     form.data("draftId", data.draftId);
                 }
             }
-        },"json")
+        }, "json");
     }
 
     $("#saveDraftButton").click(saveDraft);

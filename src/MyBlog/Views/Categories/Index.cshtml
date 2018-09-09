@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MyBlog.Models.Category>
+@model IEnumerable<MyBlog.Models.Category>
 
 @{
     ViewData["Title"] = "分类管理";
@@ -32,7 +32,7 @@
                 <td>
                     <form asp-action="Delete" asp-route-id="@item.ID">
                         <a asp-action="Edit" asp-route-id="@item.ID">编辑</a> |
-                        <input type="submit" value="删除" class="btn btn-danger" onclick="return deleteConfirm()" />
+                        <input type="submit" value="删除" class="btn btn-danger" onclick="return deleteConfirm();" />
                     </form>
                 </td>
             </tr>
@@ -43,7 +43,7 @@
 @section Scripts{
     <script>
         function deleteConfirm() {
-            return confirm('确定删除？\n注意：子分类将同时被删除。')
+            return confirm('确定删除？\n注意：子分类将同时被删除。');
         }
     </script>
 }

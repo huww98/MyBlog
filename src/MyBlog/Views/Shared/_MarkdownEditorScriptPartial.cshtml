@@ -1,8 +1,8 @@
-﻿<environment names="Development">
-    <script src="~/lib/remarkable/dist/remarkable.js"></script>
+<environment names="Development">
+    <script src="~/lib/remarkable.js"></script>
 </environment>
 <environment names="Staging,Production">
-    <script src="~/lib/remarkable/dist/remarkable.min.js"></script>
+    <script src="~/lib/remarkable.min.js"></script>
 </environment>
 
 <script type='text/javascript'>
@@ -10,12 +10,12 @@
     function updatePreview(jqueryObj) {
         var source = jqueryObj.find(".markdown-edit").val();
         jqueryObj.find('.markdown-preview').html(mdHtml.render(source));
-    };
+    }
     $(".markdown-editor").each(function () {
         var editor = $(this);
         updatePreview(editor);
         editor.find(".markdown-edit").on("input", function () {
             updatePreview(editor);
         });
-    })
+    });
 </script>

@@ -1,4 +1,4 @@
-﻿@using MyBlog.Models.ArticleViewModels;
+@using MyBlog.Models.ArticleViewModels;
 @model ArticleFilterViewModel
 @inject ISummaryGenerator summaryGenerator
 
@@ -22,7 +22,7 @@
     </p>
 }
 <div class="row">
-    <div class="col-md-3 col-md-push-9">
+    <div class="col-md-auto order-md-last">
         <form method="get" class="form-horizontal">
             <div class="form-group">
                 <label for="categoryID" class="control-label col-xs-3">分类</label>
@@ -53,7 +53,7 @@
             </div>
         </form>
     </div>
-    <div class="col-md-9 col-md-pull-3">
+    <div class="col">
         @if (ViewBag.ViewMode == MyBlog.Controllers.ArticleViewMode.Summary)
         {
             @foreach (var item in articles)

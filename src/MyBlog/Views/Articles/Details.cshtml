@@ -83,16 +83,16 @@ else
             var btn = $(this);
             var hiddenInput = document.createElement("input");
             hiddenInput.name = "parentCommentID";
-            hiddenInput.type = "hidden"
+            hiddenInput.type = "hidden";
             hiddenInput.value = btn.data("replyId");
             var prompt = $("#replyPrompt");
-            prompt.find(".reply-user").html(btn.data("replyUser"))
+            prompt.find(".reply-user").html(btn.data("replyUser"));
             prompt.append(hiddenInput);
             prompt.css("display", "");
-        })
+        });
 
         function deleteConfirm() {
-            return confirm('确定删除？\n注意：该评论下所有回复都会被删除。')
+            return confirm('确定删除？\n注意：该评论下所有回复都会被删除。');
         }
     </script>
 }

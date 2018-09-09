@@ -43,6 +43,8 @@ namespace MyBlog.Controllers
             ArticleViewMode viewMode,
             bool showOnlyCanEdit = false)
         {
+            query = query.OrderByDescending(a => a.CreatedTime);
+
             if (ModelState.IsValid)
             {
                 query = query.ApplyArticleFilter(filter);

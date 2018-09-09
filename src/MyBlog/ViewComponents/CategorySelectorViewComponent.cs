@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyBlog.Models;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace MyBlog.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync(
             string name,
-            string buttonClasses = "btn btn-default",
+            string buttonClasses = "btn btn-light",
             bool isMultiple = false,
             ICollection<int> preselectedIDs = null,
             int exceptionID = -1)
