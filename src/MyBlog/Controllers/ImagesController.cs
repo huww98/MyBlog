@@ -44,7 +44,7 @@ namespace MyBlog.Controllers
         {
             if (file == null)
             {
-                ModelState.AddModelError(string.Empty, "必须选择文件");
+                ModelState.AddModelError(string.Empty, "蹇呴』閫夋嫨鏂囦欢");
                 return View(image);
             }
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using MyBlog.Models;
 using System.Security.Claims;
 using System.Threading.Tasks;

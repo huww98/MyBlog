@@ -1,4 +1,4 @@
-﻿using AngleSharp.Dom.Html;
+using AngleSharp.Dom.Html;
 using Ganss.XSS;
 using MyBlog.Controllers;
 using MyBlog.Helpers;

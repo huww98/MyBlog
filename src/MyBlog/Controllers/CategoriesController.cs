@@ -120,7 +120,7 @@ namespace MyBlog.Controllers
             {
                 if (!await IsParentCategoryValid(category))
                 {
-                    return BadRequest("¸¸·ÖÀàÎÞÐ§");
+                    return BadRequest("çˆ¶åˆ†ç±»æ— æ•ˆ");
                 }
 
                 await _context.SaveChangesAsync();
