@@ -243,3 +243,8 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+
+**/UploadedImages/*
+!**/.gitkeep
+**/*.min.css
+**/*.min.js

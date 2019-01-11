@@ -25,6 +25,10 @@ select {
     line-height: 1.4;
 }
 
+.bd-title {
+    margin-top: 1rem;
+}
+
 /* buttons and links extension to use brackets: [ click me ] */
 .btn-bracketed::before {
     display: inline-block;

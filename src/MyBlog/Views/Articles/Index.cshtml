@@ -7,7 +7,7 @@
     IEnumerable<Article> articles = (IEnumerable<Article>)ViewData["Articles"];
 }
 
-<h2>@ViewData["Title"]</h2>
+<h2 class="bd-title">@ViewData["Title"]</h2>
 
 @if ((bool)ViewData["CanCreate"])
 {
@@ -47,8 +47,8 @@
             </div>
             <div class="form-group">
                 <div class="col-xs-9 col-xs-offset-3">
-                    <input type="submit" value="筛选" class="btn btn-default" /> |
-                    <a asp-action="Index">取消筛选</a>
+                    <input type="submit" value="筛选" class="btn btn-primary" /> |
+                    <a asp-action="Index" class="btn btn-link">取消筛选</a>
                 </div>
             </div>
         </form>

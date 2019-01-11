@@ -1,4 +1,4 @@
-﻿@model Article
+@model Article
 
 @{string actionName = Model == null || Model.Status == ArticleStatus.Draft && Model.ParentArticleID == null ? "Create" : "Edit";}
 <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel">
@@ -38,28 +38,29 @@
 </div>
 @{ int draftId = Model?.Status == ArticleStatus.Draft ? Model.ID : 0; }
 <form asp-action=@actionName asp-route-draftId="@draftId" id="article-form" autocomplete="off" data-draft-id="@draftId">
-    <div class="form-horizontal">
         <h4>文章</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group">
+        <div class="form-group row">
             <label asp-for="Title" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group row">
             <label class="col-md-2 control-label">链接</label>
             <div class="col-md-10">
                 <div class="input-group">
-                    <span class="input-group-addon">@(Context.Request.Scheme)://@(Context.Request.Host)/</span>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">@(Context.Request.Scheme)://@(Context.Request.Host)/</span>
+                    </div>
                     <input asp-for="Slug" class="form-control" />
                 </div>
                 <span asp-validation-for="Slug" class="text-danger"></span>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group row">
             <label asp-for="Categories" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 @(await Component.InvokeAsync<CategorySelectorViewComponent>(new
@@ -70,11 +71,11 @@
             }))
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group row">
             <label asp-for="Content" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <div class="btn-group">
-                    <a class="btn btn-default" data-toggle="modal" data-target="#imageModal" title="插入图片"><i class="fa fa-picture-o"></i></a>
+                    <a class="btn btn-light" data-toggle="modal" data-target="#imageModal" title="插入图片"><i class="fa fa-picture-o"></i></a>
                 </div>
                 <div class="row markdown-editor">
                     <div class="col-sm-6">
@@ -87,12 +88,12 @@
                 <span class="text-danger" asp-validation-for="Content"></span>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group row">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn btn-primary">
                     发布
                 </button>
-                <button type="button" class="btn btn-default" id="saveDraftButton">
+                <button type="button" class="btn btn-secondary" id="saveDraftButton">
                     保存草稿
                 </button>
                 <span id="draftStatus">
@@ -105,5 +106,4 @@
                 </span>
             </div>
         </div>
-    </div>
 </form>

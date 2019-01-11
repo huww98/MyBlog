@@ -1,4 +1,4 @@
-﻿@model Article
+@model Article
 @inject IMarkdownRenderer renderer
 @inject SignInManager<ApplicationUser> SignInManager
 
@@ -6,7 +6,7 @@
     ViewData["Title"] = Model.Title;
 }
 
-<h1>@Model.Title</h1>
+<h1 class="bd-title">@Model.Title</h1>
 
 <div>
     @Html.DisplayNameFor(model => model.CreatedTime)：@Html.DisplayFor(model => model.CreatedTime) <br class="visible-xs" />

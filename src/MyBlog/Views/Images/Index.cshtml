@@ -4,7 +4,7 @@
     ViewData["Title"] = "图片列表";
 }
 
-<h2>图片列表</h2>
+<h2 class="bd-title">图片列表</h2>
 
 <p>
     <a asp-action="Create">上传新图片</a>
@@ -14,9 +14,9 @@
     {
         var isUsed = img.Articles.Count > 0;
         <div class="img-preview">
-            <div class="thumbnail">
-                <img src="@img.Url" />
-                <div class="caption">
+            <div class="card">
+                <img class="card-img-top" src="@img.Url" />
+                <div class="card-body">
                     <p>
                         @img.Description<br />
                         @Html.DisplayNameFor(i => i.UploadedTime)：@Html.DisplayFor(model => img.UploadedTime)
@@ -39,7 +39,7 @@
                             @:未使用此图片
                         }
                     </p>
-                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#imgPreviewModal" data-preview-url="@img.Url"
+                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#imgPreviewModal" data-preview-url="@img.Url"
                             onclick="$('#imgPreview')[0].src = $(this).data('previewUrl');">
                         <i class="fa fa-arrows-alt" aria-hidden="true"></i>
                     </button>
@@ -65,8 +65,8 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-window-close" aria-hidden="true"></i></button>
                 <h4 class="modal-title" id="myModalLabel">图片查看</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-window-close" aria-hidden="true"></i></button>
             </div>
             <div class="modal-body">
                 <img id="imgPreview" class="img-responsive" />

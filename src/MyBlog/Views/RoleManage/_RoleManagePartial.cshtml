@@ -1,18 +1,18 @@
-﻿@model RoleManageViewModel
+@model RoleManageViewModel
 
-<form class="form-inline" asp-action="UpdateRoles">
+<form asp-action="UpdateRoles">
     <input asp-for="UserId" type="hidden" />
-    <div class="checkbox">
+    <div class="form-check form-check-inline">
         <label>
             <input asp-for="IsAuthor" />
             @Html.DisplayNameFor(model=>model.IsAuthor)
         </label>
     </div>
-    <div class="checkbox">
+    <div class="form-check form-check-inline">
         <label>
             <input asp-for="IsEditor" />
             @Html.DisplayNameFor(model => model.IsEditor)
         </label>
     </div>
-    <input type="submit" class="btn btn-default" value="提交修改" />
+    <input type="submit" class="btn btn-primary" value="提交修改" />
 </form>

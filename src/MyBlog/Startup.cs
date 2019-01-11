@@ -1,45 +1,30 @@
-﻿using AspNet.Security.OAuth.GitHub;
-using AspNet.Security.OAuth.QQ;
-using Ganss.XSS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using MyBlog.Authorization;
 using MyBlog.Models;
 using MyBlog.Services;
 using System;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MyBlog
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
-            if (env.IsDevelopment())
-            {
-                // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
-                builder.AddUserSecrets<Startup>();
-            }
-
-            builder.AddEnvironmentVariables();
-            Configuration = builder.Build();
+            Configuration = configuration;
         }
 
-        public IConfigurationRoot Configuration { get; }
+        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -52,7 +37,7 @@ namespace MyBlog
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("CanCreateArticle", builder => builder.RequireRole(RoleInfo.EditorRoleName));
@@ -101,7 +86,6 @@ namespace MyBlog
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
-                app.UseBrowserLink();
             }
             else
             {
