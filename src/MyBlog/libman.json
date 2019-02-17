@@ -49,6 +49,10 @@
         },
         {
             "library": "remarkable@1.7.1"
+        },
+        {
+            "library": "highlight.js@9.14.2",
+            "files": ["highlight.min.js", "styles/default.min.css"]
         }
     ]
 }

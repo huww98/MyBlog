@@ -1,7 +1,6 @@
 @model Article
 @inject IMarkdownRenderer renderer
 @inject SignInManager<ApplicationUser> SignInManager
-
 @{
     ViewData["Title"] = Model.Title;
 }
@@ -37,7 +36,6 @@
         @await Html.PartialAsync("_CommentPartial", c);
     }
 </div>
-
 @if (SignInManager.IsSignedIn(User))
 {
     <h3>发表评论 <small>使用Markdown编辑</small></h3>
@@ -95,4 +93,6 @@ else
             return confirm('确定删除？\n注意：该评论下所有回复都会被删除。');
         }
     </script>
+    <script src="~/lib/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
 }
