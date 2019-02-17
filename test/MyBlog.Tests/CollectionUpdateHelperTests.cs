@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using MyBlog.Helpers;
 using Xunit;
 
@@ -18,7 +16,7 @@ namespace MyBlog.Tests
                 { '2',"item2 data" },
                 { '3',"item3 data" },
             };
-            var changes = CollectionUpdateHelper.updateCollection<string, char, string>(
+            var changes = CollectionUpdateHelper.UpdateCollection<string, char, string>(
                 collection,
                 s => s.Last(),
                 newData,

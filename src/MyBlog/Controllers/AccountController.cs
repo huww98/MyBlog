@@ -1,3 +1,6 @@
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -8,9 +11,6 @@ using MyBlog.Helpers;
 using MyBlog.Models;
 using MyBlog.Models.AccountViewModels;
 using MyBlog.Services;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace MyBlog.Controllers
 {
@@ -68,7 +68,7 @@ namespace MyBlog.Controllers
                 }
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, model.RememberMe });
                 }
                 if (result.IsLockedOut)
                 {
@@ -253,10 +253,7 @@ namespace MyBlog.Controllers
         // GET: /Account/ForgotPassword
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ForgotPassword()
-        {
-            return View();
-        }
+        public IActionResult ForgotPassword() => View();
 
         //
         // POST: /Account/ForgotPassword
@@ -291,19 +288,14 @@ namespace MyBlog.Controllers
         // GET: /Account/ForgotPasswordConfirmation
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ForgotPasswordConfirmation()
-        {
-            return View();
-        }
+        public IActionResult ForgotPasswordConfirmation() => View();
 
         //
         // GET: /Account/ResetPassword
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ResetPassword(string code = null)
-        {
-            return code == null ? View("Error") : View();
-        }
+            => code == null ? View("Error") : View();
 
         //
         // POST: /Account/ResetPassword
@@ -335,10 +327,7 @@ namespace MyBlog.Controllers
         // GET: /Account/ResetPasswordConfirmation
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ResetPasswordConfirmation()
-        {
-            return View();
-        }
+        public IActionResult ResetPasswordConfirmation() => View();
 
         //
         // GET: /Account/SendCode
@@ -391,7 +380,7 @@ namespace MyBlog.Controllers
                 await _smsSender.SendSmsAsync(await _userManager.GetPhoneNumberAsync(user), message);
             }
 
-            return RedirectToAction(nameof(VerifyCode), new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
+            return RedirectToAction(nameof(VerifyCode), new { Provider = model.SelectedProvider, model.ReturnUrl, model.RememberMe });
         }
 
         //
@@ -452,9 +441,7 @@ namespace MyBlog.Controllers
         }
 
         private Task<ApplicationUser> GetCurrentUserAsync()
-        {
-            return _userManager.GetUserAsync(HttpContext.User);
-        }
+            => _userManager.GetUserAsync(HttpContext.User);
 
         private IActionResult RedirectToLocal(string returnUrl)
         {

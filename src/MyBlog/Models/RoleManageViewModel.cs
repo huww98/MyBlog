@@ -7,13 +7,7 @@ namespace MyBlog.Models
         public string UserId { get; set; }
 
         [Display(Name = "用户")]
-        public string UserDisplayName
-        {
-            get
-            {
-                return $"{NickName} ({Email})";
-            }
-        }
+        public string UserDisplayName => $"{NickName} ({Email})";
 
         public string NickName { get; set; }
 

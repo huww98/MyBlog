@@ -7,13 +7,13 @@ namespace MyBlog.Helpers
 {
     public static class CollectionUpdateHelper
     {
-        public static CollectionUpdateChanges<T> updateCollection<T, TKey, TData>(
+        public static CollectionUpdateChanges<T> UpdateCollection<T, TKey, TData>(
             ICollection<T> collectionToUpdate,
             Func<T, TKey> keySelector,
             IDictionary<TKey, TData> newData,
             Func<TData, T> newObjectFactory)
         {
-            CollectionUpdateChanges<T> changes = new CollectionUpdateChanges<T>();
+            var changes = new CollectionUpdateChanges<T>();
             var addedData = new Dictionary<TKey, TData>(newData);
             foreach (var o in collectionToUpdate)
             {

@@ -23,9 +23,9 @@ namespace MyBlog.Tests
     {
         private Mock<ICurrentTime> currentTimeMock;
         private Mock<IAuthorizationService> authMock;
-        private DateTime mockedCurrentTime = new DateTime(3079, 3, 9, 8, 7, 34, 687);
+        private readonly DateTime mockedCurrentTime = new DateTime(3079, 3, 9, 8, 7, 34, 687);
 
-        private ArticlesController buildController(Action<IServiceCollection> buildServices = null)
+        private ArticlesController BuildController(Action<IServiceCollection> buildServices = null)
         {
             var services = new ServiceCollection();
             buildServices?.Invoke(services);
@@ -53,12 +53,12 @@ namespace MyBlog.Tests
             }
             var serviceProvider = services.BuildServiceProvider();
 
-            addTestArticles(serviceProvider.GetRequiredService<ApplicationDbContext>());
+            AddTestArticles(serviceProvider.GetRequiredService<ApplicationDbContext>());
 
             return ActivatorUtilities.CreateInstance<ArticlesController>(serviceProvider);
         }
 
-        private void addTestArticles(ApplicationDbContext dbContext)
+        private void AddTestArticles(ApplicationDbContext dbContext)
         {
             dbContext.Database.EnsureDeleted();
             dbContext.Articles.AddRange(
@@ -101,7 +101,7 @@ namespace MyBlog.Tests
         [Fact]
         public async Task Index_WithoutDraft_PreservesParameters_CheckPermitions()
         {
-            var controller = buildController();
+            var controller = BuildController();
             var filter = new ArticleFilterViewModel();
             var result = await controller.Index(filter, ArticleViewMode.List);
 
@@ -116,15 +116,15 @@ namespace MyBlog.Tests
             Assert.Equal(ArticleViewMode.List, viewResult.ViewData["ViewMode"]);
             //CheckPermitions
             authMock.VerifyAll();
-            Assert.Equal(true, articles.Where(a => a.Title == "Test Article").Single().CanEdit);
-            Assert.Equal(false, articles.Where(a => a.Title == "测试文章").Single().CanEdit);
+            Assert.True(articles.Where(a => a.Title == "Test Article").Single().CanEdit);
+            Assert.False(articles.Where(a => a.Title == "测试文章").Single().CanEdit);
             Assert.Equal(true, viewResult.ViewData["CanCreate"]);
         }
 
         [Fact]
         public async Task IndexReturnsAllArticlesWhenFilterIsInvalid()
         {
-            var controller = buildController();
+            var controller = BuildController();
             controller.ModelState.AddModelError("ToDate", "Some error");
             var result = await controller.Index(new ArticleFilterViewModel { FromDate = new DateTime(2017, 1, 11) });
 
@@ -138,26 +138,26 @@ namespace MyBlog.Tests
         [Fact]
         public async Task IndexAppliesVaildFilter()
         {
-            var controller = buildController();
+            var controller = BuildController();
             var result = await controller.Index(new ArticleFilterViewModel { FromDate = new DateTime(2017, 1, 11) });
 
             var viewResult = Assert.IsType<ViewResult>(result);
             var articles = Assert.IsAssignableFrom<IEnumerable<Article>>(viewResult.ViewData["Articles"]);
-            Assert.Equal(1, articles.Count());
-            Assert.Contains(articles, m => m.Title == "测试文章");
+            var a = Assert.Single(articles);
+            Assert.Equal("测试文章", a.Title);
         }
 
         [Fact]
         public async Task Draft_ReturnEditableDrafts()
         {
-            var controller = buildController();
+            var controller = BuildController();
             var filter = new ArticleFilterViewModel();
             var result = await controller.Drafts(filter);
 
             var viewResult = Assert.IsType<ViewResult>(result);
             var articles = Assert.IsAssignableFrom<IEnumerable<Article>>(viewResult.ViewData["Articles"]);
 
-            Assert.Equal(1, articles.Count());
+            Assert.Single(articles);
             Assert.True(articles.All(a => a.Status == ArticleStatus.Draft));
             Assert.Contains(articles, m => m.Title == "Test Article");
         }

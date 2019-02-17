@@ -1,17 +1,14 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using MyBlog.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using MyBlog.Models;
 using Xunit;
 
 namespace MyBlog.Tests
 {
     public class ArticleTests
     {
-        DateTime fakeCurrentTime = new DateTime(2598, 8, 28, 16, 8, 7, 988);
+        readonly DateTime fakeCurrentTime = new DateTime(2598, 8, 28, 16, 8, 7, 988);
 
         [Fact]
         public void FinishArticleEdit_UpdateEditedTime_UpdateImageAndCategory_valid()

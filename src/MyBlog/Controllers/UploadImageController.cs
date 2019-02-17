@@ -20,7 +20,7 @@ namespace MyBlog.Controllers
 
         public async Task<IActionResult> Index(IFormFile imageFile, int file_id)
         {
-            Image img = new Image();
+            var img = new Image();
             await _uploader.UploadImageAsync(imageFile, img);
             return Json(new { src = img.Url });
         }

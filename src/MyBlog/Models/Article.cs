@@ -70,25 +70,23 @@ namespace MyBlog.Models
         {
             this.EditedTime = currentTime;
             this.Content = this.Content?.Trim();
-            updateImageArticleLinks(imagesInDb);
-            updateCategoryArticleLinks(newCategoryIDs);
+            UpdateImageArticleLinks(imagesInDb);
+            UpdateCategoryArticleLinks(newCategoryIDs);
         }
 
-        private void updateImageArticleLinks(IQueryable<Image> imagesInDb)
+        private void UpdateImageArticleLinks(IQueryable<Image> imagesInDb)
         {
             imgSrcs = ArticleContentHelper.GetImageSrcs(Content).Where(src => src.StartsWith(ImagePath.UrlPath)).ToList();
             usedImages = imagesInDb.Where(i => imgSrcs.Distinct().Contains(i.Url)).ToDictionary(s => s.Url);
-            CollectionUpdateHelper.updateCollection(Images, ai => ai.Image.Url, usedImages, i => new ArticleImage { Image = i });
+            CollectionUpdateHelper.UpdateCollection(Images, ai => ai.Image.Url, usedImages, i => new ArticleImage { Image = i });
         }
 
-        private void updateCategoryArticleLinks(ICollection<int> categoryIDs)
-        {
-            CollectionUpdateHelper.updateCollection(
+        private void UpdateCategoryArticleLinks(ICollection<int> categoryIDs)
+            => CollectionUpdateHelper.UpdateCollection(
                 Categories,
                 ac => ac.CategoryID,
                 categoryIDs.ToDictionary(id => id),
                 id => new ArticleCategory { CategoryID = id });
-        }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

@@ -50,15 +50,15 @@ namespace MyBlog.Controllers
                     return NotFound();
                 }
                 var rawRoles = await _userManager.GetRolesAsync(user);
-                await updateRole(user, rawRoles, RoleInfo.AuthorRoleName, model.IsAuthor);
-                await updateRole(user, rawRoles, RoleInfo.EditorRoleName, model.IsEditor);
+                await UpdateRole(user, rawRoles, RoleInfo.AuthorRoleName, model.IsAuthor);
+                await UpdateRole(user, rawRoles, RoleInfo.EditorRoleName, model.IsEditor);
             }
             return RedirectToAction("Index");
         }
 
-        private async Task updateRole(ApplicationUser user, IList<string> rawRoles, string roleName, bool isInRole)
+        private async Task UpdateRole(ApplicationUser user, IList<string> rawRoles, string roleName, bool isInRole)
         {
-            bool rawIsInRole = rawRoles.Contains(roleName);
+            var rawIsInRole = rawRoles.Contains(roleName);
             if (rawIsInRole == isInRole)
             {
                 return;

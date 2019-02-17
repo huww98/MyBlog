@@ -145,9 +145,7 @@ namespace MyBlog.Controllers
         }
 
         private async Task<bool> IsParentCategoryValid(Category category)
-        {
-            return !await IsAncestorOf(category.ParentCategory, category);
-        }
+            => !await IsAncestorOf(category.ParentCategory, category);
 
         private async Task<bool> IsAncestorOf(Category category, Category ancestor)
         {

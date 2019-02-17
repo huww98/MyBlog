@@ -54,8 +54,8 @@ namespace MyBlog.Tests
             var result = articles.AsQueryable().ApplyArticleFilter(filter).ToList();
 
 
-            Assert.Equal(1, result.Count());
-            Assert.Contains(articles.Where(a => a.Title == "Test 4").Single(), result);
+            var article = Assert.Single(result);
+            Assert.Equal("Test 4", article.Title);
         }
 
         [Fact]

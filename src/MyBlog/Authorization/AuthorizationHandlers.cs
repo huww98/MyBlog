@@ -23,10 +23,9 @@ namespace MyBlog.Authorization
                         context.Succeed(requirement);
                     }
                 }
-                else if (context.Resource is Comment)
+                else if (context.Resource is Comment comment)
                 {
-                    var comment = (Comment)context.Resource;
-                    if (currentUserID == ((Comment)context.Resource).Article.AuthorID)
+                    if (currentUserID == comment.Article.AuthorID)
                     {
                         var requirement = context.PendingRequirements.SingleOrDefault(r => r is CanDeleteCommentRequirement);
                         if (requirement != null)

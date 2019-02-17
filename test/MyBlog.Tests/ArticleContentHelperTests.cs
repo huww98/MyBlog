@@ -15,7 +15,7 @@ namespace MyBlog.Tests
         [Fact]
         public void GetImageSrcs()
         {
-            string content = "<div><p>some text</p><img src='1.jpg'/><p>some text</p></div>";
+            var content = "<div><p>some text</p><img src='1.jpg'/><p>some text</p></div>";
             var result = ArticleContentHelper.GetImageSrcs(content);
             Assert.Equal("1.jpg", result.Single());
         }

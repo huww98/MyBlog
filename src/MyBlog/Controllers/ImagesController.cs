@@ -24,15 +24,10 @@ namespace MyBlog.Controllers
 
         // GET: Images
         public async Task<IActionResult> Index()
-        {
-            return View(await _context.Images.Include(i => i.Articles).ThenInclude(ai => ai.Article).ToListAsync());
-        }
+            => View(await _context.Images.Include(i => i.Articles).ThenInclude(ai => ai.Article).ToListAsync());
 
         // GET: Images/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
         // POST: Images/Create
         [HttpPost]

@@ -91,10 +91,7 @@ namespace MyBlog.Controllers
 
         //
         // GET: /Manage/AddPhoneNumber
-        public IActionResult AddPhoneNumber()
-        {
-            return View();
-        }
+        public IActionResult AddPhoneNumber() => View();
 
         //
         // POST: /Manage/AddPhoneNumber
@@ -114,7 +111,7 @@ namespace MyBlog.Controllers
             }
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
             await _smsSender.SendSmsAsync(model.PhoneNumber, "Your security code is: " + code);
-            return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = model.PhoneNumber });
+            return RedirectToAction(nameof(VerifyPhoneNumber), new { model.PhoneNumber });
         }
 
         //
@@ -211,10 +208,7 @@ namespace MyBlog.Controllers
         //
         // GET: /Manage/ChangePassword
         [HttpGet]
-        public IActionResult ChangePassword()
-        {
-            return View();
-        }
+        public IActionResult ChangePassword() => View();
 
         //
         // POST: /Manage/ChangePassword
@@ -245,10 +239,7 @@ namespace MyBlog.Controllers
         //
         // GET: /Manage/SetPassword
         [HttpGet]
-        public IActionResult SetPassword()
-        {
-            return View();
-        }
+        public IActionResult SetPassword() => View();
 
         //
         // POST: /Manage/SetPassword
@@ -381,9 +372,7 @@ namespace MyBlog.Controllers
         }
 
         private Task<ApplicationUser> GetCurrentUserAsync()
-        {
-            return _userManager.GetUserAsync(HttpContext.User);
-        }
+            => _userManager.GetUserAsync(HttpContext.User);
 
         #endregion Helpers
     }

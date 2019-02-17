@@ -12,9 +12,7 @@ namespace MyBlog.Models
         public ICollection<TreeViewNode> RootNodes { get; } = new List<TreeViewNode>();
 
         public string GetJsonData()
-        {
-            return JsonConvert.SerializeObject(RootNodes, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
-        }
+            => JsonConvert.SerializeObject(RootNodes, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
     }
 
     public class TreeViewNode

@@ -141,14 +141,10 @@ namespace MyBlog.Controllers
         }
 
         private async Task<bool> GetCanEdit(Article article)
-        {
-            return (await _authorizationService.AuthorizeAsync(User, article, new CanEditArticleRequirement())).Succeeded;
-        }
+            => (await _authorizationService.AuthorizeAsync(User, article, new CanEditArticleRequirement())).Succeeded;
 
         private async Task<bool> GetCanDeleteComment(Comment comment)
-        {
-            return (await _authorizationService.AuthorizeAsync(User, comment, new CanDeleteCommentRequirement())).Succeeded;
-        }
+            => (await _authorizationService.AuthorizeAsync(User, comment, new CanDeleteCommentRequirement())).Succeeded;
 
         // GET: Articles/Create
         [Authorize(Roles = RoleInfo.AuthorRoleName)]
@@ -177,7 +173,7 @@ namespace MyBlog.Controllers
             {
                 article = new Article
                 {
-                    AuthorID = getCurrentUserID(),
+                    AuthorID = GetCurrentUserID(),
                 };
                 _context.Add(article);
             }
@@ -292,7 +288,7 @@ namespace MyBlog.Controllers
                    .SingleOrDefaultAsync(a => a.ID == draftID);
 
             var result = await UpdateArticle(article, categoryIDs);
-            return generateJsonResult(article, result);
+            return GenerateJsonResult(article, result);
         }
 
         [HttpPost]
@@ -302,7 +298,7 @@ namespace MyBlog.Controllers
             Article draft;
             if (id == 0)
             {
-                draft = new Article { Status = ArticleStatus.Draft, AuthorID = getCurrentUserID() };
+                draft = new Article { Status = ArticleStatus.Draft, AuthorID = GetCurrentUserID() };
                 _context.Add(draft);
             }
             else
@@ -327,10 +323,10 @@ namespace MyBlog.Controllers
             }
             draft.CreatedTime = _currentTime.CurrentTime;
             var result = await UpdateArticle(draft, categoryIDs);
-            return generateJsonResult(draft, result);
+            return GenerateJsonResult(draft, result);
         }
 
-        private IActionResult generateJsonResult(Article draft, IActionResult result)
+        private IActionResult GenerateJsonResult(Article draft, IActionResult result)
         {
             switch (result)
             {
@@ -413,7 +409,7 @@ namespace MyBlog.Controllers
             if (ModelState.IsValid)
             {
                 comment.CreatedTime = _currentTime.CurrentTime;
-                comment.AuthorID = getCurrentUserID();
+                comment.AuthorID = GetCurrentUserID();
                 _context.Add(comment);
                 await _context.SaveChangesAsync();
             }
@@ -438,9 +434,7 @@ namespace MyBlog.Controllers
             return RedirectToAction("Details", new { id = comment.ArticleID });
         }
 
-        private string getCurrentUserID()
-        {
-            return User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value;
-        }
+        private string GetCurrentUserID()
+            => User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value;
     }
 }
