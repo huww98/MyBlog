@@ -69,3 +69,7 @@ select {
     width: 180px;
     padding: 2px;
 }
+
+.link-icons {
+    font-size: 30px;
+}
