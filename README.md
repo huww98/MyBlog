@@ -16,3 +16,44 @@ Based on ASP.NET Core, MySQL, Bootstrap
 * Mobile frendly (responsive)
 
 Currently, it is lack of paging. I may add this once I got more article.
+
+## Development
+
+* Install MySQL
+* Open solution with Visual Studio
+* Configure OAuth：
+  * right click MyBlog project，click Manage User secrets，输入相关信息，如：
+    ```json
+    {
+      "Authentication": {
+        "QQ": {
+          "AppId": "101xxxx9",
+          "AppKey": "xxxxxxxxxxxxx"
+        },
+        "GitHub": {
+          "ClientID": "3b0xxxxxxx66",
+          "ClientSecret": "xxxxxxxxxxxxxxxxxxx"
+        }
+      }
+    }
+    ```
+  * Or，delete `AddQQ`/`AddGitHub` in `Startup.cs` file.
+* Config Database connection: edit `appsettings.json`，Update ConnectionStrings.DefaultConnection with your MySQL connection string.
+
+## Deployment
+
+OAuth configure and database connection string should be write to `appsettings.Production.json` file on server.
+
+Build process I'm using:
+```shell
+dotnet publish --configuration Release --output ...
+```
+
+Run with:
+```shell
+dotnet MyBlog.dll
+```
+
+For more information, refer to
+* Official documentation: https://docs.microsoft.com/zh-cn/aspnet/core/host-and-deploy/linux-nginx
+* My blog article: https://www.huww98.cn/blog-construction-road-deployment
