@@ -14,22 +14,17 @@ while :; do
 done
 
 localDir="bin/publishToRemote/"
-remoteTarget="/var/aspnetcore/myblog/"
-server="qcloud"
+remoteTarget="/opt/myblog/"
+server="sh.qcloud"
 echo Starting publish to $server:$remoteTarget
 
 if [ $restart = true ]; then
 	echo Stoping remote service
-	ssh $server sudo service kestrel-myblog stop
+	ssh $server sudo service myblog stop
 fi
 
 echo transfering files
-rsync -rz "$localDir" "$server:$remoteTarget"
-
-echo setting permissions
-ssh $server \
-"sudo chown -R www-data:www-data \"$remoteTarget\";
-sudo chmod -R 775 \"$remoteTarget\";
+rsync -rvz --delete --checksum "$localDir" "$server:$remoteTarget"
 
 if [ $restart = true ]; then
 	echo restarting service

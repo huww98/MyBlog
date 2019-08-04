@@ -15,13 +15,13 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.App" />
-        <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="2.0.1" />
-        <PackageReference Include="AspNet.Security.OAuth.QQ" Version="2.0.1" />
+        <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="2.1.0" />
+        <PackageReference Include="AspNet.Security.OAuth.QQ" Version="2.1.0" />
         <PackageReference Include="BuildBundlerMinifier" Version="2.9.406" />
-        <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.48" />
+        <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.76" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.2.0" />
         <PackageReference Include="HtmlSanitizer" Version="4.0.217" />
-        <PackageReference Include="Markdig" Version="0.17.0" />
+        <PackageReference Include="Markdig" Version="0.17.1" />
     </ItemGroup>
 
     <ItemGroup>
