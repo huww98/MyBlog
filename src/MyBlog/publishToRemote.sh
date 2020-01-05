@@ -24,11 +24,11 @@ if [ $restart = true ]; then
 fi
 
 echo transfering files
-rsync -rvz --delete --checksum "$localDir" "$server:$remoteTarget"
+rsync -rvz --delete --checksum --exclude "appsettings.*.json" "$localDir" "$server:$remoteTarget"
 
 if [ $restart = true ]; then
 	echo restarting service
-	sudo service kestrel-myblog start;
-fi"
+	ssh $server sudo service myblog start;
+fi
 
 echo Published to remote successfully.

@@ -35,6 +35,7 @@ namespace MyBlog.Tests
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+            services.AddLogging();
 
             currentTimeMock = new Mock<ICurrentTime>();
             currentTimeMock.Setup(t => t.CurrentTime).Returns(mockedCurrentTime);

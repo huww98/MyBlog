@@ -4,11 +4,11 @@
     "defaultDestination": "wwwroot/lib/",
     "libraries": [
         {
-            "library": "jquery@3.3.1",
+            "library": "jquery@3.4.1",
             "files": [ "jquery.js", "jquery.min.js" ]
         },
         {
-            "library": "twitter-bootstrap@4.3.1",
+            "library": "twitter-bootstrap@4.4.1",
             "files": [
                 "css/bootstrap.css",
                 "css/bootstrap.min.css",
@@ -17,7 +17,7 @@
             ]
         },
         {
-            "library": "bootstrap-fileinput@4.5.2",
+            "library": "bootstrap-fileinput@5.0.8",
             "destination": "wwwroot/lib/fileinput/",
             "files": [
                 "css/fileinput.css",
@@ -35,11 +35,11 @@
             "library": "bootstrap-treeview@1.2.0"
         },
         {
-            "library": "font-awesome@5.7.2",
+            "library": "font-awesome@5.11.2",
             "destination": "wwwroot/lib/font-awesome/"
         },
         {
-            "library": "jquery-validate@1.19.0",
+            "library": "jquery-validate@1.19.1",
             "files": [ "jquery.validate.js", "jquery.validate.min.js" ]
         },
         {
@@ -49,10 +49,10 @@
             "library": "masonry@4.2.2"
         },
         {
-            "library": "remarkable@1.7.1"
+            "library": "remarkable@2.0.0"
         },
         {
-            "library": "highlight.js@9.15.6",
+            "library": "highlight.js@9.15.10",
             "files": ["highlight.min.js", "styles/default.min.css"]
         }
     ]

@@ -14,6 +14,9 @@ using System;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using Microsoft.AspNetCore.Mvc;
+using Pomelo.EntityFrameworkCore.MySql.Storage;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Microsoft.Extensions.Hosting;
 
 namespace MyBlog
 {
@@ -31,13 +34,15 @@ namespace MyBlog
         {
             // Add framework services.
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseMySql(Configuration.GetConnectionString("DefaultConnection"), mySqlOptions => mySqlOptions
+                    .ServerVersion(new ServerVersion(new Version(5, 7, 28), ServerType.MySql)))
+            );
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddControllersWithViews().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("CanCreateArticle", builder => builder.RequireRole(RoleInfo.EditorRoleName));
@@ -80,12 +85,11 @@ namespace MyBlog
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
             }
             else
             {
@@ -97,16 +101,19 @@ namespace MyBlog
             {
                 ForwardedHeaders = ForwardedHeaders.All
             });
-            app.UseAuthentication();
+            app.UseRouting();
 
-            app.UseMvc(routes =>
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-                routes.MapRoute(
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
                     name: "article",
-                    template: "{*slug:required}",
+                    pattern: "{*slug:required}",
                     defaults: new { controller = "Articles", action = "Slug" });
             });
         }
